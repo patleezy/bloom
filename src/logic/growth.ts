@@ -9,7 +9,7 @@ export interface Stage {
 export const STAGES: Stage[] = [
   { index: 0, name: 'Seed', threshold: 0 },
   { index: 1, name: 'Sprout', threshold: 60 },
-  { index: 2, name: 'Sapling', threshold: 300 },
+  { index: 2, name: 'Leafling', threshold: 300 },
   { index: 3, name: 'Bud', threshold: 900 },
   { index: 4, name: 'Bloom', threshold: 2000 },
   { index: 5, name: 'Elder Bloom', threshold: 4000 },

@@ -1,4 +1,4 @@
-import { renderCompanion } from '../companion/sprout';
+import { renderCompanion } from '../companion/companion';
 import { copy } from '../copy';
 import { h } from '../dom';
 import { lastSevenDays, streak, totalMinutes } from '../domain/stats';
@@ -38,7 +38,7 @@ export function homeScreen(
       h('h1', { class: 'brand' }, copy.appName),
       h('span', { class: `streak${s ? ' on' : ''}` }, s ? copy.streak(s) : copy.streakZero)),
     h('section', { class: 'stage-wrap' },
-      renderCompanion(stage.index, { label: `Your companion, a ${stage.name}` }),
+      renderCompanion(stage.index, { label: `Your Bloomling, a ${stage.name}` }),
       h('p', { class: 'stage-name' }, stage.name),
       bar,
       h('p', { class: 'muted' }, next ? copy.toNext(next.threshold - total, next.name) : copy.fullyGrown),

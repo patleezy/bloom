@@ -1,4 +1,4 @@
-import { renderCompanion, setGrowth } from '../companion/sprout';
+import { renderCompanion, setGrowth, setSleeping } from '../companion/companion';
 import { copy } from '../copy';
 import { formatClock, h } from '../dom';
 import { totalMinutes } from '../domain/stats';
@@ -15,7 +15,7 @@ export function runningScreen(
   const active = svc.active!;
   const planned = active.clock.plannedMs;
   const stage = stageFor(totalMinutes([...svc.history]));
-  const companion = renderCompanion(stage.index, { label: `Your companion, a ${stage.name}, growing` });
+  const companion = renderCompanion(stage.index, { label: `Your Bloomling, a ${stage.name}, growing` });
 
   const ring = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   ring.setAttribute('viewBox', '0 0 120 120');
@@ -49,6 +49,7 @@ export function runningScreen(
     setGrowth(companion, frac);
     const paused = svc.active?.clock.runningSince === null;
     el.classList.toggle('is-paused', paused);
+    setSleeping(companion, paused);
     resumeBtn.hidden = !paused;
     if (!paused && Date.now() - lastMsgSwap > 60000) {
       note.textContent = copy.running[msgIdx++ % copy.running.length];

@@ -10,11 +10,9 @@
   --stem: #6b9463;
   --petal: #f2b5a0;
   --petal-2: #f7d5b6;
-  --head: #f7e3c4;
-  --seed: #c9a27a;
-  --pot: #d98c6a;
-  --pot-rim: #c77a59;
-  --soil: #7a5a45;
+  --body: #b9dca5;
+  --body-dark: #93bf80;
+  --belly: #e6f2d8;
   --cheek: #f0a08c;
   --track: #e4dccb;
   --halo: #fbe7b0;
@@ -31,7 +29,6 @@
     --accent-ink: #1c211d;
     --track: #333c34;
     --halo: #4a4630;
-    --head: #efdcbc;
     color-scheme: dark;
   }
 }
@@ -126,33 +123,48 @@ p { margin: 0; }
 
 /* Companion */
 .companion { width: min(62vw, 240px); height: auto; overflow: visible; }
-.companion .plant { transform-origin: 100px 150px; transform: scale(var(--grow, 1)); transition: transform 1s ease; }
-.companion .sway { transform-origin: 100px 150px; animation: sway 6s ease-in-out infinite; }
-.companion .stem { fill: none; stroke: var(--stem); stroke-width: 4; stroke-linecap: round; }
+.companion .plant { transform-origin: 100px 180px; transform: scale(var(--grow, 1)); transition: transform 1s ease; }
+.companion .bounce { transform-origin: 100px 180px; animation: bounce 3.2s ease-in-out infinite; }
+.companion .crown { transform-origin: 100px 120px; animation: sway 5s ease-in-out infinite; }
+.companion .body { fill: var(--body); }
+.companion .belly { fill: var(--belly); }
+.companion .foot { fill: var(--body-dark); }
+.companion .stem { fill: none; stroke: var(--stem); stroke-width: 3.5; stroke-linecap: round; }
 .companion .leaf { fill: var(--leaf); }
-.companion .leaf:nth-of-type(even) { fill: var(--leaf-dark); }
-.companion .head { fill: var(--head); }
-.companion .seed { fill: var(--seed); }
-.companion .seed-tip { fill: none; stroke: var(--leaf); stroke-width: 3; stroke-linecap: round; }
+.companion .arm-leaf { fill: var(--leaf-dark); }
+.companion .arm { transform-box: fill-box; }
+.companion .arm-l { transform-origin: right center; animation: wave-l 4s ease-in-out infinite; }
+.companion .arm-r { transform-origin: left center; animation: wave-r 4s ease-in-out infinite; }
 .companion .bud { fill: var(--petal); }
 .companion .bud-line { fill: none; stroke: var(--petal-2); stroke-width: 2; }
 .companion .petal { fill: var(--petal); }
-.companion .flower.inner .petal { fill: var(--petal-2); }
-.companion .flower { transform-origin: 100px 52px; animation: spin 40s linear infinite; }
-.companion .pot { fill: var(--pot); }
-.companion .pot-rim { fill: var(--pot-rim); }
-.companion .soil { fill: var(--soil); }
+.companion .petal-2 { fill: var(--petal-2); }
+.companion .flower-center { fill: var(--halo); }
+.companion .flower { transform-box: fill-box; transform-origin: center; animation: spin 40s linear infinite; }
 .companion .shadow { fill: var(--ink); opacity: 0.08; }
 .companion .eye { fill: #2f3a31; transform-box: fill-box; transform-origin: center; animation: blink 5s infinite; }
+.companion .eye-shine { fill: #fff; }
+.companion .eye-closed { fill: none; stroke: #2f3a31; stroke-width: 1.6; stroke-linecap: round; display: none; }
 .companion .cheek { fill: var(--cheek); opacity: 0.6; }
-.companion .mouth { fill: none; stroke: #2f3a31; stroke-width: 1.4; stroke-linecap: round; }
-.companion .halo { fill: var(--halo); opacity: 0.5; animation: breathe 5s ease-in-out infinite; transform-origin: 100px 52px; }
+.companion .mouth { fill: none; stroke: #2f3a31; stroke-width: 1.5; stroke-linecap: round; }
+.companion .halo { fill: var(--halo); opacity: 0.45; animation: breathe 5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 .companion .motes circle { fill: var(--halo); animation: float 7s ease-in-out infinite; }
 .companion .motes circle:nth-child(2) { animation-delay: -2s; }
 .companion .motes circle:nth-child(3) { animation-delay: -4s; }
+.companion .zzz { display: none; fill: var(--muted); font: 700 12px system-ui, sans-serif; }
+.companion .zzz text { animation: float 3s ease-in-out infinite; }
+.companion .zzz text:nth-child(2) { animation-delay: -1.5s; font-size: 9px; }
+.companion.sleeping .eye-open { display: none; }
+.companion.sleeping .eye-closed, .companion.sleeping .zzz { display: inline; }
+.companion.sleeping .bounce { animation: breathe-slow 4s ease-in-out infinite; }
+.companion.sleeping .arm { animation: none; }
 .companion.grew { animation: grow-in 1.2s cubic-bezier(.2,1.4,.4,1); }
-.companion.celebrate { animation: hop 0.9s ease; }
+.companion.celebrate .bounce { animation: hop 0.6s ease 3; }
 
+@keyframes bounce { 0%,100% { transform: scale(1, 1); } 50% { transform: scale(1.03, 0.97); } }
+@keyframes breathe-slow { 0%,100% { transform: scale(1, 1); } 50% { transform: scale(1.015, 0.985); } }
+@keyframes wave-l { 0%,100% { transform: rotate(0); } 50% { transform: rotate(12deg); } }
+@keyframes wave-r { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-12deg); } }
 @keyframes sway { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
 @keyframes blink { 0%,94%,100% { transform: scaleY(1); } 97% { transform: scaleY(0.1); } }
 @keyframes spin { to { transform: rotate(360deg); } }

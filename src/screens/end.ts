@@ -1,4 +1,4 @@
-import { renderCompanion } from '../companion/sprout';
+import { renderCompanion } from '../companion/companion';
 import { copy } from '../copy';
 import { h } from '../dom';
 import { streak, totalMinutes } from '../domain/stats';
@@ -17,7 +17,7 @@ export function endScreen(
   const grew = stageAfter.index > stageBefore.index;
   const s = streak([...history], new Date());
 
-  const companion = renderCompanion(stageAfter.index, { label: `Your companion, a ${stageAfter.name}` });
+  const companion = renderCompanion(stageAfter.index, { label: `Your Bloomling, a ${stageAfter.name}` });
   companion.classList.add(grew ? 'grew' : 'celebrate');
 
   return h('main', { class: 'screen end' },

@@ -12,7 +12,7 @@ npm run build    # static site in dist/ (strict CSP added)
 ```
 
 ## How it works
-- **Growth:** cumulative focus minutes → Seed 0 · Sprout 60 · Sapling 300 · Bud 900 · Bloom 2000 · Elder Bloom 4000.
+- **Growth:** cumulative focus minutes → Seed 0 · Sprout 60 · Leafling 300 · Bud 900 · Bloom 2000 · Elder Bloom 4000.
   Sessions under 5 minutes are recorded but don't add growth. Ending early still credits minutes focused.
 - **Streak:** consecutive days with a counted session; one missed day per 7 is forgiven.
 - **Honest timer:** pauses when the tab is hidden and resumes on return. A reload restores the session paused.
