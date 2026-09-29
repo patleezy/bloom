@@ -1,3 +1,4 @@
+import { setAmbientVolume, startAmbient, stopAmbient } from '../audio/ambient';
 import { startActivities } from '../companion/activities';
 import { renderCompanion, setGrowth, setSleeping } from '../companion/render';
 import { stageName } from '../companion/species';
@@ -7,6 +8,8 @@ import type { SessionService } from '../domain/sessionService';
 import { totalMinutes } from '../domain/stats';
 import { icon } from '../icons';
 import { countedMinutes, minutesToNext, stageFor } from '../logic/growth';
+import { unlockAudio } from '../feedback';
+import { savePrefs, type Prefs } from '../state/prefs';
 import { acquireWakeLock, releaseWakeLock } from '../wakeLock';
 
 const RING = 2 * Math.PI * 54;
@@ -17,7 +20,7 @@ const CHECKPOINT_EVERY_MS = 15_000;
 /** Running session. Returns the element plus a cleanup function for timers/listeners. */
 export function runningScreen(
   svc: SessionService,
-  opts: { restored: boolean; onFinish: () => void },
+  opts: { restored: boolean; prefs: Prefs; onFinish: () => void },
 ): { el: HTMLElement; dispose: () => void } {
   const active = svc.active!;
   const companion = svc.companion!;
@@ -63,7 +66,30 @@ export function runningScreen(
       }))
     : null;
 
+  // Ambient sound: plays while focusing, fades out while the companion naps.
+  const { prefs } = opts;
+  setAmbientVolume(prefs.volume);
+  const soundBtn = h('button', { class: 'icon-btn sound-toggle' });
+  function renderSoundBtn() {
+    soundBtn.replaceChildren(icon(prefs.ambient ? 'sound' : 'mute'));
+    soundBtn.setAttribute('aria-label', prefs.ambient ? copy.soundOff : copy.soundOn);
+    soundBtn.setAttribute('aria-pressed', String(prefs.ambient));
+  }
+  soundBtn.addEventListener('click', () => {
+    unlockAudio(); // this click counts as the user gesture browsers require
+    prefs.ambient = !prefs.ambient;
+    savePrefs(prefs);
+    renderSoundBtn();
+    syncSound();
+  });
+  function syncSound() {
+    if (prefs.ambient && !isPaused() && !finishing) startAmbient(companion.species);
+    else stopAmbient();
+  }
+  renderSoundBtn();
+
   const el = h('main', { class: 'screen running' },
+    h('div', { class: 'running-top' }, soundBtn),
     h('div', { class: 'ring-wrap' }, ring, art),
     time, toNext, note, checklist, resumeBtn, endBtn);
 
@@ -71,6 +97,7 @@ export function runningScreen(
   let msgIdx = 0;
   let lastMsgSwap = 0;
   let hiddenAt: number | null = null;
+  let wasPaused: boolean | null = null;
   let lastCheckpoint = Date.now();
 
   function cheer() {
@@ -82,6 +109,7 @@ export function runningScreen(
   function finish() {
     if (finishing) return;
     finishing = true;
+    stopAmbient();
     void svc.finish().then(opts.onFinish);
   }
 
@@ -103,6 +131,10 @@ export function runningScreen(
 
     const paused = isPaused();
     if (paused) activities.interrupt();
+    if (paused !== wasPaused) {
+      wasPaused = paused;
+      syncSound();
+    }
     el.classList.toggle('is-paused', paused);
     setSleeping(art, paused);
     resumeBtn.hidden = !paused;
@@ -156,6 +188,7 @@ export function runningScreen(
       window.clearInterval(tick);
       document.removeEventListener('visibilitychange', onVisibility);
       activities.dispose();
+      stopAmbient();
       void releaseWakeLock();
     },
   };

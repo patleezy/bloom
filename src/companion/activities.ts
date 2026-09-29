@@ -19,7 +19,7 @@ const SHARED: Activity[] = [
 
 const OWN: Record<SpeciesId, Activity[]> = {
   bloomling: [{ name: 'water', ms: 6000 }, { name: 'butterfly', ms: 8000 }],
-  kindle: [{ name: 'sparks', ms: 5000 }, { name: 'wiggle', ms: 4000 }],
+  cinder: [{ name: 'sparks', ms: 5000 }, { name: 'wiggle', ms: 4000 }],
   ripple: [{ name: 'bubbles', ms: 6000 }, { name: 'swim', ms: 6000 }],
 };
 

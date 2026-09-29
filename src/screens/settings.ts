@@ -5,6 +5,7 @@ import { icon } from '../icons';
 import type { SessionService } from '../domain/sessionService';
 import { dayKey } from '../logic/dates';
 import { MAX_NAME } from '../state/localRepository';
+import { setAmbientVolume } from '../audio/ambient';
 import { applyTheme, savePrefs, type Prefs, type Theme } from '../state/prefs';
 
 const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
@@ -31,6 +32,29 @@ export function settingsScreen(
   sound.checked = prefs.sound;
   sound.addEventListener('change', () => {
     prefs.sound = sound.checked;
+    savePrefs(prefs);
+  });
+
+  // Ambient sound + volume
+  const ambient = h('input', { type: 'checkbox', class: 'toggle' });
+  ambient.checked = prefs.ambient;
+  ambient.addEventListener('change', () => {
+    prefs.ambient = ambient.checked;
+    savePrefs(prefs);
+  });
+  const volume = h('input', { type: 'range', min: '0', max: '100', step: '5', class: 'slider', 'aria-label': copy.volume });
+  volume.value = String(Math.round(prefs.volume * 100));
+  volume.addEventListener('input', () => {
+    prefs.volume = Number(volume.value) / 100;
+    setAmbientVolume(prefs.volume);
+    savePrefs(prefs);
+  });
+
+  // Breaks
+  const breaks = h('input', { type: 'checkbox', class: 'toggle' });
+  breaks.checked = prefs.breaks;
+  breaks.addEventListener('change', () => {
+    prefs.breaks = breaks.checked;
     savePrefs(prefs);
   });
 
@@ -79,7 +103,11 @@ export function settingsScreen(
       h('h3', {}, copy.theme),
       h('div', { class: 'chips three' }, ...themeBtns)),
     h('section', { class: 'card' },
-      h('label', { class: 'row between' }, h('span', {}, copy.sound), sound)),
+      h('label', { class: 'row between' }, h('span', {}, copy.sound), sound),
+      h('label', { class: 'row between' }, h('span', {}, copy.ambient), ambient),
+      svc.companion ? h('p', { class: 'muted small' }, copy.ambientHelp[svc.companion.species]) : null,
+      h('label', { class: 'row between' }, h('span', {}, copy.volume), volume),
+      h('label', { class: 'row between' }, h('span', {}, copy.breaks), breaks)),
     h('section', { class: 'card' },
       h('h3', {}, copy.rename),
       renameForm),

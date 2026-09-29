@@ -51,7 +51,7 @@ export const copy = {
   // Running
   running: {
     bloomling: (n: string) => ['Soaking up the light.', 'Roots going deeper.', `${n} is photosynthesizing. Probably.`],
-    kindle: (n: string) => ['Keeping the fire going.', `${n} is all fired up.`, 'Crackle, crackle. Nice pace.'],
+    cinder: (n: string) => ['Keeping the fire going.', `${n} is all fired up.`, 'Crackle, crackle. Nice pace.'],
     ripple: (n: string) => ['Flowing along.', `${n} is making little waves.`, 'Deep water, calm mind.'],
   } satisfies Record<SpeciesId, (name: string) => string[]>,
   liveToNext: (m: number, stage: string) => (m <= 0 ? `Evolving into ${stage}!` : `${m} min to ${stage}`),
@@ -70,10 +70,39 @@ export const copy = {
   stageUp: (name: string, stage: string) => `${name} grew into a ${stage}!`,
   home: 'Back home',
 
+  // Breaks
+  breakOffer: (m: number) => `Take a ${m}-minute break`,
+  breakOfferLong: 'You’ve earned a longer one.',
+  breakTitle: 'Break time',
+  breakTips: [
+    'Stand up and stretch.',
+    'Sip some water.',
+    'Look at something far away for a bit.',
+    'Roll your shoulders. Unclench your jaw.',
+  ],
+  breakSnack: (name: string) => `${name} is having a snack.`,
+  breakNap: (name: string) => `${name} is resting its eyes.`,
+  breakReady: 'I’m ready',
+  breakOver: 'Break’s over',
+  breakOverBody: (name: string) => `${name} is rested and ready when you are.`,
+  nextRound: 'Start another session',
+
+  // Sound
+  soundOn: 'Turn on ambient sound',
+  soundOff: 'Turn off ambient sound',
+
   // Settings
   theme: 'Theme',
   themes: { auto: 'Auto', light: 'Light', night: 'Night' },
   sound: 'Chime when a session ends',
+  ambient: 'Ambient sound during sessions',
+  ambientHelp: {
+    bloomling: 'Bloomling: a breeze through the leaves.',
+    cinder: 'Cinder: a crackling fire.',
+    ripple: 'Ripple: soft rain.',
+  } satisfies Record<SpeciesId, string>,
+  volume: 'Volume',
+  breaks: 'Offer a break after each session',
   rename: 'Companion name',
   save: 'Save',
   saved: 'Saved.',

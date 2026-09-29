@@ -2,7 +2,7 @@
  * Offline support. Caches only Bloom's own files (same origin, GET). It never touches or caches
  * user data, which lives in localStorage. Bump VERSION to drop old caches on deploy.
  */
-const VERSION = 'bloom-v2';
+const VERSION = 'bloom-v3';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png'];
 
 self.addEventListener('install', (event) => {
