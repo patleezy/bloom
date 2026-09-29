@@ -4,7 +4,9 @@ import { copy } from '../copy';
 import { h } from '../dom';
 import { icon } from '../icons';
 import { streak, totalMinutes } from '../domain/stats';
+import type { Medal } from '../domain/medals';
 import type { CompanionProfile, SessionRecord } from '../domain/types';
+import { medalBadge } from './medals';
 import { stageFor } from '../logic/growth';
 
 export function endScreen(
@@ -12,7 +14,7 @@ export function endScreen(
   companion: CompanionProfile,
   companionHistory: SessionRecord[],
   allHistory: readonly SessionRecord[],
-  actions: { onHome: () => void; breakOffer?: { minutes: number; long: boolean; onBreak: () => void } },
+  actions: { onHome: () => void; onMedals: () => void; newMedals: Medal[]; breakOffer?: { minutes: number; long: boolean; onBreak: () => void } },
 ): HTMLElement {
   const after = totalMinutes(companionHistory);
   const before = after - record.countedMinutes;
@@ -37,6 +39,12 @@ export function endScreen(
           h('h3', {}, copy.tasksDone(record.tasks.filter((t) => t.done).length, record.tasks.length)),
           h('ul', { class: 'checklist readonly' }, ...record.tasks.map((t) =>
             h('li', { class: t.done ? 'done' : '' }, h('span', { class: 'check', 'aria-hidden': 'true' }, icon('check')), h('span', {}, t.text)))))
+      : null,
+    actions.newMedals.length
+      ? h('button', { class: 'card new-medals', type: 'button', onclick: actions.onMedals },
+          h('h3', {}, actions.newMedals.length === 1 ? copy.newMedal : copy.newMedals(actions.newMedals.length)),
+          ...actions.newMedals.map((m) => h('span', { class: 'new-medal-row' }, medalBadge(m, true, 'sm'),
+            h('span', {}, h('strong', {}, m.name), h('span', { class: 'muted small' }, ` ${m.description}`)))))
       : null,
     s ? h('p', { class: 'stat on' }, icon('sprout'), h('strong', {}, copy.streakBadge(s))) : null,
     actions.breakOffer

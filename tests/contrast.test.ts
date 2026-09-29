@@ -35,6 +35,9 @@ const TEXT: [string, string][] = [
 ];
 const UI: [string, string][] = [
   ['border', 'bg'], ['border', 'surface'], ['accent', 'track'], ['ink', 'bg'],
+  // Medal icons on their pastel badges
+  ['cat-time-ink', 'cat-time'], ['cat-streak-ink', 'cat-streak'], ['cat-habit-ink', 'cat-habit'], ['cat-growth-ink', 'cat-growth'],
+  ['muted', 'track'],
 ];
 
 describe.each([

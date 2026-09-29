@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to Bloom. Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
 
+## 0.9.0 — Medals and new friends (2026-09-30)
+- Medals! Earn 16 of them for focus time, streaks, habits like Night Owl and Early Bird, and helping your companion grow. They’re yours forever, even if a streak ends.
+- Medals count everything you’ve already done, so you may have a few waiting for you.
+- New friends on the way: Moss, Nimbus, and Lumi. See what unlocks each one on the Medals page.
+- The 7-day chart on the home screen shows your focus bars again.
+
 ## 0.8.0 — Easy on the eyes (2026-09-30)
 - Softer pastel colors that are easier on the eyes, especially the buttons.
 - Accessibility: every screen now meets WCAG AA contrast, with bigger tap targets, clearer text fields, and stronger focus outlines for keyboard users.
