@@ -17,7 +17,7 @@ export const copy = {
   ],
   welcomeCta: 'Meet the starters',
   chooseTitle: 'Pick your starter',
-  chooseSub: 'They all grow the same way. Go with your gut.',
+  chooseSub: 'They all grow the same way. Go with your gut. You can meet the others anytime.',
   nameTitle: (species: string) => `What should we call your ${species}?`,
   namePlaceholder: 'Name',
   nameCta: 'Start growing',
@@ -81,6 +81,22 @@ export const copy = {
   evoHere: 'You are here',
   evoNeeds: (m: number) => `${m.toLocaleString()} min to go`,
   evoOpen: 'See the full journey',
+
+  // Who's joining + garden
+  whoTitle: 'Who’s joining you?',
+  whoNew: 'New',
+  whoMeet: (species: string) => `Meet ${species}, a new friend`,
+  gardenTitle: 'Your garden',
+  gardenOpen: 'Open your garden',
+  gardenIntro: 'Each companion grows from the sessions you share. Pick whoever suits your mood.',
+  gardenOnHome: 'On home',
+  gardenSetHome: 'Show on home',
+  gardenJourney: 'Journey',
+  gardenAdopt: (name: string) => `Adopt ${name}`,
+  gardenNotMet: 'Not met yet. Free to adopt anytime.',
+  gardenMinutes: (m: number) => (m === 1 ? '1 minute together' : `${m.toLocaleString()} minutes together`),
+  gardenUnlocks: 'More friends can be unlocked with medals.',
+  gardenSeeMedals: 'See medals',
 
   // Medals
   medalsTitle: 'Medals',

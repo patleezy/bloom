@@ -24,9 +24,9 @@ export function runningScreen(
   opts: { restored: boolean; prefs: Prefs; onFinish: () => void },
 ): { el: HTMLElement; dispose: () => void } {
   const active = svc.active!;
-  const companion = svc.companion!;
+  const companion = svc.sessionCompanion!;
   const planned = active.clock.plannedMs;
-  const baseTotal = totalMinutes(svc.companionHistory);
+  const baseTotal = totalMinutes(svc.historyFor(companion.id));
   const stage = stageFor(baseTotal);
   const art = renderCompanion(companion.species, stage.index,
     { label: `${companion.name}, a ${stageName(companion.species, stage.index)}, growing` });

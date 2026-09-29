@@ -28,30 +28,61 @@ export class SessionService {
     return this.snap.history;
   }
 
+  get companions(): readonly CompanionProfile[] {
+    return this.snap.companions;
+  }
+
+  /** The companion on the home screen (and preselected for the next session). */
   get companion(): CompanionProfile | null {
-    return this.snap.companion;
+    return this.snap.companions.find((c) => c.id === this.snap.currentId) ?? this.snap.companions[0] ?? null;
+  }
+
+  companionById(id: string): CompanionProfile | null {
+    return this.snap.companions.find((c) => c.id === id) ?? null;
+  }
+
+  /** Sessions that grew a given companion. */
+  historyFor(companionId: string): SessionRecord[] {
+    return this.snap.history.filter((r) => r.companionId === companionId);
   }
 
   /** Sessions that grew the current companion. */
   get companionHistory(): SessionRecord[] {
-    const id = this.snap.companion?.id;
-    return this.snap.history.filter((r) => r.companionId === id);
+    return this.companion ? this.historyFor(this.companion.id) : [];
   }
 
+  /** The companion joining the active session. */
+  get sessionCompanion(): CompanionProfile | null {
+    return this.snap.active ? this.companionById(this.snap.active.companionId) : null;
+  }
+
+  /** Adopt a companion (one per species) and make it current. */
   async adopt(species: SpeciesId, name: string): Promise<CompanionProfile> {
+    const existing = this.snap.companions.find((c) => c.species === species);
+    if (existing) {
+      await this.setCurrent(existing.id);
+      return existing;
+    }
     const companion: CompanionProfile = {
       id: this.newId(),
       species,
       name: cleanName(name) || 'Buddy',
       adoptedAt: this.now(),
     };
-    this.snap.companion = companion;
+    this.snap.companions.push(companion);
     await this.repo.saveCompanion(companion);
+    await this.setCurrent(companion.id);
     return companion;
   }
 
-  async rename(name: string): Promise<void> {
-    const c = this.snap.companion;
+  async setCurrent(companionId: string): Promise<void> {
+    if (!this.companionById(companionId)) return;
+    this.snap.currentId = companionId;
+    await this.repo.setCurrent(companionId);
+  }
+
+  async rename(name: string, companionId = this.companion?.id): Promise<void> {
+    const c = companionId ? this.companionById(companionId) : null;
     const clean = cleanName(name);
     if (!c || !clean) return;
     c.name = clean;
@@ -66,7 +97,7 @@ export class SessionService {
   /** Validate and restore a backup. Returns false (changing nothing) if the file is invalid. */
   async importBackup(raw: string): Promise<boolean> {
     const snap = parseSnapshot(raw);
-    if (!snap || !snap.companion) return false;
+    if (!snap || !snap.companions.length) return false;
     snap.active = null;
     await this.repo.replaceAll(snap);
     this.snap = snap;
@@ -77,11 +108,15 @@ export class SessionService {
     return this.snap.active;
   }
 
-  async start(minutes: number, tasks: string[] = []): Promise<ActiveSession> {
+  /** Start a session with a companion (defaults to the current one, which it then becomes). */
+  async start(minutes: number, tasks: string[] = [], companionId = this.companion?.id): Promise<ActiveSession> {
+    if (!companionId || !this.companionById(companionId)) throw new Error('No companion to focus with');
+    await this.setCurrent(companionId);
     const t = this.now();
     const mins = Math.min(Math.max(Math.round(minutes), 1), 240);
     const active: ActiveSession = {
       id: this.newId(),
+      companionId,
       startedAt: t,
       tasks: tasks.map(cleanLabel).filter(Boolean).slice(0, MAX_TASKS).map((text) => ({ text, done: false })),
       clock: clock.newClock(mins * 60000, t),
@@ -148,7 +183,7 @@ export class SessionService {
     const focusedMs = clock.elapsed(a.clock, t);
     const record: SessionRecord = {
       id: a.id,
-      companionId: this.snap.companion?.id ?? 'none',
+      companionId: a.companionId,
       startedAt: a.startedAt,
       endedAt: t,
       day: dayKey(new Date(t)),

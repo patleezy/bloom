@@ -7,7 +7,9 @@ import type { ActiveSession, BloomSnapshot, CompanionProfile, SessionRecord } fr
  */
 export interface BloomRepository {
   load(): Promise<BloomSnapshot>;
+  /** Insert or update a companion (matched by id). */
   saveCompanion(companion: CompanionProfile): Promise<void>;
+  setCurrent(companionId: string): Promise<void>;
   saveActive(active: ActiveSession | null): Promise<void>;
   appendSession(record: SessionRecord): Promise<void>;
   /** Replace everything (used by backup import). */
