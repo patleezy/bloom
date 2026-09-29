@@ -70,6 +70,17 @@ export const copy = {
   stageUp: (name: string, stage: string) => `${name} grew into a ${stage}!`,
   home: 'Back home',
 
+  // Evolution path
+  evoTitle: (name: string) => `${name}’s journey`,
+  evoIntro: (m: number) => `${m.toLocaleString()} minutes together so far.`,
+  evoStage: (n: number) => `Stage ${n}`,
+  evoUnknown: '???',
+  evoReached: 'Reached',
+  evoCurrent: 'Right now',
+  evoHere: 'You are here',
+  evoNeeds: (m: number) => `${m.toLocaleString()} min to go`,
+  evoOpen: 'See the full journey',
+
   // Breaks
   breakOffer: (m: number) => `Take a ${m}-minute break`,
   breakOfferLong: 'You’ve earned a longer one.',

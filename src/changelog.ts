@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.6.0';
+export const APP_VERSION = '0.7.0';
 
 export interface Release {
   version: string;
@@ -12,6 +12,16 @@ export interface Release {
 }
 
 export const CHANGELOG: Release[] = [
+  {
+    version: '0.7.0',
+    date: '2026-09-30',
+    title: 'The road ahead',
+    notes: [
+      'See your companion’s whole journey: tap the progress bar on the home screen to view every stage, with silhouettes of what’s still to come.',
+      'A mini preview next to the progress bar shows who your companion becomes next.',
+      'Cinder’s second stage is now called Kindling.',
+    ],
+  },
   {
     version: '0.6.0',
     date: '2026-09-30',

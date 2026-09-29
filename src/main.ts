@@ -21,6 +21,7 @@ import { startScreen } from './screens/start';
 import { LocalRepository } from './state/localRepository';
 import { APP_VERSION } from './changelog';
 import { whatsNewScreen } from './screens/whatsNew';
+import { evolutionScreen } from './screens/evolution';
 import { applyTheme, clearPrefs, loadPrefs, savePrefs } from './state/prefs';
 
 // Swap LocalRepository for an API-backed repository here when a backend exists.
@@ -61,6 +62,7 @@ function goHome() {
     onStart: goStart,
     onSettings: goSettings,
     onWhatsNew: unseen ? () => goWhatsNew(goHome) : undefined,
+    onEvolution: () => show(evolutionScreen(svc.companion!, totalMinutes(svc.companionHistory), { onBack: goHome })),
   });
   show(home.el, home.dispose);
 }

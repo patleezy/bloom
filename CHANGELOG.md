@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to Bloom. Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
 
+## 0.7.0 — The road ahead (2026-09-30)
+- See your companion’s whole journey: tap the progress bar on the home screen to view every stage, with silhouettes of what’s still to come.
+- A mini preview next to the progress bar shows who your companion becomes next.
+- Cinder’s second stage is now called Kindling.
+
 ## 0.6.0 — Sounds and breathers (2026-09-30)
 - Ambient sound for each companion: a breeze for Bloomling, a crackling fire for Cinder, soft rain for Ripple. Tap the speaker during a session.
 - Breaks: after a full session, take a 5-minute break (15 after every 4th). Your companion has a snack, then a nap.
