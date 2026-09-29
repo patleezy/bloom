@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to Bloom. Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
 
+## 0.12.0 — Meet Nimbus (2026-09-30)
+- Meet Nimbus! A fluffy little cloud that brings a drizzle, then a rainbow, and finally the sun and moon.
+- Keep a 7-day streak to unlock Nimbus, then adopt it in your garden.
+- Nimbus has its own sky: a high breeze with faint wind chimes, plus drizzle and puff-up activities.
+- Lumi is the last friend still on the way. Finish a session after 10pm to unlock it.
+
 ## 0.11.0 — Meet Moss (2026-09-30)
 - Meet Moss, the first unlockable friend! A cozy mushroom whose cap grows moss, flowers, and finally a ring of tiny mushrooms.
 - Earn the Ten Hours medal to unlock Moss, then adopt it in your garden. Until then, the garden shows your progress toward it.

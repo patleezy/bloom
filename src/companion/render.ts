@@ -232,6 +232,10 @@ function props(species: SpeciesId, g: Geo): string {
       <g class="prop prop-spores">
         ${[-0.4, -0.1, 0.2, 0.45].map((dx, i) => `<circle class="spore spore-${i}" cx="${X + dx * rx}" cy="${top - 4}" r="${1.6 + (i % 2) * 0.6}"/>`).join('')}
       </g>`,
+    nimbus: `
+      <g class="prop prop-drizzle">
+        ${[-0.45, -0.15, 0.15, 0.45].map((dx, i) => `<path class="raindrop fall-${i}" d="M${X + dx * rx} ${cy + ry * 0.9} q-1.8 3.4 0 4.8 q1.8 -1.4 0 -4.8 Z"/>`).join('')}
+      </g>`,
     ripple: `
       <g class="prop prop-bubbles">
         ${[0, 1, 2, 3].map((i) => `<circle class="bubble bubble-${i}" cx="${X + 6 * s + i * 2}" cy="${mouthY}" r="${2.6 + (i % 2) * 1.2}"/>`).join('')}
@@ -286,7 +290,46 @@ function moss(g: Geo): Parts {
   };
 }
 
-const PARTS: Record<SpeciesId, (g: Geo) => Parts> = { bloomling, cinder, ripple, moss };
+function nimbus(g: Geo): Parts {
+  const { stage, cy, ry, rx, top, s } = g;
+  // Fluffy outline: puffs around the upper body, drawn behind it in the same color.
+  const shape = [[-0.72, -0.35, 0.42], [-0.35, -0.8, 0.5], [0.12, -0.92, 0.55], [0.55, -0.65, 0.46], [0.82, -0.2, 0.36], [-0.88, 0.1, 0.3]]
+    .slice(0, stage === 0 ? 3 : 6);
+  // A soft outline behind everything (body + puffs, slightly larger) so the pale cloud reads on light backgrounds.
+  const outline = shape.map(([dx, dy, r]) => `<circle class="cloud-outline" cx="${X + dx * rx}" cy="${cy + dy * ry}" r="${r * rx + 1.8}"/>`).join('')
+    + `<ellipse class="cloud-outline" cx="${X}" cy="${cy}" rx="${rx + 1.8}" ry="${ry + 1.8}"/>`;
+  const puffs = outline + shape.map(([dx, dy, r]) => `<circle class="puff" cx="${X + dx * rx}" cy="${cy + dy * ry}" r="${r * rx}"/>`).join('');
+  const mini = (x: number, y: number, k: number) => {
+    const c = [[-6, 0, 5], [0, -3, 6.5], [6.5, 0, 5]];
+    return `<g class="mini-cloud">${c.map(([dx, dy, r]) => `<circle class="cloud-outline" cx="${x + dx * k}" cy="${y + dy * k}" r="${r * k + 1.4}"/>`).join('')}${c.map(([dx, dy, r]) => `<circle class="puff rain-cloud" cx="${x + dx * k}" cy="${y + dy * k}" r="${r * k}"/>`).join('')}</g>`;
+  };
+  const drops = (x: number, y: number) =>
+    [-5, 0, 5].map((dx, i) => `<path class="raindrop rd-${i}" d="M${x + dx} ${y} q-1.6 3 0 4.2 q1.6 -1.2 0 -4.2 Z"/>`).join('');
+  const rainbow = (r: number, cyR: number) => ['rb-1', 'rb-2', 'rb-3', 'rb-4']
+    .map((c, i) => `<path class="rainbow ${c}" d="M${X - r + i * 3.2} ${cyR} A ${r - i * 3.2} ${r - i * 3.2} 0 0 1 ${X + r - i * 3.2} ${cyR}"/>`).join('');
+  const topY = top - rx * 0.35; // above the fluffy crown
+  const crowns = [
+    '',
+    `<circle class="sparkle-dot" cx="${X + rx * 0.6}" cy="${topY}" r="2"/>`,
+    `<circle class="sparkle-dot" cx="${X - rx * 0.7}" cy="${topY + 4}" r="2"/><circle class="sparkle-dot" cx="${X + rx * 0.7}" cy="${topY - 2}" r="1.6"/>`,
+    `${mini(X + rx * 0.55, topY - 18, 1)}<g class="drizzle">${drops(X + rx * 0.55, topY - 10)}</g>`,
+    `<g class="arc">${rainbow(rx * 0.95, topY + 6)}</g>`,
+    `<g class="arc">${rainbow(rx * 1.05, topY + 8)}</g>
+     <circle class="sun" cx="${X - rx * 1.08}" cy="${topY - 6}" r="${7.5 * s}"/>
+     <path class="moon" d="M${X + rx * 1.12} ${topY - 10} a ${6 * s} ${6 * s} 0 1 0 ${3 * s} ${11 * s} a ${4.5 * s} ${4.5 * s} 0 1 1 ${-3 * s} ${-11 * s} Z"/>`,
+  ];
+  return {
+    back: puffs,
+    crown: crowns[stage],
+    arms: stage >= 2
+      ? `<g class="arm arm-l"><circle class="puff arm-puff" cx="${X - rx + 2}" cy="${cy + 6}" r="${7 * s}"/></g>
+         <g class="arm arm-r"><circle class="puff arm-puff" cx="${X + rx - 2}" cy="${cy + 6}" r="${7 * s}"/></g>`
+      : '',
+    front: '',
+  };
+}
+
+const PARTS: Record<SpeciesId, (g: Geo) => Parts> = { bloomling, cinder, ripple, moss, nimbus };
 
 // ---------- assembly ----------
 
@@ -302,7 +345,7 @@ function creature(species: SpeciesId, stage: number): string {
        <ellipse class="foot" cx="${X + rx * 0.45}" cy="${GROUND - 3}" rx="${8 * g.s}" ry="${4.5 * g.s}"/>`
     : '';
   // Stage 0 is egg/seed shaped: slightly pointed on top.
-  const body = stage === 0
+  const body = stage === 0 && species !== 'nimbus' // clouds are round from the start
     ? `<path class="body" d="M${X} ${g.top - 4} C ${X + rx} ${g.top + 4}, ${X + rx} ${GROUND}, ${X} ${GROUND}
          C ${X - rx} ${GROUND}, ${X - rx} ${g.top + 4}, ${X} ${g.top - 4} Z"/>`
     : `<ellipse class="body" cx="${X}" cy="${cy}" rx="${rx}" ry="${ry}"/>`;

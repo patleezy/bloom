@@ -48,12 +48,21 @@ export const SPECIES: Record<SpeciesId, Species> = {
     stageNames: ['Spore', 'Button', 'Capling', 'Mossling', 'Toadstool', 'Elder Grove'],
     unlockMedal: 'hours-10',
   },
+  nimbus: {
+    id: 'nimbus',
+    name: 'Nimbus',
+    element: 'Sky',
+    icon: 'cloud',
+    blurb: 'Light and dreamy. Shows up every day, and one day brings a rainbow.',
+    stageNames: ['Wisp', 'Puff', 'Cumulus', 'Drizzle', 'Rainbow', 'Elder Sky'],
+    unlockMedal: 'streak-7',
+  },
 };
 
 /** Free starters, offered in onboarding. */
 export const STARTERS: SpeciesId[] = ['bloomling', 'cinder', 'ripple'];
 /** Display order everywhere else (garden, picker). */
-export const SPECIES_ORDER: SpeciesId[] = [...STARTERS, 'moss'];
+export const SPECIES_ORDER: SpeciesId[] = [...STARTERS, 'moss', 'nimbus'];
 
 /** Whether a species can be adopted given the medals earned so far. */
 export function isUnlocked(species: SpeciesId, earnedMedalIds: ReadonlySet<string>): boolean {

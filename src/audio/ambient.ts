@@ -118,6 +118,23 @@ function build(c: AudioContext, species: SpeciesId, out: AudioNode): Scene {
     loopNoise(c, 'brown', out, s, [filter(c, 'lowpass', 280)], 0.3);
     loopNoise(c, 'pink', out, s, [filter(c, 'bandpass', 700, 0.5)], 0.12);
     every(s, 700, 2600, () => blip(c, out, 520 + Math.random() * 420, 0.05, 0.22, 'sine', 380));
+  } else if (species === 'nimbus') {
+    // High breeze with a slow swell, and faint wind chimes now and then.
+    const wind = loopNoise(c, 'pink', out, s, [filter(c, 'bandpass', 1200, 0.35)], 0.22);
+    const lfo = c.createOscillator();
+    const depth = c.createGain();
+    lfo.frequency.value = 0.05;
+    depth.gain.value = 0.12;
+    lfo.connect(depth).connect(wind.gain);
+    lfo.start();
+    s.nodes.push(lfo, depth);
+    const chime = [1318.5, 1568, 1760, 2093, 2349];
+    every(s, 3500, 9000, () => {
+      const n = 1 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < n; i++) {
+        window.setTimeout(() => blip(c, out, chime[Math.floor(Math.random() * chime.length)], 0.018, 2.4), i * 220);
+      }
+    });
   } else if (species === 'cinder') {
     loopNoise(c, 'brown', out, s, [filter(c, 'lowpass', 420)], 0.55);
     const white = noiseBuffer(c, 'white');

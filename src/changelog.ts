@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.11.0';
+export const APP_VERSION = '0.12.0';
 
 export interface Release {
   version: string;
@@ -12,6 +12,17 @@ export interface Release {
 }
 
 export const CHANGELOG: Release[] = [
+  {
+    version: '0.12.0',
+    date: '2026-09-30',
+    title: 'Meet Nimbus',
+    notes: [
+      'Meet Nimbus! A fluffy little cloud that brings a drizzle, then a rainbow, and finally the sun and moon.',
+      'Keep a 7-day streak to unlock Nimbus, then adopt it in your garden.',
+      'Nimbus has its own sky: a high breeze with faint wind chimes, plus drizzle and puff-up activities.',
+      'Lumi is the last friend still on the way. Finish a session after 10pm to unlock it.',
+    ],
+  },
   {
     version: '0.11.0',
     date: '2026-09-30',

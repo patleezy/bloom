@@ -133,3 +133,26 @@ describe('Moss (unlockable)', () => {
     expect(s.companions[0]?.species).toBe('moss');
   });
 });
+
+describe('Nimbus (unlockable)', () => {
+  async function svcWithDays(days: number) {
+    let t = new Date('2026-09-01T12:00:00').getTime();
+    const svc = new SessionService(new LocalRepository(new MemStorage()), () => t);
+    await svc.init();
+    const leaf = await svc.adopt('ripple', 'Pip');
+    for (let d = 0; d < days; d++) {
+      await svc.start(25, [], leaf.id);
+      t += 26 * 60000;
+      await svc.finish();
+      t += 24 * 3600_000 - 26 * 60000; // same time tomorrow
+    }
+    return svc;
+  }
+
+  it('stays locked on a 6-day streak and unlocks at 7 days', async () => {
+    expect((await svcWithDays(6)).canAdopt('nimbus')).toBe(false);
+    const svc = await svcWithDays(7);
+    expect(svc.canAdopt('nimbus')).toBe(true);
+    expect((await svc.adopt('nimbus', 'Nimbus')).species).toBe('nimbus');
+  });
+});
