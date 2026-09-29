@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to Bloom. Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
 
+## 0.6.0 — Sounds and breathers (2026-09-30)
+- Ambient sound for each companion: a breeze for Bloomling, a crackling fire for Cinder, soft rain for Ripple. Tap the speaker during a session.
+- Breaks: after a full session, take a 5-minute break (15 after every 4th). Your companion has a snack, then a nap.
+- Starting the next session brings back anything you didn’t check off.
+- Kindle is now called Cinder. Same fiery friend, same progress.
+
 ## 0.5.0 — Plan it, pet it (2026-09-29)
 - Add up to 3 things you want to focus on, then check them off as you go.
 - Tap your companion on the home screen to give it a pet.

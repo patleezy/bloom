@@ -1,5 +1,5 @@
 /**
- * Session-complete chime (synthesized with Web Audio, no audio files) and a gentle vibration.
+ * Shared audio context, session-complete chime (synthesized, no audio files), and vibration.
  * Browsers only allow audio after a user gesture, so call unlockAudio() from a click first.
  */
 let ctx: AudioContext | null = null;
@@ -13,10 +13,14 @@ export function unlockAudio(): void {
   }
 }
 
+export function audioContext(): AudioContext | null {
+  return ctx;
+}
+
 export function chime(): void {
   if (!ctx) return;
   const t0 = ctx.currentTime;
-  // Soft rising major third + fifth.
+  // Soft rising major triad.
   [523.25, 659.25, 783.99].forEach((freq, i) => {
     const osc = ctx!.createOscillator();
     const gain = ctx!.createGain();

@@ -27,9 +27,9 @@ describe('parseStored', () => {
 
   it('drops invalid records, duplicates, and sanitizes text', () => {
     const s = parseStored(JSON.stringify({
-      schemaVersion: 3,
+      schemaVersion: 4,
       active: null,
-      companion: { id: 'c1', species: 'kindle', name: '  Fi\u0000ery<b>' + 'x'.repeat(50), adoptedAt: 1 },
+      companion: { id: 'c1', species: 'cinder', name: '  Fi\u0000ery<b>' + 'x'.repeat(50), adoptedAt: 1 },
       history: [
         rec('a', { tasks: [{ text: 'x'.repeat(200), done: true }, { text: '' }, { text: 'b' }, { text: 'c' }, { text: 'd' }] }),
         { id: 'b', day: 'bad' },
@@ -44,8 +44,16 @@ describe('parseStored', () => {
   });
 
   it('rejects unknown species', () => {
-    const s = parseStored(JSON.stringify({ schemaVersion: 3, companion: { id: 'c', species: 'dragon', name: 'x', adoptedAt: 1 }, history: [], active: null }));
+    const s = parseStored(JSON.stringify({ schemaVersion: 4, companion: { id: 'c', species: 'dragon', name: 'x', adoptedAt: 1 }, history: [], active: null }));
     expect(s.companion).toBeNull();
+  });
+
+  it('migrates v3 Kindle companions to Cinder, keeping custom names', () => {
+    const base = { schemaVersion: 3, history: [], active: null };
+    const a = parseStored(JSON.stringify({ ...base, companion: { id: 'c', species: 'kindle', name: 'Kindle', adoptedAt: 1 } }));
+    expect(a.companion).toMatchObject({ species: 'cinder', name: 'Cinder' });
+    const b = parseStored(JSON.stringify({ ...base, companion: { id: 'c', species: 'kindle', name: 'Toasty', adoptedAt: 1 } }));
+    expect(b.companion).toMatchObject({ species: 'cinder', name: 'Toasty' });
   });
 
   it('migrates v2 labels to focus tasks', () => {
@@ -96,7 +104,7 @@ describe('SessionService', () => {
   it('round-trips a backup and rejects bad files without changing anything', async () => {
     const a = new SessionService(new LocalRepository(new MemStorage()));
     await a.init();
-    await a.adopt('kindle', 'Ember');
+    await a.adopt('cinder', 'Ember');
     await a.start(25);
     await a.finish();
     const backup = a.exportBackup();

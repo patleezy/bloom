@@ -8,6 +8,10 @@ import './styles.css';
 import { copy } from './copy';
 import { SessionService } from './domain/sessionService';
 import { buzz, chime, unlockAudio } from './feedback';
+import { breakMinutesAfter, LONG_BREAK_MIN } from './domain/breaks';
+import { totalMinutes } from './domain/stats';
+import { stageFor } from './logic/growth';
+import { breakScreen } from './screens/break';
 import { endScreen } from './screens/end';
 import { homeScreen } from './screens/home';
 import { startOnboarding } from './screens/onboarding';
@@ -87,6 +91,8 @@ function goSettings() {
   }));
 }
 
+let lastSession: { minutes: number; tasks: string[] } | null = null;
+
 function goStart() {
   show(startScreen({
     onBack: goHome,
@@ -95,19 +101,44 @@ function goStart() {
       await svc.start(minutes, tasks);
       goRunning(false);
     },
-  }));
+  }, lastSession ?? {}));
+}
+
+function goBreak(minutes: number) {
+  const c = svc.companion!;
+  const stage = stageFor(totalMinutes(svc.companionHistory)).index;
+  const b = breakScreen(c, stage, minutes, {
+    onDone: () => {
+      if (prefs.sound) chime();
+      buzz();
+    },
+    onNext: goStart,
+    onHome: goHome,
+  });
+  show(b.el, b.dispose);
 }
 
 function goRunning(restored: boolean) {
   const r = runningScreen(svc, {
     restored,
+    prefs,
     onFinish: () => {
       const record = svc.history[svc.history.length - 1];
       if (record.completed) {
         if (prefs.sound) chime();
         buzz();
       }
-      show(endScreen(record, svc.companion!, svc.companionHistory, svc.history, { onHome: goHome }));
+      lastSession = {
+        minutes: Math.round(record.plannedMs / 60000),
+        tasks: record.tasks.filter((t) => !t.done).map((t) => t.text),
+      };
+      const breakMin = breakMinutesAfter(svc.history, new Date());
+      show(endScreen(record, svc.companion!, svc.companionHistory, svc.history, {
+        onHome: goHome,
+        breakOffer: prefs.breaks && record.completed
+          ? { minutes: breakMin, long: breakMin === LONG_BREAK_MIN, onBreak: () => goBreak(breakMin) }
+          : undefined,
+      }));
     },
   });
   show(r.el, r.dispose);

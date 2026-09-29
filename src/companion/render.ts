@@ -2,7 +2,7 @@ import type { SpeciesId } from '../domain/types';
 
 /**
  * Companion art. Each species is a small round creature that grows something on its head:
- * a flower (Bloomling), a flame (Kindle), or a water lily (Ripple). All markup is built from
+ * a flower (Bloomling), a flame (Cinder), or a water lily (Ripple). All markup is built from
  * static templates and numbers — no user data ever enters it. Colors come from CSS classes
  * (.species-*), animation is pure CSS (see styles.css).
  */
@@ -106,7 +106,7 @@ function bloomling(g: Geo): Parts {
   return { back: '', crown: crowns[stage], arms: leafArms(g, 'leaf arm-leaf'), front: '' };
 }
 
-function kindle(g: Geo): Parts {
+function cinder(g: Geo): Parts {
   const { stage, top, rx, cy, s } = g;
   const tuft = (h: number) =>
     `<g class="flicker">${flame(X, top + 4, h)}${flame(X, top + 4, h * 0.6, 'flame-core')}</g>`;
@@ -193,6 +193,13 @@ function props(species: SpeciesId, g: Geo): string {
       <path class="book-page" d="M${X} ${by + 1 * s} L${X + 12 * s} ${by - 2 * s} L${X + 12 * s} ${by + 9 * s} L${X} ${by + 12 * s} Z"/>
       <path class="book-page page-flip" d="M${X} ${by + 1 * s} L${X + 12 * s} ${by - 2 * s} L${X + 12 * s} ${by + 9 * s} L${X} ${by + 12 * s} Z"/>
     </g>
+    <g class="prop prop-snack">
+      <g class="snack-item">
+        <circle class="berry" cx="${X + 9 * s}" cy="${mouthY + 3 * s}" r="${4.2 * s}"/>
+        <circle class="berry-shine" cx="${X + 7.8 * s}" cy="${mouthY + 1.8 * s}" r="${1.1 * s}"/>
+        <path class="berry-leaf" d="M${X + 9 * s} ${mouthY - 1 * s} q${2 * s} ${-3 * s} ${4.5 * s} ${-2.5 * s}"/>
+      </g>
+    </g>
     <g class="prop prop-hum">
       <text class="note-glyph" x="${X + rx * 0.6}" y="${top + 4}">♪</text>
       <text class="note-glyph" x="${X + rx * 0.9}" y="${top - 6}">♫</text>
@@ -217,7 +224,7 @@ function props(species: SpeciesId, g: Geo): string {
           <ellipse class="wing-body" cx="0" cy="0" rx="1.2" ry="5.5"/>
         </g></g>
       </g>`,
-    kindle: `
+    cinder: `
       <g class="prop prop-sparks">
         ${[-14, -5, 6, 15].map((dx, i) => `<circle class="spark spark-${i}" cx="${X + dx * 0.3}" cy="${top - 14}" r="1.8"/>`).join('')}
       </g>`,
@@ -229,7 +236,7 @@ function props(species: SpeciesId, g: Geo): string {
   return common + own[species];
 }
 
-const PARTS: Record<SpeciesId, (g: Geo) => Parts> = { bloomling, kindle, ripple };
+const PARTS: Record<SpeciesId, (g: Geo) => Parts> = { bloomling, cinder, ripple };
 
 // ---------- assembly ----------
 

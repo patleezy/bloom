@@ -12,7 +12,7 @@ export function endScreen(
   companion: CompanionProfile,
   companionHistory: SessionRecord[],
   allHistory: readonly SessionRecord[],
-  actions: { onHome: () => void },
+  actions: { onHome: () => void; breakOffer?: { minutes: number; long: boolean; onBreak: () => void } },
 ): HTMLElement {
   const after = totalMinutes(companionHistory);
   const before = after - record.countedMinutes;
@@ -39,5 +39,11 @@ export function endScreen(
             h('li', { class: t.done ? 'done' : '' }, h('span', { class: 'check', 'aria-hidden': 'true' }, icon('check')), h('span', {}, t.text)))))
       : null,
     s ? h('p', { class: 'stat on' }, icon('sprout'), h('strong', {}, `${copy.streak(s)} streak`)) : null,
-    h('button', { class: 'btn primary big', onclick: actions.onHome }, copy.home));
+    actions.breakOffer
+      ? h('div', { class: 'stack' },
+          actions.breakOffer.long ? h('p', { class: 'muted small' }, copy.breakOfferLong) : null,
+          h('button', { class: 'btn primary big', onclick: actions.breakOffer.onBreak },
+            icon('cup'), ' ', copy.breakOffer(actions.breakOffer.minutes)),
+          h('button', { class: 'btn ghost', onclick: actions.onHome }, copy.home))
+      : h('button', { class: 'btn primary big', onclick: actions.onHome }, copy.home));
 }

@@ -9,10 +9,13 @@ export interface Prefs {
   sound: boolean;
   lastSeenVersion: string | null; // for the "What's new" pill
   introDismissed: boolean;
+  ambient: boolean; // species soundscape during sessions
+  volume: number; // 0–1
+  breaks: boolean; // offer a break after completed sessions
 }
 
 const KEY = 'bloom:prefs';
-const DEFAULTS: Prefs = { theme: 'auto', sound: true, lastSeenVersion: null, introDismissed: false };
+const DEFAULTS: Prefs = { theme: 'auto', sound: true, lastSeenVersion: null, introDismissed: false, ambient: false, volume: 0.5, breaks: true };
 
 export function loadPrefs(): Prefs {
   try {
@@ -22,6 +25,9 @@ export function loadPrefs(): Prefs {
       sound: typeof o?.sound === 'boolean' ? o.sound : DEFAULTS.sound,
       lastSeenVersion: typeof o?.lastSeenVersion === 'string' ? o.lastSeenVersion.slice(0, 20) : null,
       introDismissed: o?.introDismissed === true,
+      ambient: o?.ambient === true,
+      volume: typeof o?.volume === 'number' && o.volume >= 0 && o.volume <= 1 ? o.volume : DEFAULTS.volume,
+      breaks: typeof o?.breaks === 'boolean' ? o.breaks : DEFAULTS.breaks,
     };
   } catch {
     return { ...DEFAULTS };

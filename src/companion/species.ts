@@ -21,9 +21,9 @@ export const SPECIES: Record<SpeciesId, Species> = {
     blurb: 'Gentle and steady. Grows a flower crown from calm, patient focus.',
     stageNames: ['Seed', 'Sprout', 'Leafling', 'Budling', 'Bloom', 'Elder Bloom'],
   },
-  kindle: {
-    id: 'kindle',
-    name: 'Kindle',
+  cinder: {
+    id: 'cinder',
+    name: 'Cinder',
     element: 'Ember',
     icon: 'flame',
     blurb: 'Warm and spirited. Its little flame grows brighter the longer you stay with it.',
@@ -39,7 +39,7 @@ export const SPECIES: Record<SpeciesId, Species> = {
   },
 };
 
-export const SPECIES_ORDER: SpeciesId[] = ['bloomling', 'kindle', 'ripple'];
+export const SPECIES_ORDER: SpeciesId[] = ['bloomling', 'cinder', 'ripple'];
 
 export function stageName(species: SpeciesId, stage: number): string {
   const names = SPECIES[species].stageNames;

@@ -12,15 +12,15 @@ import type { BloomRepository } from './repository';
 
 /** All data stays in this browser's localStorage. Nothing is sent over the network. */
 const KEY = 'bloom:data';
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 const MAX_LABEL = 60;
 export const MAX_NAME = 20;
 const MAX_PLANNED_MS = 24 * 3600_000;
 const MAX_HISTORY = 20_000;
-const SPECIES: readonly SpeciesId[] = ['bloomling', 'kindle', 'ripple'];
+const SPECIES: readonly SpeciesId[] = ['bloomling', 'cinder', 'ripple'];
 
-interface StoredV3 {
-  schemaVersion: 3;
+interface StoredV4 {
+  schemaVersion: 4;
   companion: CompanionProfile | null;
   history: SessionRecord[];
   active: ActiveSession | null;
@@ -124,6 +124,17 @@ function migrate(o: Record<string, unknown>): Record<string, unknown> | null {
       active: toTasks(cur.active),
     };
   }
+  if (cur.schemaVersion === 3) {
+    // v4 renamed the Ember starter from "kindle" to "cinder".
+    const c = cur.companion as Record<string, unknown> | null;
+    cur = {
+      ...cur,
+      schemaVersion: 4,
+      companion: c && c.species === 'kindle'
+        ? { ...c, species: 'cinder', name: c.name === 'Kindle' ? 'Cinder' : c.name }
+        : c,
+    };
+  }
   return cur.schemaVersion === SCHEMA_VERSION ? cur : null; // unknown/newer version: don't guess
 }
 
@@ -149,7 +160,7 @@ export function parseSnapshot(raw: string | null): BloomSnapshot | null {
 export const parseStored = (raw: string | null): BloomSnapshot => parseSnapshot(raw) ?? emptySnapshot();
 
 export function serialize(s: BloomSnapshot): string {
-  const stored: StoredV3 = { schemaVersion: 3, companion: s.companion, history: s.history, active: s.active };
+  const stored: StoredV4 = { schemaVersion: 4, companion: s.companion, history: s.history, active: s.active };
   return JSON.stringify(stored);
 }
 

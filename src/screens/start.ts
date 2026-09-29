@@ -5,8 +5,11 @@ import { icon } from '../icons';
 
 const PRESETS = [25, 50, 90];
 
-export function startScreen(actions: { onBegin: (minutes: number, tasks: string[]) => void; onBack: () => void }): HTMLElement {
-  let minutes = 25;
+export function startScreen(
+  actions: { onBegin: (minutes: number, tasks: string[]) => void; onBack: () => void },
+  initial: { minutes?: number; tasks?: string[] } = {},
+): HTMLElement {
+  let minutes = initial.minutes ?? 25;
   const custom = h('input', { type: 'number', min: '5', max: '240', step: '5', inputmode: 'numeric',
     class: 'custom-input', 'aria-label': 'Custom minutes', placeholder: copy.custom });
 
@@ -51,7 +54,18 @@ export function startScreen(actions: { onBegin: (minutes: number, tasks: string[
     refresh();
     if (focus) input.focus();
   }
-  addField(false);
+  // Carry over anything unfinished from the last session.
+  const carry = (initial.tasks ?? []).slice(0, MAX_TASKS);
+  if (carry.length) {
+    carry.forEach(() => addField(false));
+    fields().forEach((f, i) => (f.value = carry[i]));
+  } else {
+    addField(false);
+  }
+  if (!PRESETS.includes(minutes)) {
+    custom.value = String(minutes);
+    select(null);
+  }
 
   const form = h('form', { class: 'start-form' },
     h('button', { class: 'btn link back', type: 'button', onclick: actions.onBack }, icon('back'), copy.back),

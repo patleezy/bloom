@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.5.0';
+export const APP_VERSION = '0.6.0';
 
 export interface Release {
   version: string;
@@ -12,6 +12,17 @@ export interface Release {
 }
 
 export const CHANGELOG: Release[] = [
+  {
+    version: '0.6.0',
+    date: '2026-09-30',
+    title: 'Sounds and breathers',
+    notes: [
+      'Ambient sound for each companion: a breeze for Bloomling, a crackling fire for Cinder, soft rain for Ripple. Tap the speaker during a session.',
+      'Breaks: after a full session, take a 5-minute break (15 after every 4th). Your companion has a snack, then a nap.',
+      'Starting the next session brings back anything you didn’t check off.',
+      'Kindle is now called Cinder. Same fiery friend, same progress.',
+    ],
+  },
   {
     version: '0.5.0',
     date: '2026-09-29',
