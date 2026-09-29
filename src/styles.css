@@ -1,3 +1,6 @@
+/* ---------- Themes ----------
+   Light is the default. "Night" is a deeper, warmer, lower-contrast dark theme for late sessions.
+   Auto follows the OS via prefers-color-scheme; an explicit choice sets <html data-theme>. */
 :root {
   --bg: #f5f1e8;
   --surface: #fffdf7;
@@ -5,32 +8,63 @@
   --muted: #6d7a6f;
   --accent: #5f8a5a;
   --accent-ink: #fffdf7;
-  --leaf: #7fae74;
-  --leaf-dark: #5f8a5a;
-  --stem: #6b9463;
-  --petal: #f2b5a0;
-  --petal-2: #f7d5b6;
-  --body: #b9dca5;
-  --body-dark: #93bf80;
-  --belly: #e6f2d8;
-  --cheek: #f0a08c;
   --track: #e4dccb;
   --halo: #fbe7b0;
+  --shadow: #2f3a31;
+  --eye: #2f3a31;
+  --danger: #b0553e;
   --radius: 18px;
   color-scheme: light;
 }
+:root[data-theme='night'] {
+  --bg: #15181a;
+  --surface: #1f2427;
+  --ink: #dfe3dc;
+  --muted: #8b958c;
+  --accent: #86b27c;
+  --accent-ink: #15181a;
+  --track: #2c3236;
+  --halo: #4a4630;
+  --shadow: #000;
+  --danger: #e08a72;
+  color-scheme: dark;
+}
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #1c211d;
-    --surface: #252c26;
-    --ink: #e9eee6;
-    --muted: #9fae9f;
-    --accent: #8fbf84;
-    --accent-ink: #1c211d;
-    --track: #333c34;
+  :root:not([data-theme='light']) {
+    --bg: #15181a;
+    --surface: #1f2427;
+    --ink: #dfe3dc;
+    --muted: #8b958c;
+    --accent: #86b27c;
+    --accent-ink: #15181a;
+    --track: #2c3236;
     --halo: #4a4630;
+    --shadow: #000;
+    --danger: #e08a72;
     color-scheme: dark;
   }
+}
+
+/* ---------- Species palettes ---------- */
+.species-bloomling {
+  --body: #b9dca5; --body-dark: #93bf80; --belly: #e6f2d8;
+  --leaf: #7fae74; --leaf-dark: #5f8a5a; --stem: #6b9463;
+  --accent-a: #f2b5a0; --accent-b: #f7d5b6; --accent-c: #fbe7b0;
+  --cheek: #f0a08c; --tag: #e3f0d9; --tag-ink: #3f6b3a;
+}
+.species-kindle {
+  --body: #f6b77c; --body-dark: #e4925a; --belly: #fde6cb;
+  --leaf: #e4925a; --leaf-dark: #d27a45; --stem: #d27a45;
+  --accent-a: #f9a03f; --accent-b: #ffd166; --accent-c: #fff1b8;
+  --flame: #f47c48; --flame-core: #ffd166; --ear-inner: #fde6cb;
+  --cheek: #ef7f6a; --tag: #fde4cc; --tag-ink: #9a4a1c;
+}
+.species-ripple {
+  --body: #9fd3e6; --body-dark: #74b6cf; --belly: #e1f3f8;
+  --leaf: #6fb8a0; --leaf-dark: #74b6cf; --stem: #5e9e88;
+  --accent-a: #f6c6d6; --accent-b: #fff4f8; --accent-c: #ffe28a;
+  --gill: #f3a6bf; --pad: #6fb8a0; --drop: #7cc4e0;
+  --cheek: #f3a6bf; --tag: #dcf0f6; --tag-ink: #2d6b82;
 }
 
 * { box-sizing: border-box; }
@@ -67,7 +101,7 @@ p { margin: 0; }
 .streak.on::before { content: '🌱 '; }
 
 .stage-wrap { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.stage-name { font-weight: 700; font-size: 1.1rem; }
+.stage-name { margin-bottom: 4px; }
 .progress { width: 70%; height: 8px; border-radius: 999px; background: var(--track); overflow: hidden; }
 .progress-fill { height: 100%; background: var(--accent); border-radius: inherit; transition: width 0.6s ease; }
 
@@ -82,6 +116,7 @@ p { margin: 0; }
 .btn.ghost { background: transparent; color: var(--muted); }
 .btn.link { background: transparent; color: var(--muted); text-decoration: underline; padding: 6px; }
 [hidden] { display: none !important; }
+[tabindex='-1']:focus { outline: none; }
 
 .week { list-style: none; margin: 8px 0 0; padding: 14px; display: flex; gap: 8px; width: 100%;
   background: var(--surface); border-radius: var(--radius); justify-content: space-between; }
@@ -91,6 +126,41 @@ p { margin: 0; }
 .week-day.today span { color: var(--ink); font-weight: 700; }
 
 .foot { margin-top: auto; padding-top: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+
+.row { display: flex; gap: 10px; align-items: center; }
+.row.between { justify-content: space-between; width: 100%; }
+.row.wrap { flex-wrap: wrap; justify-content: center; }
+.spacer { width: 60px; }
+.icon-btn { font: inherit; font-size: 1.2rem; line-height: 1; border: 0; background: var(--surface); color: var(--muted);
+  width: 38px; height: 38px; border-radius: 50%; cursor: pointer; }
+.icon-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.companion-name { font-weight: 700; font-size: 1.3rem; overflow-wrap: anywhere; }
+.element-tag { display: inline-block; padding: 2px 10px; border-radius: 999px; background: var(--tag); color: var(--tag-ink); font-size: 0.85rem; font-weight: 600; }
+.danger { color: var(--danger) !important; }
+h3 { margin: 0 0 8px; font-size: 1rem; }
+.card { width: 100%; background: var(--surface); border-radius: var(--radius); padding: 16px; text-align: left; display: flex; flex-direction: column; gap: 8px; }
+.card .row .label-input { flex: 1; background: var(--bg); }
+.card .btn { background: var(--bg); }
+.card .btn.primary { background: var(--accent); }
+.chips.three { grid-template-columns: repeat(3, 1fr); }
+.card .chip { background: var(--bg); }
+.toggle { width: 22px; height: 22px; accent-color: var(--accent); }
+.settings .topbar h2 { font-size: 1.1rem; }
+
+/* Onboarding */
+.onboarding { gap: 16px; }
+.trio { display: flex; justify-content: center; margin-top: 6vh; }
+.trio .companion { width: 30%; max-width: 120px; }
+.welcome-list { text-align: left; padding: 0 0 0 20px; margin: 0; display: flex; flex-direction: column; gap: 8px; color: var(--muted); }
+.starters { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.starter-card { font: inherit; color: var(--ink); display: flex; align-items: center; gap: 12px; padding: 12px 16px 12px 8px;
+  border: 2px solid transparent; border-radius: var(--radius); background: var(--surface); cursor: pointer; text-align: left; }
+.starter-card:hover, .starter-card:focus-visible { border-color: var(--body-dark); outline: none; }
+.starter-card .companion { width: 96px; flex-shrink: 0; }
+.starter-text { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.starter-text strong { font-size: 1.15rem; }
+.onboarding .start-form { margin-top: 6vh; align-items: center; }
+.onboarding .start-form .btn { width: 100%; }
 
 /* Start */
 .start-form { width: 100%; display: flex; flex-direction: column; gap: 16px; margin-top: 12vh; }
@@ -117,6 +187,9 @@ p { margin: 0; }
 .is-paused .clock { opacity: 0.5; }
 .is-paused .companion .plant { animation-play-state: paused; }
 
+.to-next { min-height: 1.4em; }
+:root[data-theme='night'] .running .companion, :root[data-theme='night'] .running .clock { opacity: 0.82; }
+
 /* End */
 .end { justify-content: center; min-height: 100vh; min-height: 100dvh; }
 .stage-up { color: var(--accent); font-weight: 700; }
@@ -125,30 +198,41 @@ p { margin: 0; }
 .companion { width: min(62vw, 240px); height: auto; overflow: visible; }
 .companion .plant { transform-origin: 100px 180px; transform: scale(var(--grow, 1)); transition: transform 1s ease; }
 .companion .bounce { transform-origin: 100px 180px; animation: bounce 3.2s ease-in-out infinite; }
-.companion .crown { transform-origin: 100px 120px; animation: sway 5s ease-in-out infinite; }
+.companion .crown { transform-origin: 100px 130px; animation: sway 5s ease-in-out infinite; }
 .companion .body { fill: var(--body); }
 .companion .belly { fill: var(--belly); }
-.companion .foot { fill: var(--body-dark); }
+.companion .foot, .companion .paw, .companion .ear { fill: var(--body-dark); }
+.companion .ear-inner { fill: var(--ear-inner); }
 .companion .stem { fill: none; stroke: var(--stem); stroke-width: 3.5; stroke-linecap: round; }
 .companion .leaf { fill: var(--leaf); }
 .companion .arm-leaf { fill: var(--leaf-dark); }
-.companion .arm { transform-box: fill-box; }
+.companion .fin { fill: var(--body-dark); }
+.companion .gill { fill: var(--gill); }
+.companion .pad { fill: var(--pad); }
+.companion .droplet { fill: var(--drop); }
+.companion .flame { fill: var(--flame); }
+.companion .flame-core { fill: var(--flame-core); }
+.companion .ember-dot { fill: var(--flame-core); animation: float 3s ease-in-out infinite; }
+.companion .accent { fill: var(--accent-a); }
+.companion .accent-2 { fill: var(--accent-b); }
+.companion .accent-line { fill: none; stroke: var(--accent-b); stroke-width: 2; }
+.companion .accent-center { fill: var(--accent-c); }
+.companion .arm, .companion .flicker, .companion .tail, .companion .spin, .companion .spin-slow, .companion .bob { transform-box: fill-box; }
 .companion .arm-l { transform-origin: right center; animation: wave-l 4s ease-in-out infinite; }
 .companion .arm-r { transform-origin: left center; animation: wave-r 4s ease-in-out infinite; }
-.companion .bud { fill: var(--petal); }
-.companion .bud-line { fill: none; stroke: var(--petal-2); stroke-width: 2; }
-.companion .petal { fill: var(--petal); }
-.companion .petal-2 { fill: var(--petal-2); }
-.companion .flower-center { fill: var(--halo); }
-.companion .flower { transform-box: fill-box; transform-origin: center; animation: spin 40s linear infinite; }
-.companion .shadow { fill: var(--ink); opacity: 0.08; }
-.companion .eye { fill: #2f3a31; transform-box: fill-box; transform-origin: center; animation: blink 5s infinite; }
+.companion .flicker { transform-origin: center bottom; animation: flicker 1.6s ease-in-out infinite; }
+.companion .tail { transform-origin: left bottom; animation: wag 2.4s ease-in-out infinite; }
+.companion .spin { transform-origin: center; animation: spin 40s linear infinite; }
+.companion .spin-slow { transform-origin: center bottom; animation: sway 7s ease-in-out infinite; }
+.companion .bob { animation: float 3s ease-in-out infinite; }
+.companion .shadow { fill: var(--shadow); opacity: 0.1; }
+.companion .eye { fill: var(--eye); transform-box: fill-box; transform-origin: center; animation: blink 5s infinite; }
 .companion .eye-shine { fill: #fff; }
-.companion .eye-closed { fill: none; stroke: #2f3a31; stroke-width: 1.6; stroke-linecap: round; display: none; }
+.companion .eye-closed { fill: none; stroke: var(--eye); stroke-width: 1.6; stroke-linecap: round; display: none; }
 .companion .cheek { fill: var(--cheek); opacity: 0.6; }
-.companion .mouth { fill: none; stroke: #2f3a31; stroke-width: 1.5; stroke-linecap: round; }
+.companion .mouth { fill: none; stroke: var(--eye); stroke-width: 1.5; stroke-linecap: round; }
 .companion .halo { fill: var(--halo); opacity: 0.45; animation: breathe 5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
-.companion .motes circle { fill: var(--halo); animation: float 7s ease-in-out infinite; }
+.companion .motes circle { fill: var(--accent-c); animation: float 7s ease-in-out infinite; }
 .companion .motes circle:nth-child(2) { animation-delay: -2s; }
 .companion .motes circle:nth-child(3) { animation-delay: -4s; }
 .companion .zzz { display: none; fill: var(--muted); font: 700 12px system-ui, sans-serif; }
@@ -157,7 +241,8 @@ p { margin: 0; }
 .companion.sleeping .eye-open { display: none; }
 .companion.sleeping .eye-closed, .companion.sleeping .zzz { display: inline; }
 .companion.sleeping .bounce { animation: breathe-slow 4s ease-in-out infinite; }
-.companion.sleeping .arm { animation: none; }
+.companion.sleeping .arm, .companion.sleeping .tail { animation: none; }
+.companion.sleeping .flicker { animation-duration: 4s; opacity: 0.7; }
 .companion.grew { animation: grow-in 1.2s cubic-bezier(.2,1.4,.4,1); }
 .companion.celebrate .bounce { animation: hop 0.6s ease 3; }
 
@@ -165,6 +250,8 @@ p { margin: 0; }
 @keyframes breathe-slow { 0%,100% { transform: scale(1, 1); } 50% { transform: scale(1.015, 0.985); } }
 @keyframes wave-l { 0%,100% { transform: rotate(0); } 50% { transform: rotate(12deg); } }
 @keyframes wave-r { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-12deg); } }
+@keyframes flicker { 0%,100% { transform: scale(1, 1) rotate(0); } 30% { transform: scale(0.94, 1.06) rotate(-3deg); } 60% { transform: scale(1.04, 0.95) rotate(2deg); } }
+@keyframes wag { 0%,100% { transform: rotate(0); } 50% { transform: rotate(10deg); } }
 @keyframes sway { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
 @keyframes blink { 0%,94%,100% { transform: scaleY(1); } 97% { transform: scaleY(0.1); } }
 @keyframes spin { to { transform: rotate(360deg); } }

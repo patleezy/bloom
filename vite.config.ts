@@ -12,6 +12,8 @@ const CSP = [
   "img-src 'self' data:",
   "connect-src 'none'",
   "font-src 'self'",
+  "worker-src 'self'",
+  "manifest-src 'self'",
   "object-src 'none'",
   "base-uri 'none'",
   "form-action 'none'",

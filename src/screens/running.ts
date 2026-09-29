@@ -1,9 +1,11 @@
-import { renderCompanion, setGrowth, setSleeping } from '../companion/companion';
+import { renderCompanion, setGrowth, setSleeping } from '../companion/render';
+import { stageName } from '../companion/species';
 import { copy } from '../copy';
 import { formatClock, h } from '../dom';
-import { totalMinutes } from '../domain/stats';
 import type { SessionService } from '../domain/sessionService';
-import { stageFor } from '../logic/growth';
+import { totalMinutes } from '../domain/stats';
+import { countedMinutes, minutesToNext, stageFor } from '../logic/growth';
+import { acquireWakeLock, releaseWakeLock } from '../wakeLock';
 
 const RING = 2 * Math.PI * 54;
 
@@ -13,9 +15,14 @@ export function runningScreen(
   opts: { restored: boolean; onFinish: () => void },
 ): { el: HTMLElement; dispose: () => void } {
   const active = svc.active!;
+  const companion = svc.companion!;
   const planned = active.clock.plannedMs;
-  const stage = stageFor(totalMinutes([...svc.history]));
-  const companion = renderCompanion(stage.index, { label: `Your Bloomling, a ${stage.name}, growing` });
+  const baseTotal = totalMinutes(svc.companionHistory);
+  const stage = stageFor(baseTotal);
+  const art = renderCompanion(companion.species, stage.index,
+    { label: `${companion.name}, a ${stageName(companion.species, stage.index)}, growing` });
+  const lines = copy.running(companion.name);
+  const remainingAtStart = minutesToNext(baseTotal);
 
   const ring = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   ring.setAttribute('viewBox', '0 0 120 120');
@@ -27,42 +34,54 @@ export function runningScreen(
 
   const time = h('p', { class: 'clock', role: 'timer', 'aria-live': 'off' });
   const note = h('p', { class: 'note', 'aria-live': 'polite' });
+  const toNext = h('p', { class: 'muted small to-next' });
   const resumeBtn = h('button', { class: 'btn primary', hidden: true, onclick: () => void doResume() }, copy.resume);
   const endBtn = h('button', { class: 'btn ghost', onclick: () => {
-    if (confirm(copy.confirmEnd)) void svc.finish().then(opts.onFinish);
+    if (confirm(copy.confirmEnd)) finish();
   } }, copy.endEarly);
 
   const el = h('main', { class: 'screen running' },
     active.label ? h('p', { class: 'focus-label' }, active.label) : null,
-    h('div', { class: 'ring-wrap' }, ring, companion),
-    time, note, resumeBtn, endBtn);
+    h('div', { class: 'ring-wrap' }, ring, art),
+    time, toNext, note, resumeBtn, endBtn);
 
   let finishing = false;
   let msgIdx = 0;
   let lastMsgSwap = 0;
+
+  function finish() {
+    if (finishing) return;
+    finishing = true;
+    void svc.finish().then(opts.onFinish);
+  }
 
   function paint() {
     const e = svc.elapsedMs();
     const frac = e / planned;
     time.textContent = formatClock(planned - e);
     ringFill.setAttribute('stroke-dashoffset', String(RING * (1 - frac)));
-    setGrowth(companion, frac);
+    setGrowth(art, frac);
+
+    // Live progress toward the next stage, counting this session's minutes as they accrue.
+    if (remainingAtStart !== null) {
+      const left = Math.max(0, remainingAtStart - countedMinutes(e));
+      toNext.textContent = copy.liveToNext(left, stageName(companion.species, stage.index + 1));
+    }
+
     const paused = svc.active?.clock.runningSince === null;
     el.classList.toggle('is-paused', paused);
-    setSleeping(companion, paused);
+    setSleeping(art, paused);
     resumeBtn.hidden = !paused;
     if (!paused && Date.now() - lastMsgSwap > 60000) {
-      note.textContent = copy.running[msgIdx++ % copy.running.length];
+      note.textContent = lines[msgIdx++ % lines.length];
       lastMsgSwap = Date.now();
     }
-    if (!finishing && svc.isDone()) {
-      finishing = true;
-      void svc.finish().then(opts.onFinish);
-    }
+    if (svc.isDone()) finish();
   }
 
   async function doResume() {
     await svc.resume();
+    void acquireWakeLock();
     lastMsgSwap = 0;
     paint();
   }
@@ -72,14 +91,15 @@ export function runningScreen(
       await svc.pause();
     } else {
       await svc.resume();
-      note.textContent = copy.paused;
+      void acquireWakeLock(); // the browser releases it while hidden
+      note.textContent = copy.paused(companion.name);
       lastMsgSwap = Date.now();
     }
     paint();
   }
 
-  if (opts.restored) note.textContent = copy.resumedAfterReload;
-  else lastMsgSwap = 0;
+  if (opts.restored) note.textContent = copy.resumedAfterReload(companion.name);
+  else void acquireWakeLock();
 
   document.addEventListener('visibilitychange', onVisibility);
   const tick = window.setInterval(paint, 250);
@@ -90,6 +110,7 @@ export function runningScreen(
     dispose: () => {
       window.clearInterval(tick);
       document.removeEventListener('visibilitychange', onVisibility);
+      void releaseWakeLock();
     },
   };
 }

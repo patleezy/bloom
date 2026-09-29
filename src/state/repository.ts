@@ -1,4 +1,4 @@
-import type { ActiveSession, BloomSnapshot, SessionRecord } from '../domain/types';
+import type { ActiveSession, BloomSnapshot, CompanionProfile, SessionRecord } from '../domain/types';
 
 /**
  * Persistence boundary. The UI only depends on this interface.
@@ -7,7 +7,10 @@ import type { ActiveSession, BloomSnapshot, SessionRecord } from '../domain/type
  */
 export interface BloomRepository {
   load(): Promise<BloomSnapshot>;
+  saveCompanion(companion: CompanionProfile): Promise<void>;
   saveActive(active: ActiveSession | null): Promise<void>;
   appendSession(record: SessionRecord): Promise<void>;
+  /** Replace everything (used by backup import). */
+  replaceAll(snapshot: BloomSnapshot): Promise<void>;
   clearAll(): Promise<void>;
 }
