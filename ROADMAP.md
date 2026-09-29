@@ -15,16 +15,17 @@ A new Claude Code session should read this first.
 | 0.9 | #9 | 16 medals (derived from history), unlock teasers |
 | 0.10 | #10 | Several companions, garden, "Who's joining you?" picker |
 | 0.11 | #11 | Moss (unlocked by Ten Hours) |
-| 0.12 | — | Nimbus (unlocked by a 7-day streak) |
+| 0.12 | #12 | Nimbus (unlocked by a 7-day streak), ROADMAP.md and CLAUDE.md |
+| 0.13 | — | Lumi (unlocked by Night Owl); all three announced friends shipped |
 
 ## Next up (in order)
-1. **Lumi**: Light element, glowing moth. Unlocked by the Night Owl medal. Same pattern as Moss and Nimbus (see "Adding a species" in CLAUDE.md).
-2. **Scenes**: sound picker (‹ ›) during sessions with matching animated backgrounds. Scene 1 is the companion's signature sound; shared scenes: Rain, Night sky, Ocean, Snowfall, Silence. **Blocked on sound files from the owner** (see below).
-3. **Opt-in analytics**: Vercel Web Analytics, cookieless, opt-in during onboarding and in Settings. Owner must enable Analytics in the Vercel dashboard first. Add the endpoint to CSP `connect-src` only.
-4. **Earned cosmetics**: hats, pots, backgrounds unlocked by focus minutes or medals; some Scenes become unlockables. Largest art effort.
-5. **Weekly recap card**: shareable image generated on the device (minutes, medals, companion).
-6. **Floating mini-companion**: Document Picture-in-Picture, desktop Chrome and Edge only.
-7. **Launch prep**: final name (leaning **BloomBuds**; check USPTO and domains), rename throughout, store screenshots, real-phone testing.
+1. **Scenes**: sound picker (‹ ›) during sessions with matching animated backgrounds. Scene 1 is the companion's signature sound; shared scenes: Rain, Night sky, Ocean, Snowfall, Silence. **Blocked on sound files from the owner** (see below).
+2. **Opt-in analytics**: Vercel Web Analytics, cookieless, opt-in during onboarding and in Settings. Owner must enable Analytics in the Vercel dashboard first. Add the endpoint to CSP `connect-src` only.
+3. **Earned cosmetics**: hats, pots, backgrounds unlocked by focus minutes or medals; some Scenes become unlockables. Largest art effort.
+4. **Weekly recap card**: shareable image generated on the device (minutes, medals, companion).
+5. **Floating mini-companion**: Document Picture-in-Picture, desktop Chrome and Edge only.
+6. **Launch prep**: final name (leaning **BloomBuds**; check USPTO and domains), rename throughout, store screenshots, real-phone testing.
+7. **More species** (optional, ongoing): follow "Adding a species" in CLAUDE.md. Each needs a new medal or reuses one as its unlock. Ideas: a crystal/gem friend (100 hours), a star friend (30-day streak).
 
 ## Later (needs a backend)
 Accounts and sync (code is already behind a `BloomRepository` interface), reminders via push, focus rooms with friends, optional paid tier (extra species, cosmetics, scenes; growth always free). Follow the pre-backend checklist in SECURITY.md.

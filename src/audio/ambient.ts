@@ -135,6 +135,15 @@ function build(c: AudioContext, species: SpeciesId, out: AudioNode): Scene {
         window.setTimeout(() => blip(c, out, chime[Math.floor(Math.random() * chime.length)], 0.018, 2.4), i * 220);
       }
     });
+  } else if (species === 'lumi') {
+    // A warm summer night: a low hush, a soft hum, and crickets chirping in little trills.
+    loopNoise(c, 'brown', out, s, [filter(c, 'lowpass', 220)], 0.2);
+    loopNoise(c, 'pink', out, s, [filter(c, 'bandpass', 450, 0.6)], 0.06);
+    every(s, 900, 2600, () => {
+      const pitch = 4200 + Math.random() * 600;
+      const pulses = 3 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < pulses; i++) window.setTimeout(() => blip(c, out, pitch, 0.012, 0.035), i * 55);
+    });
   } else if (species === 'cinder') {
     loopNoise(c, 'brown', out, s, [filter(c, 'lowpass', 420)], 0.55);
     const white = noiseBuffer(c, 'white');

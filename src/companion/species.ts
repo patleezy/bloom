@@ -57,12 +57,21 @@ export const SPECIES: Record<SpeciesId, Species> = {
     stageNames: ['Wisp', 'Puff', 'Cumulus', 'Drizzle', 'Rainbow', 'Elder Sky'],
     unlockMedal: 'streak-7',
   },
+  lumi: {
+    id: 'lumi',
+    name: 'Lumi',
+    element: 'Light',
+    icon: 'moon',
+    blurb: 'Soft and glowing. A night-time moth whose wings brighten with every session.',
+    stageNames: ['Cocoon', 'Flutter', 'Moonwing', 'Lantern', 'Starwing', 'Elder Light'],
+    unlockMedal: 'night-owl',
+  },
 };
 
 /** Free starters, offered in onboarding. */
 export const STARTERS: SpeciesId[] = ['bloomling', 'cinder', 'ripple'];
 /** Display order everywhere else (garden, picker). */
-export const SPECIES_ORDER: SpeciesId[] = [...STARTERS, 'moss', 'nimbus'];
+export const SPECIES_ORDER: SpeciesId[] = [...STARTERS, 'moss', 'nimbus', 'lumi'];
 
 /** Whether a species can be adopted given the medals earned so far. */
 export function isUnlocked(species: SpeciesId, earnedMedalIds: ReadonlySet<string>): boolean {

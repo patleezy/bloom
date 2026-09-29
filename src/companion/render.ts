@@ -236,6 +236,10 @@ function props(species: SpeciesId, g: Geo): string {
       <g class="prop prop-drizzle">
         ${[-0.45, -0.15, 0.15, 0.45].map((dx, i) => `<path class="raindrop fall-${i}" d="M${X + dx * rx} ${cy + ry * 0.9} q-1.8 3.4 0 4.8 q1.8 -1.4 0 -4.8 Z"/>`).join('')}
       </g>`,
+    lumi: `
+      <g class="prop prop-motes">
+        ${[-0.9, -0.4, 0.3, 0.85].map((dx, i) => `<circle class="glow-mote gm-${i}" cx="${X + dx * rx}" cy="${cy - ry * (0.2 + (i % 2) * 0.5)}" r="${1.6 + (i % 2) * 0.5}"/>`).join('')}
+      </g>`,
     ripple: `
       <g class="prop prop-bubbles">
         ${[0, 1, 2, 3].map((i) => `<circle class="bubble bubble-${i}" cx="${X + 6 * s + i * 2}" cy="${mouthY}" r="${2.6 + (i % 2) * 1.2}"/>`).join('')}
@@ -329,7 +333,46 @@ function nimbus(g: Geo): Parts {
   };
 }
 
-const PARTS: Record<SpeciesId, (g: Geo) => Parts> = { bloomling, cinder, ripple, moss, nimbus };
+function lumi(g: Geo): Parts {
+  const { stage, cy, ry, rx, top, s } = g;
+  // Wings sit behind the body and grow each stage; the cocoon (stage 0) has none yet.
+  const wing = (side: 1 | -1) => {
+    if (stage === 0) return '';
+    const k = 0.55 + stage * 0.12;
+    const ux = X + side * rx * 0.55;
+    const uy = cy - ry * 0.35;
+    const upper = `<ellipse class="wing-up" cx="${ux + side * 18 * k * s}" cy="${uy - 8 * k * s}" rx="${20 * k * s}" ry="${15 * k * s}"
+      transform="rotate(${side * -25} ${ux + side * 18 * k * s} ${uy - 8 * k * s})"/>`;
+    const lower = `<ellipse class="wing-low" cx="${ux + side * 13 * k * s}" cy="${cy + ry * 0.35}" rx="${13 * k * s}" ry="${10 * k * s}"
+      transform="rotate(${side * 25} ${ux + side * 13 * k * s} ${cy + ry * 0.35})"/>`;
+    const spots = stage >= 3
+      ? `<circle class="wing-glow" cx="${ux + side * 20 * k * s}" cy="${uy - 9 * k * s}" r="${4.5 * k * s}"/>`
+        + (stage >= 4
+          ? [[0.9, -0.2], [1.25, 0.25], [1.4, -0.55]].map(([a, b]) => `<circle class="star-dot" cx="${ux + side * a * 20 * k * s}" cy="${uy + b * 20 * k * s}" r="${1.4 * s}"/>`).join('')
+          : '')
+      : '';
+    return `<g class="wing wing-${side === 1 ? 'r' : 'l'}">${upper}${lower}${spots}</g>`;
+  };
+  // Feathery antennae with glowing tips.
+  const antenna = (side: 1 | -1) => {
+    const len = 10 + stage * 2.5;
+    const bx = X + side * 6 * s;
+    const tx = bx + side * len * 0.55;
+    const ty = top - len;
+    return `<path class="antenna" d="M${bx} ${top + 3} Q ${bx + side * 2} ${top - len * 0.6} ${tx} ${ty}"/>
+      <circle class="antenna-tip" cx="${tx}" cy="${ty}" r="${(2 + stage * 0.35) * s}"/>`;
+  };
+  const crown = stage === 0
+    ? `<path class="antenna" d="M${X} ${top - 2} q2 -5 5 -6"/><circle class="antenna-tip" cx="${X + 5}" cy="${top - 8}" r="1.8"/>`
+    : antenna(-1) + antenna(1);
+  // A fuzzy collar for older stages.
+  const collar = stage >= 2
+    ? `<ellipse class="collar" cx="${X}" cy="${cy - ry * 0.72}" rx="${rx * 0.62}" ry="${ry * 0.16}"/>`
+    : '';
+  return { back: wing(-1) + wing(1), crown, arms: leafArms(g, 'leaf arm-leaf'), front: collar };
+}
+
+const PARTS: Record<SpeciesId, (g: Geo) => Parts> = { bloomling, cinder, ripple, moss, nimbus, lumi };
 
 // ---------- assembly ----------
 
