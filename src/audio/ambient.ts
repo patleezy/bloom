@@ -113,6 +113,11 @@ function build(c: AudioContext, species: SpeciesId, out: AudioNode): Scene {
     loopNoise(c, 'white', out, s, [filter(c, 'highpass', 500), filter(c, 'lowpass', 5000)], 0.18);
     loopNoise(c, 'brown', out, s, [filter(c, 'lowpass', 350)], 0.25);
     every(s, 40, 220, () => blip(c, out, 1800 + Math.random() * 2200, 0.02 + Math.random() * 0.03, 0.05));
+  } else if (species === 'moss') {
+    // Woods after the rain: a low hush, a faint breeze, and slow round drips.
+    loopNoise(c, 'brown', out, s, [filter(c, 'lowpass', 280)], 0.3);
+    loopNoise(c, 'pink', out, s, [filter(c, 'bandpass', 700, 0.5)], 0.12);
+    every(s, 700, 2600, () => blip(c, out, 520 + Math.random() * 420, 0.05, 0.22, 'sine', 380));
   } else if (species === 'cinder') {
     loopNoise(c, 'brown', out, s, [filter(c, 'lowpass', 420)], 0.55);
     const white = noiseBuffer(c, 'white');

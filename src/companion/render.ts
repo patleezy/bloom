@@ -228,6 +228,10 @@ function props(species: SpeciesId, g: Geo): string {
       <g class="prop prop-sparks">
         ${[-14, -5, 6, 15].map((dx, i) => `<circle class="spark spark-${i}" cx="${X + dx * 0.3}" cy="${top - 14}" r="1.8"/>`).join('')}
       </g>`,
+    moss: `
+      <g class="prop prop-spores">
+        ${[-0.4, -0.1, 0.2, 0.45].map((dx, i) => `<circle class="spore spore-${i}" cx="${X + dx * rx}" cy="${top - 4}" r="${1.6 + (i % 2) * 0.6}"/>`).join('')}
+      </g>`,
     ripple: `
       <g class="prop prop-bubbles">
         ${[0, 1, 2, 3].map((i) => `<circle class="bubble bubble-${i}" cx="${X + 6 * s + i * 2}" cy="${mouthY}" r="${2.6 + (i % 2) * 1.2}"/>`).join('')}
@@ -236,7 +240,53 @@ function props(species: SpeciesId, g: Geo): string {
   return common + own[species];
 }
 
-const PARTS: Record<SpeciesId, (g: Geo) => Parts> = { bloomling, cinder, ripple };
+function moss(g: Geo): Parts {
+  const { stage, cy, ry, rx, s } = g;
+  // The cap sits over the top of the body like a hat, ending just above the eyes.
+  const capY = cy - ry * 0.32;
+  const w = rx * (1.02 + stage * 0.05);
+  const hgt = ry * (0.72 + stage * 0.06);
+  const cap = `<path class="cap" d="M${X - w} ${capY} C ${X - w} ${capY - hgt * 1.25}, ${X + w} ${capY - hgt * 1.25}, ${X + w} ${capY}
+      Q ${X} ${capY + hgt * 0.22} ${X - w} ${capY} Z"/>`;
+  const spot = (dx: number, dy: number, r: number) =>
+    `<ellipse class="cap-spot" cx="${X + dx * w}" cy="${capY - dy * hgt}" rx="${r * s}" ry="${r * s * 0.8}"/>`;
+  const spots = stage >= 1 ? spot(-0.5, 0.45, 3.2) + spot(0.35, 0.7, 2.6) + (stage >= 2 ? spot(0.62, 0.25, 2.2) + spot(-0.12, 0.85, 1.8) : '') : '';
+  // Moss grows across the top of the cap from stage 3.
+  const mossTop = stage >= 3
+    ? Array.from({ length: 5 + stage }, (_, i) => {
+        const t = -0.55 + (1.1 / (4 + stage)) * i;
+        const bx = X + t * w;
+        const by = capY - hgt * (0.93 - t * t * 0.9);
+        return `<circle class="moss-tuft" cx="${bx}" cy="${by}" r="${(3.4 + (i % 2)) * s}"/>`;
+      }).join('')
+    : '';
+  const sprout = stage >= 3
+    ? `<path class="stem" d="M${X + 4} ${capY - hgt * 0.95} q1 -6 0 -10"/>${leaf(X + 4, capY - hgt * 0.95 - 9, -30, 0.35)}`
+    : '';
+  const flowers = stage >= 4
+    ? [[-0.35, 0.95], [0.3, 1.0], ...(stage >= 5 ? [[0, 1.12], [-0.6, 0.72], [0.6, 0.75]] : [])]
+        .map(([dx, dy]) => `<g class="tiny-flower">${roundPetals(X + dx * w, capY - dy * hgt, 5, 4.2 * s, 'accent-2')}<circle class="accent-center" cx="${X + dx * w}" cy="${capY - dy * hgt}" r="${1.4 * s}"/></g>`)
+        .join('')
+    : '';
+  const seed = stage === 0 ? `<circle class="moss-tuft" cx="${X + 3}" cy="${capY - hgt * 0.95}" r="${2.2 * s}"/>` : '';
+  // Elder: a little ring of mushrooms at its feet.
+  const ring = stage >= 5
+    ? [[-1.35, 0.9], [1.3, 0.85], [-1.05, 1.02]].map(([dx, sc]) => {
+        const mx = X + dx * rx;
+        const my = GROUND - 2;
+        return `<g class="baby-shroom"><rect class="shroom-stem" x="${mx - 2.2 * sc}" y="${my - 8 * sc}" width="${4.4 * sc}" height="${8 * sc}" rx="2"/>
+          <path class="cap" d="M${mx - 7 * sc} ${my - 7 * sc} Q ${mx} ${my - 17 * sc} ${mx + 7 * sc} ${my - 7 * sc} Z"/></g>`;
+      }).join('')
+    : '';
+  return {
+    back: ring,
+    crown: '',
+    arms: leafArms(g, 'leaf arm-leaf'),
+    front: `<g class="cap-group">${cap}${spots}${mossTop}${sprout}${flowers}${seed}</g>`,
+  };
+}
+
+const PARTS: Record<SpeciesId, (g: Geo) => Parts> = { bloomling, cinder, ripple, moss };
 
 // ---------- assembly ----------
 

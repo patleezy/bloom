@@ -54,6 +54,7 @@ export const copy = {
     bloomling: (n: string) => ['Soaking up the light.', 'Roots going deeper.', `${n} is photosynthesizing. Probably.`],
     cinder: (n: string) => ['Keeping the fire going.', `${n} is all fired up.`, 'Crackle, crackle. Nice pace.'],
     ripple: (n: string) => ['Flowing along.', `${n} is making little waves.`, 'Deep water, calm mind.'],
+    moss: (n: string) => ['Slow and steady.', `${n} is growing roots.`, 'Quiet as a forest floor.'],
   } satisfies Record<SpeciesId, (name: string) => string[]>,
   liveToNext: (m: number, stage: string) => (m <= 0 ? `Evolving into ${stage}!` : `${m} min to ${stage}`),
   paused: (name: string) => `${name} took a nap while you were gone. Welcome back.`,
@@ -111,8 +112,13 @@ export const copy = {
   newMedal: 'New medal!',
   newMedals: (n: number) => `${n} new medals!`,
   unlocksTitle: 'New friends on the way',
-  unlocksIntro: 'Keep focusing to unlock new companions. They arrive in an upcoming update, and your progress counts starting now.',
-  unlockReady: (name: string) => `Unlocked! ${name} will be ready to adopt in an upcoming update.`,
+  unlocksIntro: 'Keep focusing to unlock new companions. Some are still on their way, and your progress counts toward them starting now.',
+  unlockReady: (name: string, available: boolean) =>
+    available ? `Unlocked! Meet ${name} in your garden.` : `Unlocked! ${name} will be ready to adopt in an upcoming update.`,
+  unlockWaiting: (name: string) => `${name} is ready to meet in your garden`,
+  unlockCelebrate: (name: string) => `You unlocked ${name}!`,
+  unlockMeet: (name: string) => `Meet ${name}`,
+  gardenLocked: (req: string) => `Locked. ${req} to unlock.`,
   unlockHint: (req: string, progress: string, name: string) => `${req} to meet ${name} · ${progress}`,
 
   // Breaks
@@ -145,6 +151,7 @@ export const copy = {
     bloomling: 'Bloomling: a breeze through the leaves.',
     cinder: 'Cinder: a crackling fire.',
     ripple: 'Ripple: soft rain.',
+    moss: 'Moss: dripping woods after the rain.',
   } satisfies Record<SpeciesId, string>,
   volume: 'Volume',
   breaks: 'Offer a break after each session',

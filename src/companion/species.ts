@@ -9,9 +9,11 @@ export interface Species {
   blurb: string;
   /** One name per growth stage (see logic/growth.ts STAGES). */
   stageNames: [string, string, string, string, string, string];
+  /** Unlockable species need this medal before they can be adopted. Starters have none. */
+  unlockMedal?: string;
 }
 
-/** The three starters: distinct elements, same growth rules. Add new species here. */
+/** Every species. Starters are free; unlockables name the medal that unlocks them. Add new species here. */
 export const SPECIES: Record<SpeciesId, Species> = {
   bloomling: {
     id: 'bloomling',
@@ -37,9 +39,27 @@ export const SPECIES: Record<SpeciesId, Species> = {
     blurb: 'Curious and calm. A water lily unfolds as your focus runs deep.',
     stageNames: ['Droplet', 'Puddle', 'Brooklet', 'Lilybud', 'Lily', 'Elder Tide'],
   },
+  moss: {
+    id: 'moss',
+    name: 'Moss',
+    element: 'Earth',
+    icon: 'mushroom',
+    blurb: 'Patient and cozy. A mossy little garden grows on its cap, one quiet hour at a time.',
+    stageNames: ['Spore', 'Button', 'Capling', 'Mossling', 'Toadstool', 'Elder Grove'],
+    unlockMedal: 'hours-10',
+  },
 };
 
-export const SPECIES_ORDER: SpeciesId[] = ['bloomling', 'cinder', 'ripple'];
+/** Free starters, offered in onboarding. */
+export const STARTERS: SpeciesId[] = ['bloomling', 'cinder', 'ripple'];
+/** Display order everywhere else (garden, picker). */
+export const SPECIES_ORDER: SpeciesId[] = [...STARTERS, 'moss'];
+
+/** Whether a species can be adopted given the medals earned so far. */
+export function isUnlocked(species: SpeciesId, earnedMedalIds: ReadonlySet<string>): boolean {
+  const medal = SPECIES[species].unlockMedal;
+  return !medal || earnedMedalIds.has(medal);
+}
 
 export function stageName(species: SpeciesId, stage: number): string {
   const names = SPECIES[species].stageNames;

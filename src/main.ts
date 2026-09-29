@@ -25,7 +25,8 @@ import { APP_VERSION } from './changelog';
 import { whatsNewScreen } from './screens/whatsNew';
 import { evolutionScreen } from './screens/evolution';
 import { medalsScreen } from './screens/medals';
-import { evaluateMedals, newlyEarned } from './domain/medals';
+import { UNLOCKABLES, evaluateMedals, newlyEarned } from './domain/medals';
+import { progressLabel } from './screens/medals';
 import { applyTheme, clearPrefs, loadPrefs, savePrefs } from './state/prefs';
 
 // Swap LocalRepository for an API-backed repository here when a backend exists.
@@ -69,16 +70,25 @@ function goHome() {
     onMedals: () => goMedals(goHome),
     onEvolution: () => goJourney(svc.companion!.id, goHome),
     onGarden: () => goGarden(goHome),
+    waitingUnlock: SPECIES_ORDER.find((sp) => SPECIES[sp].unlockMedal && svc.canAdopt(sp) && !svc.companions.some((c) => c.species === sp)),
   });
   show(home.el, home.dispose);
 }
 
 /** One entry per starter species: adopted companions with their growth, or not-yet-met starters. */
 function gardenEntries(): GardenEntry[] {
+  const medals = evaluateMedals(svc.history);
   return SPECIES_ORDER.map((species) => {
     const c = svc.companions.find((x) => x.species === species) ?? null;
     const minutes = c ? totalMinutes(svc.historyFor(c.id)) : 0;
-    return { species, companion: c, stage: stageFor(minutes).index, minutes, isCurrent: !!c && c.id === svc.companion?.id };
+    const status = !c && !svc.canAdopt(species) ? medals.find((m) => m.medal.id === SPECIES[species].unlockMedal) : undefined;
+    const unlock = UNLOCKABLES.find((u) => u.id === species);
+    return {
+      species, companion: c, stage: stageFor(minutes).index, minutes, isCurrent: !!c && c.id === svc.companion?.id,
+      locked: status && unlock
+        ? { requirement: unlock.requirement, progress: progressLabel(status), current: status.current, target: status.target }
+        : null,
+    };
   });
 }
 
@@ -137,7 +147,7 @@ function goSettings() {
 let lastSession: { minutes: number; tasks: string[] } | null = null;
 
 function goStart() {
-  const choices: CompanionChoice[] = gardenEntries().map((e) => ({
+  const choices: CompanionChoice[] = gardenEntries().filter((e) => !e.locked).map((e) => ({
     species: e.species, companionId: e.companion?.id ?? null, name: e.companion?.name ?? SPECIES[e.species].name, stage: e.stage,
   }));
   show(startScreen({
@@ -188,6 +198,8 @@ function goRunning(restored: boolean) {
         onHome: goHome,
         onMedals: () => goMedals(back),
         newMedals: medalsNow,
+        newUnlocks: UNLOCKABLES.filter((u) => u.available && medalsNow.some((m) => m.id === u.medalId)).map((u) => u.name),
+        onGarden: () => goGarden(goHome),
         breakOffer: prefs.breaks && record.completed
           ? { minutes: breakMin, long: breakMin === LONG_BREAK_MIN, onBreak: () => goBreak(breakMin, record.companionId) }
           : undefined,

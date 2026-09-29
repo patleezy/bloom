@@ -1,4 +1,6 @@
+import { isUnlocked } from '../companion/species';
 import { dayKey } from '../logic/dates';
+import { earnedMedalIds } from './medals';
 import { countedMinutes } from '../logic/growth';
 import * as clock from '../logic/timer';
 import { cleanLabel, cleanName, parseSnapshot, serialize } from '../state/localRepository';
@@ -56,13 +58,19 @@ export class SessionService {
     return this.snap.active ? this.companionById(this.snap.active.companionId) : null;
   }
 
-  /** Adopt a companion (one per species) and make it current. */
+  /** Species that can be adopted right now (starters, plus unlockables whose medal is earned). */
+  canAdopt(species: SpeciesId): boolean {
+    return isUnlocked(species, earnedMedalIds(this.snap.history));
+  }
+
+  /** Adopt a companion (one per species) and make it current. Locked species are refused. */
   async adopt(species: SpeciesId, name: string): Promise<CompanionProfile> {
     const existing = this.snap.companions.find((c) => c.species === species);
     if (existing) {
       await this.setCurrent(existing.id);
       return existing;
     }
+    if (!this.canAdopt(species)) throw new Error(`${species} is still locked`);
     const companion: CompanionProfile = {
       id: this.newId(),
       species,

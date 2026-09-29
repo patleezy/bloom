@@ -96,3 +96,40 @@ describe('several companions', () => {
     expect(other.companion?.name).toBe('Pip');
   });
 });
+
+describe('Moss (unlockable)', () => {
+  async function svcWith(minutes: number) {
+    let t = new Date('2026-09-01T12:00:00').getTime();
+    let n = 0;
+    const svc = new SessionService(new LocalRepository(new MemStorage()), () => t, () => `id-${++n}`);
+    await svc.init();
+    const leaf = await svc.adopt('bloomling', 'Fern');
+    // Focus in 2-hour sessions until the target is reached.
+    for (let done = 0; done < minutes; done += 120) {
+      await svc.start(Math.min(120, minutes - done), [], leaf.id);
+      t += Math.min(120, minutes - done) * 60000 + 1000;
+      await svc.finish();
+    }
+    return svc;
+  }
+
+  it('is locked before the Ten Hours medal and refuses adoption', async () => {
+    const svc = await svcWith(540);
+    expect(svc.canAdopt('moss')).toBe(false);
+    await expect(svc.adopt('moss', 'Moss')).rejects.toThrow(/locked/);
+    expect(svc.companions.some((c) => c.species === 'moss')).toBe(false);
+  });
+
+  it('unlocks at 10 hours and can then be adopted', async () => {
+    const svc = await svcWith(600);
+    expect(svc.canAdopt('moss')).toBe(true);
+    const m = await svc.adopt('moss', 'Moss');
+    expect(m.species).toBe('moss');
+    expect(svc.companion?.id).toBe(m.id);
+  });
+
+  it('survives storage parsing as a valid species', () => {
+    const s = parseStored(JSON.stringify({ schemaVersion: 5, companions: [{ id: 'm', species: 'moss', name: 'Moss', adoptedAt: 1 }], currentId: 'm', history: [], active: null }));
+    expect(s.companions[0]?.species).toBe('moss');
+  });
+});

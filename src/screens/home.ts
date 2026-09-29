@@ -7,7 +7,7 @@ import { h } from '../dom';
 import { evaluateMedals, nearestUnlock } from '../domain/medals';
 import { lastSevenDays, streak, totalMinutes } from '../domain/stats';
 import { progressLabel } from './medals';
-import type { CompanionProfile, SessionRecord } from '../domain/types';
+import type { CompanionProfile, SessionRecord, SpeciesId } from '../domain/types';
 import { icon } from '../icons';
 import { minutesToNext, progressToNext, stageFor } from '../logic/growth';
 
@@ -24,6 +24,7 @@ export function homeScreen(
     onEvolution: () => void;
     onMedals: () => void;
     onGarden: () => void;
+    waitingUnlock?: SpeciesId;
   },
 ): { el: HTMLElement; dispose: () => void } {
   const now = new Date();
@@ -87,7 +88,10 @@ export function homeScreen(
   const medals = evaluateMedals(allHistory);
   const medalCount = medals.filter((m) => m.earned).length;
   const next = nearestUnlock(medals);
-  const hint = next && next.status.current / next.status.target >= 0.5
+  const hint = opts.waitingUnlock
+    ? h('button', { class: 'unlock-hint ready', type: 'button', onclick: opts.onGarden }, icon(SPECIES[opts.waitingUnlock].icon),
+        copy.unlockWaiting(SPECIES[opts.waitingUnlock].name))
+    : next && next.status.current / next.status.target >= 0.5
     ? h('button', { class: 'unlock-hint', type: 'button', onclick: opts.onMedals }, icon(next.unlock.icon),
         copy.unlockHint(next.unlock.requirement, progressLabel(next.status), next.unlock.name))
     : null;
