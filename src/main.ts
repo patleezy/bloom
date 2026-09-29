@@ -1,3 +1,9 @@
+// Fonts are bundled with the app (no third-party font CDN), Latin subset only.
+import '@fontsource/fredoka/latin-500.css';
+import '@fontsource/fredoka/latin-600.css';
+import '@fontsource/nunito/latin-400.css';
+import '@fontsource/nunito/latin-600.css';
+import '@fontsource/nunito/latin-700.css';
 import './styles.css';
 import { copy } from './copy';
 import { SessionService } from './domain/sessionService';
@@ -9,7 +15,9 @@ import { runningScreen } from './screens/running';
 import { settingsScreen } from './screens/settings';
 import { startScreen } from './screens/start';
 import { LocalRepository } from './state/localRepository';
-import { applyTheme, clearPrefs, loadPrefs } from './state/prefs';
+import { APP_VERSION } from './changelog';
+import { whatsNewScreen } from './screens/whatsNew';
+import { applyTheme, clearPrefs, loadPrefs, savePrefs } from './state/prefs';
 
 // Swap LocalRepository for an API-backed repository here when a backend exists.
 const svc = new SessionService(new LocalRepository());
@@ -32,19 +40,42 @@ function show(el: HTMLElement, cleanup: (() => void) | null = null) {
 function goOnboarding() {
   startOnboarding(show, async (species, name) => {
     await svc.adopt(species, name);
+    markSeen(); // new users don't need release notes
     goHome();
   });
 }
 
 function goHome() {
   if (!svc.companion) return goOnboarding();
-  show(homeScreen(svc.companion, svc.companionHistory, svc.history, { onStart: goStart, onSettings: goSettings }));
+  const unseen = prefs.lastSeenVersion !== APP_VERSION;
+  const home = homeScreen(svc.companion, svc.companionHistory, svc.history, {
+    showIntro: !prefs.introDismissed,
+    onDismissIntro: () => {
+      prefs.introDismissed = true;
+      savePrefs(prefs);
+    },
+    onStart: goStart,
+    onSettings: goSettings,
+    onWhatsNew: unseen ? () => goWhatsNew(goHome) : undefined,
+  });
+  show(home.el, home.dispose);
+}
+
+function markSeen() {
+  prefs.lastSeenVersion = APP_VERSION;
+  savePrefs(prefs);
+}
+
+function goWhatsNew(back: () => void) {
+  markSeen();
+  show(whatsNewScreen({ onBack: back }));
 }
 
 function goSettings() {
   show(settingsScreen(svc, prefs, {
     onBack: goHome,
     onImported: goSettings,
+    onWhatsNew: () => goWhatsNew(goSettings),
     onClear: async () => {
       if (!confirm(copy.confirmClear)) return;
       await svc.clearAll();
@@ -59,9 +90,9 @@ function goSettings() {
 function goStart() {
   show(startScreen({
     onBack: goHome,
-    onBegin: async (minutes, label) => {
+    onBegin: async (minutes, tasks) => {
       unlockAudio(); // must happen during a user gesture
-      await svc.start(minutes, label);
+      await svc.start(minutes, tasks);
       goRunning(false);
     },
   }));

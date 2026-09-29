@@ -7,10 +7,12 @@ export type Theme = 'auto' | 'light' | 'night';
 export interface Prefs {
   theme: Theme;
   sound: boolean;
+  lastSeenVersion: string | null; // for the "What's new" pill
+  introDismissed: boolean;
 }
 
 const KEY = 'bloom:prefs';
-const DEFAULTS: Prefs = { theme: 'auto', sound: true };
+const DEFAULTS: Prefs = { theme: 'auto', sound: true, lastSeenVersion: null, introDismissed: false };
 
 export function loadPrefs(): Prefs {
   try {
@@ -18,6 +20,8 @@ export function loadPrefs(): Prefs {
     return {
       theme: o?.theme === 'light' || o?.theme === 'night' ? o.theme : 'auto',
       sound: typeof o?.sound === 'boolean' ? o.sound : DEFAULTS.sound,
+      lastSeenVersion: typeof o?.lastSeenVersion === 'string' ? o.lastSeenVersion.slice(0, 20) : null,
+      introDismissed: o?.introDismissed === true,
     };
   } catch {
     return { ...DEFAULTS };

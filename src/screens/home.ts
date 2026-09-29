@@ -1,17 +1,25 @@
+import { startActivities } from '../companion/activities';
 import { renderCompanion } from '../companion/render';
 import { SPECIES, stageName } from '../companion/species';
 import { copy } from '../copy';
 import { h } from '../dom';
 import { lastSevenDays, streak, totalMinutes } from '../domain/stats';
 import type { CompanionProfile, SessionRecord } from '../domain/types';
+import { icon } from '../icons';
 import { minutesToNext, progressToNext, stageFor } from '../logic/growth';
 
 export function homeScreen(
   companion: CompanionProfile,
   companionHistory: SessionRecord[],
   allHistory: readonly SessionRecord[],
-  actions: { onStart: () => void; onSettings: () => void },
-): HTMLElement {
+  opts: {
+    showIntro: boolean;
+    onDismissIntro: () => void;
+    onStart: () => void;
+    onSettings: () => void;
+    onWhatsNew?: () => void;
+  },
+): { el: HTMLElement; dispose: () => void } {
   const now = new Date();
   const total = totalMinutes(companionHistory);
   const stage = stageFor(total);
@@ -28,31 +36,68 @@ export function homeScreen(
   const bar = h('div', { class: 'progress', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': '100',
     'aria-valuenow': String(pct), 'aria-label': 'Progress to next stage' }, fill);
 
-  const strip = h('ol', { class: 'week', 'aria-label': 'Last 7 days' },
-    ...days.map((d) => {
-      const col = h('div', { class: 'week-bar' });
-      col.style.height = `${Math.round((d.minutes / maxDay) * 100)}%`;
-      const weekday = new Date(`${d.day}T12:00:00`).toLocaleDateString(undefined, { weekday: 'narrow' });
-      return h('li', { class: `week-day${d.isToday ? ' today' : ''}`, title: `${d.day}: ${d.minutes} min` },
-        h('div', { class: 'week-track' }, col), h('span', {}, weekday));
-    }));
+  const weekEmpty = days.every((d) => d.minutes === 0);
+  const strip = h('section', { class: 'week-card' },
+    h('ol', { class: 'week', 'aria-label': 'Last 7 days' },
+      ...days.map((d) => {
+        const col = h('div', { class: 'week-bar' });
+        col.style.height = `${Math.round((d.minutes / maxDay) * 100)}%`;
+        const weekday = new Date(`${d.day}T12:00:00`).toLocaleDateString(undefined, { weekday: 'narrow' });
+        return h('li', { class: `week-day${d.isToday ? ' today' : ''}`, title: `${d.day}: ${d.minutes} min` },
+          h('div', { class: 'week-track' }, col), h('span', {}, weekday));
+      })),
+    weekEmpty ? h('p', { class: 'muted small' }, copy.weekEmpty) : null);
 
-  return h('main', { class: 'screen home' },
+  // Tap to pet: a hop and a little heart.
+  const art = renderCompanion(companion.species, stage.index, { label: `${companion.name}, a ${current}` });
+  const activities = startActivities(art, companion.species, { gap: [25000, 50000] });
+  const petBtn = h('button', { class: 'pet-btn', 'aria-label': copy.pet(companion.name) }, art);
+  petBtn.addEventListener('click', () => {
+    activities.interrupt();
+    art.classList.remove('petted');
+    void art.getBoundingClientRect();
+    art.classList.add('petted');
+    const heart = icon('heart', 'float-heart');
+    heart.style.left = `${40 + Math.random() * 20}%`;
+    petBtn.append(heart);
+    setTimeout(() => heart.remove(), 1200);
+    try {
+      navigator.vibrate?.(12);
+    } catch {
+      /* unsupported */
+    }
+  });
+
+  const intro = opts.showIntro
+    ? h('aside', { class: 'intro-card' },
+        h('p', {}, copy.introCard),
+        h('button', { class: 'icon-btn small', 'aria-label': copy.dismiss, onclick: () => {
+          intro?.remove();
+          opts.onDismissIntro();
+        } }, icon('close')))
+    : null;
+
+  const el = h('main', { class: 'screen home' },
     h('header', { class: 'topbar' },
-      h('h1', { class: 'brand' }, copy.appName),
-      h('div', { class: 'row' },
-        h('span', { class: `streak${s ? ' on' : ''}` }, s ? copy.streak(s) : copy.streakZero),
-        h('button', { class: 'icon-btn', 'aria-label': copy.settings, title: copy.settings, onclick: actions.onSettings }, '⚙'))),
+      h('img', { class: 'logo', src: './logo.svg', alt: copy.appName, width: '112', height: '35' }),
+      h('button', { class: 'icon-btn', 'aria-label': copy.settings, title: copy.settings, onclick: opts.onSettings }, icon('settings'))),
+    intro,
+    opts.onWhatsNew ? h('button', { class: 'pill', onclick: opts.onWhatsNew }, icon('sparkle'), copy.whatsNewPill) : null,
     h('section', { class: 'stage-wrap' },
-      renderCompanion(companion.species, stage.index, { label: `${companion.name}, a ${current}` }),
+      petBtn,
       h('p', { class: 'companion-name' }, companion.name),
-      h('p', { class: 'stage-name' }, h('span', { class: `element-tag species-${companion.species}` }, `${sp.emoji} ${current}`)),
+      h('p', { class: 'stage-name' },
+        h('span', { class: `element-tag species-${companion.species}` }, icon(sp.icon), current)),
       bar,
       h('p', { class: 'muted' }, toNext === null
         ? copy.fullyGrown
         : copy.toNext(toNext, stageName(companion.species, stage.index + 1))),
       h('p', { class: 'muted small' }, copy.totalMinutes(total))),
-    h('button', { class: 'btn primary big', onclick: actions.onStart }, copy.startCta),
+    h('div', { class: 'stats-row' },
+      h('div', { class: `stat${s ? ' on' : ''}` }, icon('sprout'),
+        h('span', {}, h('strong', {}, s ? copy.streak(s) : copy.streakZero), h('small', {}, copy.streakTitle)))),
+    h('button', { class: 'btn primary big', onclick: opts.onStart }, copy.startCta),
     strip,
     h('footer', { class: 'foot' }, h('p', { class: 'muted small' }, copy.privacy)));
+  return { el, dispose: activities.dispose };
 }

@@ -14,6 +14,14 @@ export interface CompanionProfile {
   adoptedAt: number; // epoch ms
 }
 
+/** One thing the user wants to get done in a session (up to MAX_TASKS). */
+export interface FocusTask {
+  text: string;
+  done: boolean;
+}
+
+export const MAX_TASKS = 3;
+
 export interface SessionRecord {
   id: string;
   companionId: string; // which companion this session grew (enables a future collection)
@@ -23,15 +31,17 @@ export interface SessionRecord {
   plannedMs: number;
   focusedMs: number;
   countedMinutes: number; // minutes credited toward growth
-  label: string;
+  tasks: FocusTask[];
   completed: boolean; // ran the full planned duration
 }
 
 export interface ActiveSession {
   id: string;
   startedAt: number;
-  label: string;
+  tasks: FocusTask[];
   clock: ClockState;
+  /** Focused ms saved periodically, so a reload or crash keeps earned time. */
+  checkpointMs: number;
 }
 
 export interface BloomSnapshot {

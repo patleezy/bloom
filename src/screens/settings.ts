@@ -1,5 +1,7 @@
+import { APP_VERSION } from '../changelog';
 import { copy } from '../copy';
 import { h } from '../dom';
+import { icon } from '../icons';
 import type { SessionService } from '../domain/sessionService';
 import { dayKey } from '../logic/dates';
 import { MAX_NAME } from '../state/localRepository';
@@ -10,7 +12,7 @@ const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
 export function settingsScreen(
   svc: SessionService,
   prefs: Prefs,
-  actions: { onBack: () => void; onClear: () => void; onImported: () => void },
+  actions: { onBack: () => void; onClear: () => void; onImported: () => void; onWhatsNew: () => void },
 ): HTMLElement {
   const status = h('p', { class: 'muted small', role: 'status' });
 
@@ -70,7 +72,7 @@ export function settingsScreen(
 
   return h('main', { class: 'screen settings' },
     h('header', { class: 'topbar' },
-      h('button', { class: 'btn link', onclick: actions.onBack }, `← ${copy.back}`),
+      h('button', { class: 'btn link back', onclick: actions.onBack }, icon('back'), copy.back),
       h('h2', {}, copy.settings),
       h('span', { class: 'spacer' })),
     h('section', { class: 'card' },
@@ -90,7 +92,11 @@ export function settingsScreen(
       fileInput,
       h('p', { class: 'muted small' }, copy.installHint)),
     status,
+    h('section', { class: 'card' },
+      h('button', { class: 'row between plain', onclick: actions.onWhatsNew },
+        h('span', {}, copy.whatsNew), icon('chevron', 'muted'))),
     h('footer', { class: 'foot' },
       h('p', { class: 'muted small' }, copy.privacy),
+      h('p', { class: 'muted small' }, copy.version(APP_VERSION)),
       h('button', { class: 'btn link small danger', onclick: actions.onClear }, copy.clearData)));
 }
