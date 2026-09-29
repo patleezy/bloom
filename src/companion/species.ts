@@ -27,7 +27,7 @@ export const SPECIES: Record<SpeciesId, Species> = {
     element: 'Ember',
     icon: 'flame',
     blurb: 'Warm and spirited. Its little flame grows brighter the longer you stay with it.',
-    stageNames: ['Spark', 'Ember', 'Flicker', 'Blaze', 'Sunflare', 'Elder Flame'],
+    stageNames: ['Spark', 'Kindling', 'Flicker', 'Blaze', 'Sunflare', 'Elder Flame'],
   },
   ripple: {
     id: 'ripple',

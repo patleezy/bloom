@@ -19,6 +19,7 @@ export function homeScreen(
     onStart: () => void;
     onSettings: () => void;
     onWhatsNew?: () => void;
+    onEvolution: () => void;
   },
 ): { el: HTMLElement; dispose: () => void } {
   const now = new Date();
@@ -36,6 +37,18 @@ export function homeScreen(
   fill.style.width = `${pct}%`;
   const bar = h('div', { class: 'progress', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': '100',
     'aria-valuenow': String(pct), 'aria-label': 'Progress to next stage' }, fill);
+
+  // Now → next: current stage, progress bar, and a silhouette of what's coming. Opens the full path.
+  const mini = (idx: number, silhouette: boolean) => {
+    const a = renderCompanion(companion.species, idx, { label: '' });
+    a.removeAttribute('role');
+    a.setAttribute('aria-hidden', 'true');
+    a.classList.add('mini');
+    if (silhouette) a.classList.add('silhouette');
+    return a;
+  };
+  const journey = h('button', { class: 'journey', type: 'button', onclick: opts.onEvolution, 'aria-label': copy.evoOpen },
+    mini(stage.index, false), bar, toNext === null ? mini(stage.index, false) : mini(stage.index + 1, true));
 
   const weekEmpty = days.every((d) => d.minutes === 0);
   const strip = h('section', { class: 'week-card' },
@@ -77,7 +90,7 @@ export function homeScreen(
       h('p', { class: 'companion-name' }, companion.name),
       h('p', { class: 'stage-name' },
         h('span', { class: `element-tag species-${companion.species}` }, icon(sp.icon), current)),
-      bar,
+      journey,
       h('p', { class: 'muted' }, toNext === null
         ? copy.fullyGrown
         : copy.toNext(toNext, stageName(companion.species, stage.index + 1))),
