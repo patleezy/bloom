@@ -1,5 +1,5 @@
 import { renderCompanion } from '../companion/render';
-import { SPECIES, SPECIES_ORDER } from '../companion/species';
+import { SPECIES, STARTERS } from '../companion/species';
 import { copy } from '../copy';
 import { h } from '../dom';
 import { icon } from '../icons';
@@ -12,7 +12,7 @@ type Show = (el: HTMLElement) => void;
 export function startOnboarding(show: Show, onDone: (species: SpeciesId, name: string) => void): void {
   const welcome = () =>
     show(h('main', { class: 'screen onboarding' },
-      h('div', { class: 'trio' }, ...SPECIES_ORDER.map((id) =>
+      h('div', { class: 'trio' }, ...STARTERS.map((id) =>
         renderCompanion(id, 1, { label: SPECIES[id].name }))),
       h('h1', {}, copy.welcomeTitle),
       h('ul', { class: 'welcome-list' }, ...copy.welcomeLines.map((l) => h('li', {}, l))),
@@ -22,7 +22,7 @@ export function startOnboarding(show: Show, onDone: (species: SpeciesId, name: s
     show(h('main', { class: 'screen onboarding' },
       h('h2', {}, copy.chooseTitle),
       h('p', { class: 'muted' }, copy.chooseSub),
-      h('div', { class: 'starters' }, ...SPECIES_ORDER.map((id) => {
+      h('div', { class: 'starters' }, ...STARTERS.map((id) => {
         const sp = SPECIES[id];
         return h('button', { class: `starter-card species-${id}`, onclick: () => name(id) },
           renderCompanion(id, 2, { label: sp.name }),

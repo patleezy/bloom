@@ -126,6 +126,10 @@ export function evaluateMedals(history: readonly SessionRecord[]): MedalStatus[]
   });
 }
 
+export function earnedMedalIds(history: readonly SessionRecord[]): Set<string> {
+  return new Set(evaluateMedals(history).filter((s) => s.earned).map((s) => s.medal.id));
+}
+
 /** Medals earned by the most recent session (for the end-screen celebration). */
 export function newlyEarned(before: readonly SessionRecord[], after: readonly SessionRecord[]): Medal[] {
   const had = new Set(evaluateMedals(before).filter((s) => s.earned).map((s) => s.medal.id));
@@ -142,15 +146,17 @@ export interface Unlockable {
   icon: IconName;
   /** Medal that unlocks it. */
   medalId: string;
+  /** True once the companion exists in the app and can be adopted. */
+  available: boolean;
   requirement: string;
 }
 
 export const UNLOCKABLES: Unlockable[] = [
-  { id: 'moss', name: 'Moss', element: 'Earth', icon: 'leaf', medalId: 'hours-10', requirement: 'Focus for 10 hours',
-    blurb: 'A round little mushroom that grows a mossy garden on its cap.' },
-  { id: 'nimbus', name: 'Nimbus', element: 'Sky', icon: 'cloud', medalId: 'streak-7', requirement: 'Reach a 7-day streak',
+  { id: 'moss', name: 'Moss', element: 'Earth', icon: 'mushroom', medalId: 'hours-10', available: true, requirement: 'Focus for 10 hours',
+    blurb: 'A cozy little mushroom that grows a mossy garden on its cap.' },
+  { id: 'nimbus', name: 'Nimbus', element: 'Sky', icon: 'cloud', medalId: 'streak-7', available: false, requirement: 'Reach a 7-day streak',
     blurb: 'A fluffy cloud with tiny feet that grows rainbows.' },
-  { id: 'lumi', name: 'Lumi', element: 'Light', icon: 'moon', medalId: 'night-owl', requirement: 'Finish a session after 10pm',
+  { id: 'lumi', name: 'Lumi', element: 'Light', icon: 'moon', medalId: 'night-owl', available: false, requirement: 'Finish a session after 10pm',
     blurb: 'A glowing moth whose wings brighten with every session.' },
 ];
 

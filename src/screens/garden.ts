@@ -11,6 +11,8 @@ export interface GardenEntry {
   stage: number;
   minutes: number;
   isCurrent: boolean;
+  /** Set while an unlockable species hasn't been earned yet. */
+  locked: { requirement: string; progress: string; current: number; target: number } | null;
 }
 
 /**
@@ -34,6 +36,22 @@ export function gardenScreen(
     const art = renderCompanion(e.species, e.stage, { label: '' });
     art.removeAttribute('role');
     art.setAttribute('aria-hidden', 'true');
+
+    if (e.locked) {
+      art.classList.add('silhouette');
+      const pct = Math.round((e.locked.current / e.locked.target) * 100);
+      const fill = h('div', { class: 'progress-fill' });
+      fill.style.width = `${pct}%`;
+      return h('li', { class: `garden-card locked species-${e.species}` },
+        h('div', { class: 'garden-art' }, art),
+        h('div', { class: 'garden-text' },
+          h('strong', {}, sp.name),
+          h('span', { class: `element-tag species-${e.species}` }, icon('lock'), sp.element),
+          h('span', { class: 'muted small' }, copy.gardenLocked(e.locked.requirement)),
+          h('div', { class: 'progress', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': '100',
+            'aria-valuenow': String(pct), 'aria-label': `${sp.name}: ${e.locked.requirement}` }, fill),
+          h('span', { class: 'small' }, e.locked.progress)));
+    }
 
     if (!e.companion) {
       return h('li', { class: `garden-card new species-${e.species}` },

@@ -5,7 +5,7 @@ import type { ClockState } from '../logic/timer';
  * serializable and free of UI concerns. Records are append-only and identified by UUID
  * so they can be merged across devices without conflicts.
  */
-export type SpeciesId = 'bloomling' | 'cinder' | 'ripple';
+export type SpeciesId = 'bloomling' | 'cinder' | 'ripple' | 'moss';
 
 export interface CompanionProfile {
   id: string;

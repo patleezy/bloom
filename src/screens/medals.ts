@@ -56,13 +56,13 @@ export function medalsScreen(statuses: MedalStatus[], opts: { onBack: () => void
   const friends = h('ul', { class: 'unlock-list' }, ...UNLOCKABLES.map((u) => {
     const s = statuses.find((x) => x.medal.id === u.medalId)!;
     return h('li', { class: `unlock-card ${s.earned ? 'ready' : ''}`,
-      'aria-label': `${u.name}, ${u.element}. ${u.blurb} ${s.earned ? copy.unlockReady(u.name) : `${u.requirement}. ${progressLabel(s)}`}` },
+      'aria-label': `${u.name}, ${u.element}. ${u.blurb} ${s.earned ? copy.unlockReady(u.name, u.available) : `${u.requirement}. ${progressLabel(s)}`}` },
       h('span', { class: 'unlock-art', 'aria-hidden': 'true' }, icon(s.earned ? u.icon : 'lock')),
       h('div', { class: 'unlock-text' },
         h('strong', {}, `${u.name} · ${u.element}`),
         h('span', { class: 'muted small' }, u.blurb),
         s.earned
-          ? h('span', { class: 'small unlock-status' }, copy.unlockReady(u.name))
+          ? h('span', { class: 'small unlock-status' }, copy.unlockReady(u.name, u.available))
           : h('div', { class: 'unlock-progress' },
               h('span', { class: 'small' }, `${u.requirement} · ${progressLabel(s)}`),
               bar(s.current, s.target, u.requirement))));

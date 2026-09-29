@@ -93,6 +93,14 @@
   --cheek: #f3a6bf; --tag: #dcf0f6; --tag-ink: #2d6b82;
 }
 
+.species-moss {
+  --body: #f1e4cf; --body-dark: #dcc6a4; --belly: #fbf4e8;
+  --leaf: #9cbf88; --leaf-dark: #7fa56d; --stem: #7fa56d;
+  --cap: #e3a193; --cap-spot: #fff4ea; --moss: #9cbf88;
+  --accent-a: #f6d3e0; --accent-b: #fbe3ea; --accent-c: #ffe28a;
+  --cheek: #eea896; --tag: #f7e4d8; --tag-ink: #7a4a2f;
+}
+
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
 body {
@@ -302,6 +310,11 @@ button.stat:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; 
 .unlock-hint:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; border-radius: 8px; }
 .new-medals { font: inherit; color: inherit; border: 2px solid var(--accent-soft); cursor: pointer; max-width: 360px; animation: grow-in 0.6s cubic-bezier(.2,1.4,.4,1); }
 .new-medals h3 { margin: 0; color: var(--accent); }
+.unlock-celebrate { max-width: 360px; align-items: center; text-align: center; border: 2px solid var(--accent); animation: grow-in 0.7s cubic-bezier(.2,1.4,.4,1); }
+.unlock-celebrate h3 { margin: 0; }
+.unlock-hint.ready { color: var(--accent); font-weight: 700; }
+.garden-card.locked { border: 2px dashed var(--border); }
+.garden-card.locked .progress { width: 100%; height: 6px; }
 .new-medal-row { display: flex; align-items: center; gap: var(--space-3); text-align: left; }
 
 /* Focus tasks */
@@ -515,6 +528,19 @@ button.stat:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; 
 .companion .spark-2 { --dx: 6px; animation-delay: 0.6s; }
 .companion .spark-3 { --dx: 15px; animation-delay: 0.15s; }
 .companion.act-sparks .flicker { animation-duration: 0.6s; }
+
+/* Moss */
+.companion .cap { fill: var(--cap); }
+.companion .cap-spot { fill: var(--cap-spot); }
+.companion .moss-tuft { fill: var(--moss); }
+.companion .shroom-stem { fill: var(--body); }
+.companion .cap-group { transform-box: fill-box; transform-origin: center bottom; }
+.companion.act-spores .prop-spores { display: inline; }
+.companion .spore { fill: var(--cap-spot); stroke: var(--cap); stroke-width: 0.6; opacity: 0; animation: spore 3s ease-out infinite; }
+.companion .spore-1 { animation-delay: 0.7s; } .companion .spore-2 { animation-delay: 1.4s; } .companion .spore-3 { animation-delay: 2.1s; }
+.companion.act-tip .cap-group { animation: tip 2s ease-in-out 2; }
+@keyframes spore { 0% { opacity: 0; transform: translate(0, 0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(6px, -28px); } }
+@keyframes tip { 0%,100% { transform: rotate(0); } 30% { transform: rotate(-8deg); } 60% { transform: rotate(5deg); } }
 
 /* Cinder: happy wiggle */
 .companion.act-wiggle .bounce { animation: wiggle 0.5s ease-in-out 8; }

@@ -21,6 +21,7 @@ const OWN: Record<SpeciesId, Activity[]> = {
   bloomling: [{ name: 'water', ms: 6000 }, { name: 'butterfly', ms: 8000 }],
   cinder: [{ name: 'sparks', ms: 5000 }, { name: 'wiggle', ms: 4000 }],
   ripple: [{ name: 'bubbles', ms: 6000 }, { name: 'swim', ms: 6000 }],
+  moss: [{ name: 'spores', ms: 6000 }, { name: 'tip', ms: 4000 }],
 };
 
 export const activitiesFor = (species: SpeciesId): Activity[] => [...SHARED, ...OWN[species]];

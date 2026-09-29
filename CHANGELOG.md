@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to Bloom. Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
 
+## 0.11.0 — Meet Moss (2026-09-30)
+- Meet Moss, the first unlockable friend! A cozy mushroom whose cap grows moss, flowers, and finally a ring of tiny mushrooms.
+- Earn the Ten Hours medal to unlock Moss, then adopt it in your garden. Until then, the garden shows your progress toward it.
+- Moss has its own sounds (dripping woods after the rain) and activities: puffing spores and tipping its cap.
+- Nimbus and Lumi are still on their way. Your progress toward them keeps counting.
+
 ## 0.10.0 — A whole garden (2026-09-30)
 - Meet everyone! Bloomling, Cinder, and Ripple are all free to adopt anytime.
 - Choose who joins each session from the start screen, depending on your mood. Whoever you pick grows from that session.

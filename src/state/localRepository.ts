@@ -18,7 +18,7 @@ const MAX_LABEL = 60;
 export const MAX_NAME = 20;
 const MAX_PLANNED_MS = 24 * 3600_000;
 const MAX_HISTORY = 20_000;
-const SPECIES: readonly SpeciesId[] = ['bloomling', 'cinder', 'ripple'];
+const SPECIES: readonly SpeciesId[] = ['bloomling', 'cinder', 'ripple', 'moss'];
 
 interface StoredV5 {
   schemaVersion: 5;

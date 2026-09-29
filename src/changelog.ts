@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.10.0';
+export const APP_VERSION = '0.11.0';
 
 export interface Release {
   version: string;
@@ -12,6 +12,17 @@ export interface Release {
 }
 
 export const CHANGELOG: Release[] = [
+  {
+    version: '0.11.0',
+    date: '2026-09-30',
+    title: 'Meet Moss',
+    notes: [
+      'Meet Moss, the first unlockable friend! A cozy mushroom whose cap grows moss, flowers, and finally a ring of tiny mushrooms.',
+      'Earn the Ten Hours medal to unlock Moss, then adopt it in your garden. Until then, the garden shows your progress toward it.',
+      'Moss has its own sounds (dripping woods after the rain) and activities: puffing spores and tipping its cap.',
+      'Nimbus and Lumi are still on their way. Your progress toward them keeps counting.',
+    ],
+  },
   {
     version: '0.10.0',
     date: '2026-09-30',

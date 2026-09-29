@@ -14,7 +14,7 @@ export function endScreen(
   companion: CompanionProfile,
   companionHistory: SessionRecord[],
   allHistory: readonly SessionRecord[],
-  actions: { onHome: () => void; onMedals: () => void; newMedals: Medal[]; breakOffer?: { minutes: number; long: boolean; onBreak: () => void } },
+  actions: { onHome: () => void; onMedals: () => void; newMedals: Medal[]; newUnlocks: string[]; onGarden: () => void; breakOffer?: { minutes: number; long: boolean; onBreak: () => void } },
 ): HTMLElement {
   const after = totalMinutes(companionHistory);
   const before = after - record.countedMinutes;
@@ -46,6 +46,9 @@ export function endScreen(
           ...actions.newMedals.map((m) => h('span', { class: 'new-medal-row' }, medalBadge(m, true, 'sm'),
             h('span', {}, h('strong', {}, m.name), h('span', { class: 'muted small' }, ` ${m.description}`)))))
       : null,
+    ...actions.newUnlocks.map((name) => h('div', { class: 'card unlock-celebrate' },
+      h('h3', {}, copy.unlockCelebrate(name)),
+      h('button', { class: 'btn primary', type: 'button', onclick: actions.onGarden }, copy.unlockMeet(name)))),
     s ? h('p', { class: 'stat on' }, icon('sprout'), h('strong', {}, copy.streakBadge(s))) : null,
     actions.breakOffer
       ? h('div', { class: 'stack' },
