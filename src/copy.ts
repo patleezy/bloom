@@ -28,6 +28,7 @@ export const copy = {
   startCta: 'Start a session',
   streak: (n: number) => (n === 1 ? '1 day' : `${n} days`),
   streakTitle: 'Current streak',
+  streakBadge: (n: number) => `${n}-day streak`,
   streakZero: 'Day 1',
   totalMinutes: (m: number) => `${m.toLocaleString()} minutes together`,
   toNext: (m: number, name: string) => `${m.toLocaleString()} min to ${name}`,

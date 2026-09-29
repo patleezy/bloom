@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to Bloom. Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
 
+## 0.8.0 — Easy on the eyes (2026-09-30)
+- Softer pastel colors that are easier on the eyes, especially the buttons.
+- Accessibility: every screen now meets WCAG AA contrast, with bigger tap targets, clearer text fields, and stronger focus outlines for keyboard users.
+- Behind the scenes: automatic checks on every update for tests, accessibility contrast, and known security issues.
+
 ## 0.7.0 — The road ahead (2026-09-30)
 - See your companion’s whole journey: tap the progress bar on the home screen to view every stage, with silhouettes of what’s still to come.
 - A mini preview next to the progress bar shows who your companion becomes next.

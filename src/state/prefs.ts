@@ -50,7 +50,7 @@ export function clearPrefs(): void {
   }
 }
 
-const THEME_COLORS = { light: '#f5f1e8', night: '#15181a' };
+const THEME_COLORS = { light: '#f8f4ee', night: '#171b1e' };
 
 /** Apply a theme to the document. 'auto' follows the operating system setting. */
 export function applyTheme(theme: Theme): void {
