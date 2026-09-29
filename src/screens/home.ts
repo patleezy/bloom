@@ -1,4 +1,5 @@
 import { startActivities } from '../companion/activities';
+import { makePettable } from '../companion/react';
 import { renderCompanion } from '../companion/render';
 import { SPECIES, stageName } from '../companion/species';
 import { copy } from '../copy';
@@ -48,24 +49,12 @@ export function homeScreen(
       })),
     weekEmpty ? h('p', { class: 'muted small' }, copy.weekEmpty) : null);
 
-  // Tap to pet: a hop and a little heart.
   const art = renderCompanion(companion.species, stage.index, { label: `${companion.name}, a ${current}` });
   const activities = startActivities(art, companion.species, { gap: [25000, 50000] });
-  const petBtn = h('button', { class: 'pet-btn', 'aria-label': copy.pet(companion.name) }, art);
-  petBtn.addEventListener('click', () => {
-    activities.interrupt();
-    art.classList.remove('petted');
-    void art.getBoundingClientRect();
-    art.classList.add('petted');
-    const heart = icon('heart', 'float-heart');
-    heart.style.left = `${40 + Math.random() * 20}%`;
-    petBtn.append(heart);
-    setTimeout(() => heart.remove(), 1200);
-    try {
-      navigator.vibrate?.(12);
-    } catch {
-      /* unsupported */
-    }
+  const petBtn = makePettable(art, {
+    label: copy.pet(companion.name),
+    mood: () => 'play',
+    onReact: () => activities.interrupt(),
   });
 
   const intro = opts.showIntro

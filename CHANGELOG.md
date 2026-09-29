@@ -6,6 +6,7 @@ All notable changes to Bloom. Newest first. Mirrors `src/changelog.ts` (shown in
 - Breaks: after a full session, take a 5-minute break (15 after every 4th). Your companion has a snack, then a nap.
 - Starting the next session brings back anything you didn’t check off.
 - Kindle is now called Cinder. Same fiery friend, same progress.
+- Tap your companion during a session for a quick wave, or during a break for a pet. Buttons like “End session” are easier to spot.
 
 ## 0.5.0 — Plan it, pet it (2026-09-29)
 - Add up to 3 things you want to focus on, then check them off as you go.

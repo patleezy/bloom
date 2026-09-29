@@ -1,3 +1,4 @@
+import { makePettable } from '../companion/react';
 import { renderCompanion, setSleeping } from '../companion/render';
 import { copy } from '../copy';
 import { formatClock, h } from '../dom';
@@ -37,7 +38,10 @@ export function breakScreen(
     h('button', { class: 'btn ghost', onclick: () => finish(true) }, copy.breakReady));
 
   const el = h('main', { class: 'screen running break' },
-    title, h('div', { class: 'ring-wrap' }, ring, art), time, status, tip, actions);
+    title, h('div', { class: 'ring-wrap' }, ring, makePettable(art, {
+      label: copy.pet(companion.name),
+      mood: () => (art.classList.contains('sleeping') ? 'sleep' : 'play'),
+    })), time, status, tip, actions);
 
   let done = false;
   function finish(early: boolean) {

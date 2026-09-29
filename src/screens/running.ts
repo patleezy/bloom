@@ -1,5 +1,6 @@
 import { setAmbientVolume, startAmbient, stopAmbient } from '../audio/ambient';
 import { startActivities } from '../companion/activities';
+import { makePettable } from '../companion/react';
 import { renderCompanion, setGrowth, setSleeping } from '../companion/render';
 import { stageName } from '../companion/species';
 import { copy } from '../copy';
@@ -90,7 +91,11 @@ export function runningScreen(
 
   const el = h('main', { class: 'screen running' },
     h('div', { class: 'running-top' }, soundBtn),
-    h('div', { class: 'ring-wrap' }, ring, art),
+    h('div', { class: 'ring-wrap' }, ring, makePettable(art, {
+      label: copy.pet(companion.name),
+      mood: () => (isPaused() ? 'sleep' : 'focus'),
+      onReact: () => activities.interrupt(),
+    })),
     time, toNext, note, checklist, resumeBtn, endBtn);
 
   let finishing = false;

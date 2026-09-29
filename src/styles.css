@@ -116,7 +116,8 @@ p { margin: 0; }
 .btn:focus-visible, .chip:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .btn.primary { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
 .btn.big { width: 100%; padding: 16px; font-size: 1.1rem; }
-.btn.ghost { background: transparent; color: var(--muted); }
+.btn.ghost { background: transparent; color: var(--ink); border: 2px solid var(--track); min-width: min(100%, 220px); padding: 10px 22px; }
+.btn.ghost:hover { border-color: var(--muted); }
 .btn.link { background: transparent; color: var(--muted); text-decoration: underline; padding: 6px; }
 [hidden] { display: none !important; }
 [tabindex='-1']:focus { outline: none; }
@@ -178,6 +179,12 @@ h3 { margin: 0 0 8px; font-size: 1rem; }
 .companion.petted .bounce { animation: pet-hop 0.55s cubic-bezier(.3,1.6,.5,1); }
 .companion.petted .eye-open { display: none; }
 .companion.petted .eye-closed { display: inline; }
+.companion.react-wave .bounce { animation: little-hop 0.6s ease; }
+.companion.react-wave .arm-r { animation: raise-r 0.9s ease-in-out; }
+.companion.react-stir .bounce { animation: stir 1s ease-in-out; }
+.companion.react-stir .zzz text { animation-duration: 0.6s; }
+@keyframes little-hop { 0%,100% { transform: translateY(0); } 40% { transform: translateY(-5px); } }
+@keyframes stir { 0%,100% { transform: rotate(0); } 30% { transform: rotate(-4deg); } 60% { transform: rotate(3deg); } }
 .companion.cheer .bounce { animation: pet-hop 0.5s cubic-bezier(.3,1.6,.5,1) 2; }
 .stats-row { display: flex; gap: var(--space-3); width: 100%; justify-content: center; }
 .stat { display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-4); border-radius: 999px; background: var(--surface); color: var(--muted); }
@@ -245,7 +252,8 @@ h3 { margin: 0 0 8px; font-size: 1rem; }
 .ring-track, .ring-fill { fill: none; stroke-width: 4; }
 .ring-track { stroke: var(--track); }
 .ring-fill { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 0.3s linear; }
-.ring-wrap .companion { position: absolute; inset: 12%; width: 76%; height: 76%; }
+.ring-wrap .pet-btn { position: absolute; inset: 12%; width: 76%; height: 76%; }
+.ring-wrap .companion { width: 100%; height: 100%; }
 .clock { font-size: 3rem; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
 .note { color: var(--muted); min-height: 1.5em; }
 .is-paused .clock { opacity: 0.5; }

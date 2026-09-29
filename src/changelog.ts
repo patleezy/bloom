@@ -21,6 +21,7 @@ export const CHANGELOG: Release[] = [
       'Breaks: after a full session, take a 5-minute break (15 after every 4th). Your companion has a snack, then a nap.',
       'Starting the next session brings back anything you didn’t check off.',
       'Kindle is now called Cinder. Same fiery friend, same progress.',
+      'Tap your companion during a session for a quick wave, or during a break for a pet. Buttons like “End session” are easier to spot.',
     ],
   },
   {
