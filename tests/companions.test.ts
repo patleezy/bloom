@@ -156,3 +156,23 @@ describe('Nimbus (unlockable)', () => {
     expect((await svc.adopt('nimbus', 'Nimbus')).species).toBe('nimbus');
   });
 });
+
+describe('Lumi (unlockable)', () => {
+  async function svcEndingAt(hour: number) {
+    let t = new Date(`2026-09-01T${String(hour).padStart(2, '0')}:00:00`).getTime() - 26 * 60000;
+    const svc = new SessionService(new LocalRepository(new MemStorage()), () => t);
+    await svc.init();
+    const c = await svc.adopt('cinder', 'Toasty');
+    await svc.start(25, [], c.id);
+    t += 26 * 60000;
+    await svc.finish();
+    return svc;
+  }
+
+  it('stays locked after a daytime session and unlocks after one ending past 10pm', async () => {
+    expect((await svcEndingAt(21)).canAdopt('lumi')).toBe(false);
+    const svc = await svcEndingAt(23);
+    expect(svc.canAdopt('lumi')).toBe(true);
+    expect((await svc.adopt('lumi', 'Lumi')).species).toBe('lumi');
+  });
+});

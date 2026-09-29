@@ -109,6 +109,14 @@
   --drop: #9fc7ec; --cheek: #f3b6c8; --tag: #e6e9f8; --tag-ink: #3f4a86;
 }
 
+.species-lumi {
+  --body: #f6ecc9; --body-dark: #e2d29a; --belly: #fdf8e6;
+  --leaf: #d8cff2; --leaf-dark: #c4b8ea; --stem: #b3a6e0;
+  --wing-up: #d8cff2; --wing-low: #f3cfe0; --wing-edge: #b8aae4; --glow: #fff0a8;
+  --accent-a: #f3cfe0; --accent-b: #fde2a8; --accent-c: #fff0a8;
+  --cheek: #f1b3c3; --tag: #efeafb; --tag-ink: #4c3f86;
+}
+
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
 body {
@@ -569,6 +577,30 @@ button.stat:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; 
 .companion.act-drizzle .prop-drizzle { display: inline; }
 .companion.act-puff .bounce { animation: puff-up 1.5s ease-in-out 2; }
 @keyframes puff-up { 0%,100% { transform: scale(1, 1); } 45% { transform: scale(1.08, 1.05); } }
+
+/* Lumi */
+.companion .wing-up { fill: var(--wing-up); stroke: var(--wing-edge); stroke-width: 1.4; }
+.companion .wing-low { fill: var(--wing-low); stroke: var(--wing-edge); stroke-width: 1.2; }
+.companion .wing-glow { fill: var(--glow); animation: glow-pulse 3.5s ease-in-out infinite; }
+.companion .star-dot { fill: #fffbe6; animation: float 4s ease-in-out infinite; }
+.companion .antenna { fill: none; stroke: var(--wing-edge); stroke-width: 1.8; stroke-linecap: round; }
+.companion .antenna-tip { fill: var(--glow); animation: glow-pulse 2.8s ease-in-out infinite; }
+.companion .collar { fill: #fffbee; opacity: 0.9; }
+.companion .wing { transform-box: fill-box; }
+.companion .wing-l { transform-origin: right center; animation: wing-rest-l 4s ease-in-out infinite; }
+.companion .wing-r { transform-origin: left center; animation: wing-rest-r 4s ease-in-out infinite; }
+.companion.act-flutter .wing-l { animation: flutter-l 0.35s ease-in-out 8; }
+.companion.act-flutter .wing-r { animation: flutter-r 0.35s ease-in-out 8; }
+.companion.act-glow .wing-glow, .companion.act-glow .antenna-tip { animation-duration: 1s; }
+.companion.act-glow .prop-motes { display: inline; }
+.companion .glow-mote { fill: var(--glow); animation: float 2.4s ease-in-out infinite; }
+.companion .gm-1 { animation-delay: -0.6s; } .companion .gm-2 { animation-delay: -1.2s; } .companion .gm-3 { animation-delay: -1.8s; }
+.companion.sleeping .wing { animation: none; }
+@keyframes glow-pulse { 0%,100% { opacity: 0.75; } 50% { opacity: 1; } }
+@keyframes wing-rest-l { 0%,100% { transform: rotate(0); } 50% { transform: rotate(4deg); } }
+@keyframes wing-rest-r { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-4deg); } }
+@keyframes flutter-l { 0%,100% { transform: rotate(0) scaleX(1); } 50% { transform: rotate(10deg) scaleX(0.85); } }
+@keyframes flutter-r { 0%,100% { transform: rotate(0) scaleX(1); } 50% { transform: rotate(-10deg) scaleX(0.85); } }
 
 /* Cinder: happy wiggle */
 .companion.act-wiggle .bounce { animation: wiggle 0.5s ease-in-out 8; }

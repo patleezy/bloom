@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.12.0';
+export const APP_VERSION = '0.13.0';
 
 export interface Release {
   version: string;
@@ -12,6 +12,17 @@ export interface Release {
 }
 
 export const CHANGELOG: Release[] = [
+  {
+    version: '0.13.0',
+    date: '2026-09-30',
+    title: 'Meet Lumi',
+    notes: [
+      'Meet Lumi! A soft, glowing moth that starts as a cocoon and grows wings that shine with little constellations.',
+      'Finish a session after 10pm to earn Night Owl and unlock Lumi.',
+      'Lumi brings a warm summer night with crickets, plus a gentle glow and a wing flutter.',
+      'All three unlockable friends are here now: Moss, Nimbus, and Lumi.',
+    ],
+  },
   {
     version: '0.12.0',
     date: '2026-09-30',

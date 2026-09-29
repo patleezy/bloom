@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to Bloom. Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
 
+## 0.13.0 — Meet Lumi (2026-09-30)
+- Meet Lumi! A soft, glowing moth that starts as a cocoon and grows wings that shine with little constellations.
+- Finish a session after 10pm to earn Night Owl and unlock Lumi.
+- Lumi brings a warm summer night with crickets, plus a gentle glow and a wing flutter.
+- All three unlockable friends are here now: Moss, Nimbus, and Lumi.
+
 ## 0.12.0 — Meet Nimbus (2026-09-30)
 - Meet Nimbus! A fluffy little cloud that brings a drizzle, then a rainbow, and finally the sun and moon.
 - Keep a 7-day streak to unlock Nimbus, then adopt it in your garden.
