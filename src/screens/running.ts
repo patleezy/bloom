@@ -5,10 +5,14 @@ import { copy } from '../copy';
 import { formatClock, h } from '../dom';
 import type { SessionService } from '../domain/sessionService';
 import { totalMinutes } from '../domain/stats';
+import { icon } from '../icons';
 import { countedMinutes, minutesToNext, stageFor } from '../logic/growth';
 import { acquireWakeLock, releaseWakeLock } from '../wakeLock';
 
 const RING = 2 * Math.PI * 54;
+/** Leaving for less than this doesn't pause (a quick glance at another tab or a text). */
+export const AWAY_GRACE_MS = 60_000;
+const CHECKPOINT_EVERY_MS = 15_000;
 
 /** Running session. Returns the element plus a cleanup function for timers/listeners. */
 export function runningScreen(
@@ -22,10 +26,10 @@ export function runningScreen(
   const stage = stageFor(baseTotal);
   const art = renderCompanion(companion.species, stage.index,
     { label: `${companion.name}, a ${stageName(companion.species, stage.index)}, growing` });
-  const lines = copy.running(companion.name);
+  const lines = copy.running[companion.species](companion.name);
+  const remainingAtStart = minutesToNext(baseTotal);
   const isPaused = () => svc.active?.clock.runningSince === null;
   const activities = startActivities(art, companion.species, { gap: [15000, 35000], isResting: isPaused });
-  const remainingAtStart = minutesToNext(baseTotal);
 
   const ring = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   ring.setAttribute('viewBox', '0 0 120 120');
@@ -43,14 +47,37 @@ export function runningScreen(
     if (confirm(copy.confirmEnd)) finish();
   } }, copy.endEarly);
 
+  // Focus checklist. Checking one off makes the companion cheer.
+  const checklist = active.tasks.length
+    ? h('ul', { class: 'checklist' }, ...active.tasks.map((t, i) => {
+        const box = h('button', { class: 'check', type: 'button', role: 'checkbox', 'aria-checked': String(t.done),
+          'aria-label': t.text }, icon('check'));
+        const item = h('li', { class: t.done ? 'done' : '' }, box, h('span', {}, t.text));
+        box.addEventListener('click', async () => {
+          const done = await svc.toggleTask(i);
+          box.setAttribute('aria-checked', String(done));
+          item.classList.toggle('done', done);
+          if (done) cheer();
+        });
+        return item;
+      }))
+    : null;
+
   const el = h('main', { class: 'screen running' },
-    active.label ? h('p', { class: 'focus-label' }, active.label) : null,
     h('div', { class: 'ring-wrap' }, ring, art),
-    time, toNext, note, resumeBtn, endBtn);
+    time, toNext, note, checklist, resumeBtn, endBtn);
 
   let finishing = false;
   let msgIdx = 0;
   let lastMsgSwap = 0;
+  let hiddenAt: number | null = null;
+  let lastCheckpoint = Date.now();
+
+  function cheer() {
+    art.classList.remove('cheer');
+    void art.getBoundingClientRect(); // restart the animation
+    art.classList.add('cheer');
+  }
 
   function finish() {
     if (finishing) return;
@@ -59,13 +86,16 @@ export function runningScreen(
   }
 
   function paint() {
+    // Background tab past the grace period: stop crediting time (pauseAt updates the clock synchronously).
+    if (hiddenAt !== null && !isPaused() && Date.now() - hiddenAt > AWAY_GRACE_MS) {
+      void svc.pauseAt(hiddenAt + AWAY_GRACE_MS);
+    }
     const e = svc.elapsedMs();
     const frac = e / planned;
     time.textContent = formatClock(planned - e);
     ringFill.setAttribute('stroke-dashoffset', String(RING * (1 - frac)));
     setGrowth(art, frac);
 
-    // Live progress toward the next stage, counting this session's minutes as they accrue.
     if (remainingAtStart !== null) {
       const left = Math.max(0, remainingAtStart - countedMinutes(e));
       toNext.textContent = copy.liveToNext(left, stageName(companion.species, stage.index + 1));
@@ -80,6 +110,10 @@ export function runningScreen(
       note.textContent = lines[msgIdx++ % lines.length];
       lastMsgSwap = Date.now();
     }
+    if (!paused && Date.now() - lastCheckpoint > CHECKPOINT_EVERY_MS) {
+      lastCheckpoint = Date.now();
+      void svc.checkpoint();
+    }
     if (svc.isDone()) finish();
   }
 
@@ -92,13 +126,20 @@ export function runningScreen(
 
   async function onVisibility() {
     if (document.hidden) {
-      await svc.pause();
-    } else {
-      await svc.resume();
-      void acquireWakeLock(); // the browser releases it while hidden
+      // Don't pause yet: short trips away are fine. Save progress in case the tab is closed.
+      hiddenAt = Date.now();
+      await svc.checkpoint();
+      return;
+    }
+    const awayFor = hiddenAt === null ? 0 : Date.now() - hiddenAt;
+    if (hiddenAt !== null && awayFor > AWAY_GRACE_MS) {
+      // Credit the grace period, then pause from that moment on.
+      if (!isPaused()) await svc.pauseAt(hiddenAt + AWAY_GRACE_MS);
       note.textContent = copy.paused(companion.name);
       lastMsgSwap = Date.now();
     }
+    hiddenAt = null;
+    void acquireWakeLock(); // the browser releases it while hidden
     paint();
   }
 

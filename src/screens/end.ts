@@ -2,6 +2,7 @@ import { renderCompanion } from '../companion/render';
 import { stageName } from '../companion/species';
 import { copy } from '../copy';
 import { h } from '../dom';
+import { icon } from '../icons';
 import { streak, totalMinutes } from '../domain/stats';
 import type { CompanionProfile, SessionRecord } from '../domain/types';
 import { stageFor } from '../logic/growth';
@@ -31,6 +32,12 @@ export function endScreen(
     h('p', {}, record.countedMinutes > 0
       ? copy.doneBody(record.countedMinutes, companion.name)
       : copy.shortBody(companion.name)),
-    s ? h('p', { class: 'streak on' }, copy.streak(s)) : null,
+    record.tasks.length
+      ? h('section', { class: 'card task-summary' },
+          h('h3', {}, copy.tasksDone(record.tasks.filter((t) => t.done).length, record.tasks.length)),
+          h('ul', { class: 'checklist readonly' }, ...record.tasks.map((t) =>
+            h('li', { class: t.done ? 'done' : '' }, h('span', { class: 'check', 'aria-hidden': 'true' }, icon('check')), h('span', {}, t.text)))))
+      : null,
+    s ? h('p', { class: 'stat on' }, icon('sprout'), h('strong', {}, `${copy.streak(s)} streak`)) : null,
     h('button', { class: 'btn primary big', onclick: actions.onHome }, copy.home));
 }

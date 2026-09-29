@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to Bloom. Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
 
+## 0.5.0 — Plan it, pet it (2026-09-29)
+- Add up to 3 things you want to focus on, then check them off as you go.
+- Tap your companion on the home screen to give it a pet.
+- Quick trips to another tab or app no longer pause you. Up to a minute away still counts.
+- Reloading mid-session now keeps the time you’ve already focused.
+- A fresh look: new fonts, custom icons, and a friendlier voice.
+- A short note on the home screen explains what Bloom is for. Tap the X to hide it.
+
 ## 0.4.0 — Your companion keeps you company (2026-09-29)
 - While you focus, your companion now reads, hums, stretches, and looks around.
 - Bloomling waters its flower and gets visits from a butterfly.

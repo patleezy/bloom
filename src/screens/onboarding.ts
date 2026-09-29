@@ -2,6 +2,7 @@ import { renderCompanion } from '../companion/render';
 import { SPECIES, SPECIES_ORDER } from '../companion/species';
 import { copy } from '../copy';
 import { h } from '../dom';
+import { icon } from '../icons';
 import type { SpeciesId } from '../domain/types';
 import { MAX_NAME } from '../state/localRepository';
 
@@ -27,10 +28,10 @@ export function startOnboarding(show: Show, onDone: (species: SpeciesId, name: s
           renderCompanion(id, 2, { label: sp.name }),
           h('span', { class: 'starter-text' },
             h('strong', {}, sp.name),
-            h('span', { class: 'element-tag' }, `${sp.emoji} ${sp.element}`),
+            h('span', { class: 'element-tag' }, icon(sp.icon), sp.element),
             h('span', { class: 'muted small' }, sp.blurb)));
       })),
-      h('button', { class: 'btn link', onclick: welcome }, copy.back)));
+      h('button', { class: 'btn link back', onclick: welcome }, icon('back'), copy.back)));
 
   const name = (id: SpeciesId) => {
     const sp = SPECIES[id];
@@ -41,7 +42,7 @@ export function startOnboarding(show: Show, onDone: (species: SpeciesId, name: s
       h('h2', {}, copy.nameTitle(sp.name)),
       input,
       h('button', { class: 'btn primary big', type: 'submit' }, copy.nameCta),
-      h('button', { class: 'btn link', type: 'button', onclick: choose }, copy.back));
+      h('button', { class: 'btn link back', type: 'button', onclick: choose }, icon('back'), copy.back));
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       onDone(id, input.value);

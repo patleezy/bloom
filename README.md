@@ -25,7 +25,9 @@ npm run build    # static site in dist/ (strict CSP added)
   Ending early still credits minutes focused. These are starting points — tune with real usage data.
 - **Streak:** consecutive days with a counted session; one missed day per 7 is forgiven.
 - **Honest timer:** pauses when the tab is hidden and resumes on return. A reload restores the session paused.
+  Leaving for up to 60 seconds doesn't pause (grace period). Progress is checkpointed every 15s.
   Screen Wake Lock keeps the phone screen on during a session so it doesn't pause itself.
+- **Focus list:** up to 3 items per session, checked off while focusing.
 - **Themes:** Auto / Light / Night. **PWA:** installable, works offline. **Backup:** export/import a JSON file.
 
 ## Architecture (built to grow a backend)

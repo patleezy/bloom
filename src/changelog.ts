@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.4.0';
+export const APP_VERSION = '0.5.0';
 
 export interface Release {
   version: string;
@@ -12,6 +12,19 @@ export interface Release {
 }
 
 export const CHANGELOG: Release[] = [
+  {
+    version: '0.5.0',
+    date: '2026-09-29',
+    title: 'Plan it, pet it',
+    notes: [
+      'Add up to 3 things you want to focus on, then check them off as you go.',
+      'Tap your companion on the home screen to give it a pet.',
+      'Quick trips to another tab or app no longer pause you. Up to a minute away still counts.',
+      'Reloading mid-session now keeps the time you’ve already focused.',
+      'A fresh look: new fonts, custom icons, and a friendlier voice.',
+      'A short note on the home screen explains what Bloom is for. Tap the X to hide it.',
+    ],
+  },
   {
     version: '0.4.0',
     date: '2026-09-29',

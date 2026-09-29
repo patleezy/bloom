@@ -1,5 +1,7 @@
 import {
+  MAX_TASKS,
   emptySnapshot,
+  type FocusTask,
   type ActiveSession,
   type BloomSnapshot,
   type CompanionProfile,
@@ -10,15 +12,15 @@ import type { BloomRepository } from './repository';
 
 /** All data stays in this browser's localStorage. Nothing is sent over the network. */
 const KEY = 'bloom:data';
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 const MAX_LABEL = 60;
 export const MAX_NAME = 20;
 const MAX_PLANNED_MS = 24 * 3600_000;
 const MAX_HISTORY = 20_000;
 const SPECIES: readonly SpeciesId[] = ['bloomling', 'kindle', 'ripple'];
 
-interface StoredV2 {
-  schemaVersion: 2;
+interface StoredV3 {
+  schemaVersion: 3;
   companion: CompanionProfile | null;
   history: SessionRecord[];
   active: ActiveSession | null;
@@ -32,6 +34,15 @@ export const cleanName = (raw: unknown) => cleanText(raw, MAX_NAME);
 
 const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v) && v >= 0;
 const isId = (v: unknown): v is string => typeof v === 'string' && /^[\w-]{1,64}$/.test(v);
+function parseTasks(t: unknown): FocusTask[] {
+  if (!Array.isArray(t)) return [];
+  return t
+    .map((x) => (x && typeof x === 'object' ? (x as Record<string, unknown>) : {}))
+    .map((x) => ({ text: cleanLabel(x.text), done: x.done === true }))
+    .filter((x) => x.text)
+    .slice(0, MAX_TASKS);
+}
+
 const isSpecies = (v: unknown): v is SpeciesId => SPECIES.includes(v as SpeciesId);
 
 function parseCompanion(c: unknown): CompanionProfile | null {
@@ -57,7 +68,7 @@ function parseRecord(r: unknown): SessionRecord | null {
     plannedMs: Math.min(o.plannedMs, MAX_PLANNED_MS),
     focusedMs: Math.min(o.focusedMs, MAX_PLANNED_MS),
     countedMinutes: Math.min(Math.floor(o.countedMinutes), MAX_PLANNED_MS / 60000),
-    label: cleanLabel(o.label),
+    tasks: parseTasks(o.tasks),
     completed: o.completed === true,
   };
 }
@@ -68,12 +79,16 @@ function parseActive(a: unknown): ActiveSession | null {
   const c = o.clock as Record<string, unknown> | undefined;
   if (!isId(o.id) || !isNum(o.startedAt) || !c || !isNum(c.plannedMs) || !isNum(c.bankedMs)) return null;
   if (c.plannedMs <= 0 || c.plannedMs > MAX_PLANNED_MS) return null;
-  // Always restore paused: time with the page closed is not focus time.
+  // Always restore paused: time with the page closed is not focus time. Keep what was
+  // earned up to the last checkpoint.
+  const checkpointMs = isNum(o.checkpointMs) ? o.checkpointMs : 0;
+  const banked = Math.min(c.plannedMs, Math.max(c.bankedMs, checkpointMs));
   return {
     id: o.id,
     startedAt: o.startedAt,
-    label: cleanLabel(o.label),
-    clock: { plannedMs: c.plannedMs, bankedMs: Math.min(c.bankedMs, c.plannedMs), runningSince: null },
+    tasks: parseTasks(o.tasks),
+    clock: { plannedMs: c.plannedMs, bankedMs: banked, runningSince: null },
+    checkpointMs: banked,
   };
 }
 
@@ -93,6 +108,20 @@ function migrate(o: Record<string, unknown>): Record<string, unknown> | null {
       history: history.map((r) =>
         r && typeof r === 'object' ? { ...(r as object), companionId: LEGACY_COMPANION_ID } : r),
       active: cur.active,
+    };
+  }
+  if (cur.schemaVersion === 2) {
+    // v2 had a single optional label per session; v3 has up to 3 focus tasks.
+    const toTasks = (r: unknown) => {
+      if (!r || typeof r !== 'object') return r;
+      const { label, ...rest } = r as Record<string, unknown>;
+      return { ...rest, tasks: typeof label === 'string' && label.trim() ? [{ text: label, done: false }] : [] };
+    };
+    cur = {
+      ...cur,
+      schemaVersion: 3,
+      history: Array.isArray(cur.history) ? cur.history.map(toTasks) : [],
+      active: toTasks(cur.active),
     };
   }
   return cur.schemaVersion === SCHEMA_VERSION ? cur : null; // unknown/newer version: don't guess
@@ -120,7 +149,7 @@ export function parseSnapshot(raw: string | null): BloomSnapshot | null {
 export const parseStored = (raw: string | null): BloomSnapshot => parseSnapshot(raw) ?? emptySnapshot();
 
 export function serialize(s: BloomSnapshot): string {
-  const stored: StoredV2 = { schemaVersion: 2, companion: s.companion, history: s.history, active: s.active };
+  const stored: StoredV3 = { schemaVersion: 3, companion: s.companion, history: s.history, active: s.active };
   return JSON.stringify(stored);
 }
 

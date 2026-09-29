@@ -1,10 +1,11 @@
 import type { SpeciesId } from '../domain/types';
+import type { IconName } from '../icons';
 
 export interface Species {
   id: SpeciesId;
   name: string;
   element: string;
-  emoji: string;
+  icon: IconName;
   blurb: string;
   /** One name per growth stage (see logic/growth.ts STAGES). */
   stageNames: [string, string, string, string, string, string];
@@ -16,7 +17,7 @@ export const SPECIES: Record<SpeciesId, Species> = {
     id: 'bloomling',
     name: 'Bloomling',
     element: 'Leaf',
-    emoji: '🌿',
+    icon: 'leaf',
     blurb: 'Gentle and steady. Grows a flower crown from calm, patient focus.',
     stageNames: ['Seed', 'Sprout', 'Leafling', 'Budling', 'Bloom', 'Elder Bloom'],
   },
@@ -24,7 +25,7 @@ export const SPECIES: Record<SpeciesId, Species> = {
     id: 'kindle',
     name: 'Kindle',
     element: 'Ember',
-    emoji: '🔥',
+    icon: 'flame',
     blurb: 'Warm and spirited. Its little flame grows brighter the longer you stay with it.',
     stageNames: ['Spark', 'Ember', 'Flicker', 'Blaze', 'Sunflare', 'Elder Flame'],
   },
@@ -32,7 +33,7 @@ export const SPECIES: Record<SpeciesId, Species> = {
     id: 'ripple',
     name: 'Ripple',
     element: 'Tide',
-    emoji: '💧',
+    icon: 'drop',
     blurb: 'Curious and calm. A water lily unfolds as your focus runs deep.',
     stageNames: ['Droplet', 'Puddle', 'Brooklet', 'Lilybud', 'Lily', 'Elder Tide'],
   },

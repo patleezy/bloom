@@ -1,3 +1,9 @@
+// Fonts are bundled with the app (no third-party font CDN), Latin subset only.
+import '@fontsource/fredoka/latin-500.css';
+import '@fontsource/fredoka/latin-600.css';
+import '@fontsource/nunito/latin-400.css';
+import '@fontsource/nunito/latin-600.css';
+import '@fontsource/nunito/latin-700.css';
 import './styles.css';
 import { copy } from './copy';
 import { SessionService } from './domain/sessionService';
@@ -43,6 +49,11 @@ function goHome() {
   if (!svc.companion) return goOnboarding();
   const unseen = prefs.lastSeenVersion !== APP_VERSION;
   const home = homeScreen(svc.companion, svc.companionHistory, svc.history, {
+    showIntro: !prefs.introDismissed,
+    onDismissIntro: () => {
+      prefs.introDismissed = true;
+      savePrefs(prefs);
+    },
     onStart: goStart,
     onSettings: goSettings,
     onWhatsNew: unseen ? () => goWhatsNew(goHome) : undefined,
@@ -79,9 +90,9 @@ function goSettings() {
 function goStart() {
   show(startScreen({
     onBack: goHome,
-    onBegin: async (minutes, label) => {
+    onBegin: async (minutes, tasks) => {
       unlockAudio(); // must happen during a user gesture
-      await svc.start(minutes, label);
+      await svc.start(minutes, tasks);
       goRunning(false);
     },
   }));

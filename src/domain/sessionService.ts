@@ -3,7 +3,7 @@ import { countedMinutes } from '../logic/growth';
 import * as clock from '../logic/timer';
 import { cleanLabel, cleanName, parseSnapshot, serialize } from '../state/localRepository';
 import type { BloomRepository } from '../state/repository';
-import { emptySnapshot, type ActiveSession, type BloomSnapshot, type CompanionProfile, type SessionRecord, type SpeciesId } from './types';
+import { MAX_TASKS, emptySnapshot, type ActiveSession, type BloomSnapshot, type CompanionProfile, type SessionRecord, type SpeciesId } from './types';
 
 export type Now = () => number;
 
@@ -77,14 +77,15 @@ export class SessionService {
     return this.snap.active;
   }
 
-  async start(minutes: number, label: string): Promise<ActiveSession> {
+  async start(minutes: number, tasks: string[] = []): Promise<ActiveSession> {
     const t = this.now();
     const mins = Math.min(Math.max(Math.round(minutes), 1), 240);
     const active: ActiveSession = {
       id: this.newId(),
       startedAt: t,
-      label: cleanLabel(label),
+      tasks: tasks.map(cleanLabel).filter(Boolean).slice(0, MAX_TASKS).map((text) => ({ text, done: false })),
       clock: clock.newClock(mins * 60000, t),
+      checkpointMs: 0,
     };
     this.snap.active = active;
     await this.repo.saveActive(active);
@@ -95,7 +96,33 @@ export class SessionService {
     const a = this.snap.active;
     if (!a || a.clock.runningSince === null) return;
     a.clock = clock.pause(a.clock, this.now());
+    a.checkpointMs = a.clock.bankedMs;
     await this.repo.saveActive(a);
+  }
+
+  /** Pause as of an earlier moment (used when the user was away past the grace period). */
+  async pauseAt(t: number): Promise<void> {
+    const a = this.snap.active;
+    if (!a || a.clock.runningSince === null) return;
+    a.clock = clock.pause(a.clock, Math.max(a.clock.runningSince, Math.min(t, this.now())));
+    a.checkpointMs = a.clock.bankedMs;
+    await this.repo.saveActive(a);
+  }
+
+  /** Save focused time so far, so a reload doesn't lose it. */
+  async checkpoint(): Promise<void> {
+    const a = this.snap.active;
+    if (!a) return;
+    a.checkpointMs = clock.elapsed(a.clock, this.now());
+    await this.repo.saveActive(a);
+  }
+
+  async toggleTask(index: number): Promise<boolean> {
+    const task = this.snap.active?.tasks[index];
+    if (!task) return false;
+    task.done = !task.done;
+    await this.repo.saveActive(this.snap.active);
+    return task.done;
   }
 
   async resume(): Promise<void> {
@@ -128,7 +155,7 @@ export class SessionService {
       plannedMs: a.clock.plannedMs,
       focusedMs,
       countedMinutes: countedMinutes(focusedMs),
-      label: a.label,
+      tasks: a.tasks.map((t) => ({ ...t })),
       completed: focusedMs >= a.clock.plannedMs,
     };
     this.snap.history.push(record);

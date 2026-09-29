@@ -1,11 +1,12 @@
 import { APP_VERSION, CHANGELOG } from '../changelog';
 import { copy } from '../copy';
 import { h } from '../dom';
+import { icon } from '../icons';
 
 export function whatsNewScreen(actions: { onBack: () => void }): HTMLElement {
   return h('main', { class: 'screen settings whats-new' },
     h('header', { class: 'topbar' },
-      h('button', { class: 'btn link', onclick: actions.onBack }, `← ${copy.back}`),
+      h('button', { class: 'btn link back', onclick: actions.onBack }, icon('back'), copy.back),
       h('h2', {}, copy.whatsNew),
       h('span', { class: 'spacer' })),
     ...CHANGELOG.map((r) =>
