@@ -37,6 +37,7 @@ export interface SessionRecord {
 
 export interface ActiveSession {
   id: string;
+  companionId: string; // who joined this session
   startedAt: number;
   tasks: FocusTask[];
   clock: ClockState;
@@ -45,9 +46,11 @@ export interface ActiveSession {
 }
 
 export interface BloomSnapshot {
-  companion: CompanionProfile | null;
+  companions: CompanionProfile[];
+  /** The companion shown on home and preselected for the next session. */
+  currentId: string | null;
   history: SessionRecord[];
   active: ActiveSession | null;
 }
 
-export const emptySnapshot = (): BloomSnapshot => ({ companion: null, history: [], active: null });
+export const emptySnapshot = (): BloomSnapshot => ({ companions: [], currentId: null, history: [], active: null });

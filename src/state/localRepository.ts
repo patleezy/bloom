@@ -12,16 +12,18 @@ import type { BloomRepository } from './repository';
 
 /** All data stays in this browser's localStorage. Nothing is sent over the network. */
 const KEY = 'bloom:data';
-export const SCHEMA_VERSION = 4;
+export const SCHEMA_VERSION = 5;
+const MAX_COMPANIONS = 50;
 const MAX_LABEL = 60;
 export const MAX_NAME = 20;
 const MAX_PLANNED_MS = 24 * 3600_000;
 const MAX_HISTORY = 20_000;
 const SPECIES: readonly SpeciesId[] = ['bloomling', 'cinder', 'ripple'];
 
-interface StoredV4 {
-  schemaVersion: 4;
-  companion: CompanionProfile | null;
+interface StoredV5 {
+  schemaVersion: 5;
+  companions: CompanionProfile[];
+  currentId: string | null;
   history: SessionRecord[];
   active: ActiveSession | null;
 }
@@ -77,7 +79,7 @@ function parseActive(a: unknown): ActiveSession | null {
   if (!a || typeof a !== 'object') return null;
   const o = a as Record<string, unknown>;
   const c = o.clock as Record<string, unknown> | undefined;
-  if (!isId(o.id) || !isNum(o.startedAt) || !c || !isNum(c.plannedMs) || !isNum(c.bankedMs)) return null;
+  if (!isId(o.id) || !isId(o.companionId) || !isNum(o.startedAt) || !c || !isNum(c.plannedMs) || !isNum(c.bankedMs)) return null;
   if (c.plannedMs <= 0 || c.plannedMs > MAX_PLANNED_MS) return null;
   // Always restore paused: time with the page closed is not focus time. Keep what was
   // earned up to the last checkpoint.
@@ -85,6 +87,7 @@ function parseActive(a: unknown): ActiveSession | null {
   const banked = Math.min(c.plannedMs, Math.max(c.bankedMs, checkpointMs));
   return {
     id: o.id,
+    companionId: o.companionId,
     startedAt: o.startedAt,
     tasks: parseTasks(o.tasks),
     clock: { plannedMs: c.plannedMs, bankedMs: banked, runningSince: null },
@@ -135,6 +138,19 @@ function migrate(o: Record<string, unknown>): Record<string, unknown> | null {
         : c,
     };
   }
+  if (cur.schemaVersion === 4) {
+    // v5 supports several companions; the single companion becomes the first and current one.
+    const c = cur.companion as Record<string, unknown> | null;
+    const id = c && typeof c.id === 'string' ? c.id : null;
+    const a = cur.active as Record<string, unknown> | null;
+    cur = {
+      schemaVersion: 5,
+      companions: c ? [c] : [],
+      currentId: id,
+      history: cur.history,
+      active: a && typeof a === 'object' ? { ...a, companionId: id } : null,
+    };
+  }
   return cur.schemaVersion === SCHEMA_VERSION ? cur : null; // unknown/newer version: don't guess
 }
 
@@ -151,7 +167,15 @@ export function parseSnapshot(raw: string | null): BloomSnapshot | null {
       .slice(-MAX_HISTORY)
       .map(parseRecord)
       .filter((r): r is SessionRecord => r !== null && !seen.has(r.id) && !!seen.add(r.id));
-    return { companion: parseCompanion(o.companion), history, active: parseActive(o.active) };
+    const ids = new Set<string>();
+    const companions = (Array.isArray(o.companions) ? o.companions : [])
+      .slice(0, MAX_COMPANIONS)
+      .map(parseCompanion)
+      .filter((c): c is CompanionProfile => c !== null && !ids.has(c.id) && !!ids.add(c.id));
+    const currentId = typeof o.currentId === 'string' && ids.has(o.currentId) ? o.currentId : companions[0]?.id ?? null;
+    let active = parseActive(o.active);
+    if (active && !ids.has(active.companionId)) active = null; // orphaned session: drop it
+    return { companions, currentId, history, active };
   } catch {
     return null;
   }
@@ -160,7 +184,7 @@ export function parseSnapshot(raw: string | null): BloomSnapshot | null {
 export const parseStored = (raw: string | null): BloomSnapshot => parseSnapshot(raw) ?? emptySnapshot();
 
 export function serialize(s: BloomSnapshot): string {
-  const stored: StoredV4 = { schemaVersion: 4, companion: s.companion, history: s.history, active: s.active };
+  const stored: StoredV5 = { schemaVersion: 5, companions: s.companions, currentId: s.currentId, history: s.history, active: s.active };
   return JSON.stringify(stored);
 }
 
@@ -182,7 +206,16 @@ export class LocalRepository implements BloomRepository {
 
   async saveCompanion(companion: CompanionProfile): Promise<void> {
     const s = await this.current();
-    s.companion = structuredClone(companion);
+    const i = s.companions.findIndex((c) => c.id === companion.id);
+    if (i >= 0) s.companions[i] = structuredClone(companion);
+    else s.companions.push(structuredClone(companion));
+    s.currentId ??= companion.id;
+    this.persist(s);
+  }
+
+  async setCurrent(companionId: string): Promise<void> {
+    const s = await this.current();
+    if (s.companions.some((c) => c.id === companionId)) s.currentId = companionId;
     this.persist(s);
   }
 

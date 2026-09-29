@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to Bloom. Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
 
+## 0.10.0 — A whole garden (2026-09-30)
+- Meet everyone! Bloomling, Cinder, and Ripple are all free to adopt anytime.
+- Choose who joins each session from the start screen, depending on your mood. Whoever you pick grows from that session.
+- Your garden (the new button at the top of home) shows all your companions, how far each has grown, and who greets you on the home screen.
+- Each companion keeps its own growth and journey. Streaks and medals belong to you, so switching never costs a thing.
+
 ## 0.9.0 — Medals and new friends (2026-09-30)
 - Medals! Earn 16 of them for focus time, streaks, habits like Night Owl and Early Bird, and helping your companion grow. They’re yours forever, even if a streak ends.
 - Medals count everything you’ve already done, so you may have a few waiting for you.

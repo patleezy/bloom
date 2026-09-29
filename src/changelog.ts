@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.9.0';
+export const APP_VERSION = '0.10.0';
 
 export interface Release {
   version: string;
@@ -12,6 +12,17 @@ export interface Release {
 }
 
 export const CHANGELOG: Release[] = [
+  {
+    version: '0.10.0',
+    date: '2026-09-30',
+    title: 'A whole garden',
+    notes: [
+      'Meet everyone! Bloomling, Cinder, and Ripple are all free to adopt anytime.',
+      'Choose who joins each session from the start screen, depending on your mood. Whoever you pick grows from that session.',
+      'Your garden (the new button at the top of home) shows all your companions, how far each has grown, and who greets you on the home screen.',
+      'Each companion keeps its own growth and journey. Streaks and medals belong to you, so switching never costs a thing.',
+    ],
+  },
   {
     version: '0.9.0',
     date: '2026-09-30',

@@ -23,6 +23,7 @@ export function homeScreen(
     onWhatsNew?: () => void;
     onEvolution: () => void;
     onMedals: () => void;
+    onGarden: () => void;
   },
 ): { el: HTMLElement; dispose: () => void } {
   const now = new Date();
@@ -94,7 +95,9 @@ export function homeScreen(
   const el = h('main', { class: 'screen home' },
     h('header', { class: 'topbar' },
       h('img', { class: 'logo', src: './logo.svg', alt: copy.appName, width: '112', height: '35' }),
-      h('button', { class: 'icon-btn', 'aria-label': copy.settings, title: copy.settings, onclick: opts.onSettings }, icon('settings'))),
+      h('div', { class: 'row' },
+        h('button', { class: 'icon-btn', 'aria-label': copy.gardenOpen, title: copy.gardenTitle, onclick: opts.onGarden }, icon('garden')),
+        h('button', { class: 'icon-btn', 'aria-label': copy.settings, title: copy.settings, onclick: opts.onSettings }, icon('settings')))),
     intro,
     opts.onWhatsNew ? h('button', { class: 'pill', onclick: opts.onWhatsNew }, icon('sparkle'), copy.whatsNewPill) : null,
     h('section', { class: 'stage-wrap' },

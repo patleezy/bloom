@@ -27,9 +27,10 @@ describe('parseStored', () => {
 
   it('drops invalid records, duplicates, and sanitizes text', () => {
     const s = parseStored(JSON.stringify({
-      schemaVersion: 4,
+      schemaVersion: 5,
       active: null,
-      companion: { id: 'c1', species: 'cinder', name: '  Fi\u0000ery<b>' + 'x'.repeat(50), adoptedAt: 1 },
+      currentId: 'c1',
+      companions: [{ id: 'c1', species: 'cinder', name: '  Fi\u0000ery<b>' + 'x'.repeat(50), adoptedAt: 1 }],
       history: [
         rec('a', { tasks: [{ text: 'x'.repeat(200), done: true }, { text: '' }, { text: 'b' }, { text: 'c' }, { text: 'd' }] }),
         { id: 'b', day: 'bad' },
@@ -39,21 +40,22 @@ describe('parseStored', () => {
     expect(s.history).toHaveLength(1);
     expect(s.history[0].tasks).toHaveLength(3); // empty dropped, capped at 3
     expect(s.history[0].tasks[0]).toEqual({ text: 'x'.repeat(60), done: true });
-    expect(s.companion?.name.length).toBeLessThanOrEqual(20);
-    expect(s.companion?.name).not.toContain('\u0000');
+    expect(s.companions[0].name.length).toBeLessThanOrEqual(20);
+    expect(s.companions[0].name).not.toContain('\u0000');
   });
 
   it('rejects unknown species', () => {
-    const s = parseStored(JSON.stringify({ schemaVersion: 4, companion: { id: 'c', species: 'dragon', name: 'x', adoptedAt: 1 }, history: [], active: null }));
-    expect(s.companion).toBeNull();
+    const s = parseStored(JSON.stringify({ schemaVersion: 5, companions: [{ id: 'c', species: 'dragon', name: 'x', adoptedAt: 1 }], currentId: 'c', history: [], active: null }));
+    expect(s.companions).toEqual([]);
+    expect(s.currentId).toBeNull();
   });
 
   it('migrates v3 Kindle companions to Cinder, keeping custom names', () => {
     const base = { schemaVersion: 3, history: [], active: null };
     const a = parseStored(JSON.stringify({ ...base, companion: { id: 'c', species: 'kindle', name: 'Kindle', adoptedAt: 1 } }));
-    expect(a.companion).toMatchObject({ species: 'cinder', name: 'Cinder' });
+    expect(a.companions[0]).toMatchObject({ species: 'cinder', name: 'Cinder' });
     const b = parseStored(JSON.stringify({ ...base, companion: { id: 'c', species: 'kindle', name: 'Toasty', adoptedAt: 1 } }));
-    expect(b.companion).toMatchObject({ species: 'cinder', name: 'Toasty' });
+    expect(b.companions[0]).toMatchObject({ species: 'cinder', name: 'Toasty' });
   });
 
   it('migrates v2 labels to focus tasks', () => {
@@ -67,8 +69,8 @@ describe('parseStored', () => {
   it('migrates v1 data to a Bloomling that keeps its growth', () => {
     const { companionId: _, tasks: _t, ...v1rec } = rec('a', { countedMinutes: 300 });
     const s = parseStored(JSON.stringify({ schemaVersion: 1, history: [v1rec], active: null }));
-    expect(s.companion?.species).toBe('bloomling');
-    expect(s.history[0].companionId).toBe(s.companion?.id);
+    expect(s.companions[0]?.species).toBe('bloomling');
+    expect(s.history[0].companionId).toBe(s.currentId);
   });
 });
 
