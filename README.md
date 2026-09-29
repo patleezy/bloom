@@ -49,7 +49,13 @@ src/
 - Sessions carry a `companionId`, so a future collection ("garden") needs no migration.
 - Device preferences (theme, sound) live separately in `state/prefs.ts` and are never meant to sync.
 
+## Accessibility
+- Targets WCAG 2.2 AA. `tests/contrast.test.ts` checks every theme token pair (text 4.5:1, UI 3:1) on each run.
+- Screens were audited with axe-core in both themes, plus keyboard-only navigation.
+
 ## Privacy & security
+See [SECURITY.md](SECURITY.md) for the OWASP Top 10 mapping and how to report issues. CI runs tests, build, and `npm audit` on every PR.
+
 - No network requests, analytics, third-party scripts, or fonts. Production CSP sets `connect-src 'none'`.
   When a backend is added, allow only its origin there.
 - User text is rendered via text nodes only (never `innerHTML`); stored data is validated and size-limited on load.

@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.7.0';
+export const APP_VERSION = '0.8.0';
 
 export interface Release {
   version: string;
@@ -12,6 +12,16 @@ export interface Release {
 }
 
 export const CHANGELOG: Release[] = [
+  {
+    version: '0.8.0',
+    date: '2026-09-30',
+    title: 'Easy on the eyes',
+    notes: [
+      'Softer pastel colors that are easier on the eyes, especially the buttons.',
+      'Accessibility: every screen now meets WCAG AA contrast, with bigger tap targets, clearer text fields, and stronger focus outlines for keyboard users.',
+      'Behind the scenes: automatic checks on every update for tests, accessibility contrast, and known security issues.',
+    ],
+  },
   {
     version: '0.7.0',
     date: '2026-09-30',

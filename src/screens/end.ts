@@ -38,7 +38,7 @@ export function endScreen(
           h('ul', { class: 'checklist readonly' }, ...record.tasks.map((t) =>
             h('li', { class: t.done ? 'done' : '' }, h('span', { class: 'check', 'aria-hidden': 'true' }, icon('check')), h('span', {}, t.text)))))
       : null,
-    s ? h('p', { class: 'stat on' }, icon('sprout'), h('strong', {}, `${copy.streak(s)} streak`)) : null,
+    s ? h('p', { class: 'stat on' }, icon('sprout'), h('strong', {}, copy.streakBadge(s))) : null,
     actions.breakOffer
       ? h('div', { class: 'stack' },
           actions.breakOffer.long ? h('p', { class: 'muted small' }, copy.breakOfferLong) : null,
