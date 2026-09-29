@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 128" role="img" aria-label="Bloom">
+  <g transform="translate(8 4) scale(0.235)">
+    <path d="M256 190 q-5 -40 0 -80" stroke="#6b9463" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <path d="M256 130 c-20 -30 -64 -34 -84 -12 c22 20 56 26 84 12z" fill="#7fae74"/>
+    <path d="M256 124 c20 -30 64 -34 84 -12 c-22 20 -56 26 -84 12z" fill="#5f8a5a"/>
+    <ellipse cx="256" cy="300" rx="150" ry="128" fill="#b9dca5"/>
+    <ellipse cx="256" cy="350" rx="82" ry="58" fill="#e6f2d8"/>
+    <ellipse cx="214" cy="290" rx="11" ry="15" fill="#2f3a31"/>
+    <ellipse cx="298" cy="290" rx="11" ry="15" fill="#2f3a31"/>
+    <ellipse cx="186" cy="318" rx="17" ry="10" fill="#f0a08c" opacity=".7"/>
+    <ellipse cx="326" cy="318" rx="17" ry="10" fill="#f0a08c" opacity=".7"/>
+    <path d="M242 318 q14 14 28 0" stroke="#2f3a31" stroke-width="6" fill="none" stroke-linecap="round"/>
+  </g>
+  <text x="138" y="92" fill="#5f8a5a" font-family="ui-rounded, 'SF Pro Rounded', 'Nunito', 'Varela Round', system-ui, sans-serif" font-weight="800" font-size="84" letter-spacing="-2">Bloom</text>
+</svg>

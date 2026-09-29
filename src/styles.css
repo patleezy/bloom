@@ -147,6 +147,14 @@ h3 { margin: 0 0 8px; font-size: 1rem; }
 .toggle { width: 22px; height: 22px; accent-color: var(--accent); }
 .settings .topbar h2 { font-size: 1.1rem; }
 
+.pill { font: inherit; font-size: 0.85rem; border: 0; cursor: pointer; padding: 6px 14px; border-radius: 999px;
+  background: var(--surface); color: var(--accent); font-weight: 600; }
+.plain { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; }
+.version-tag { font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; background: var(--track); color: var(--muted); white-space: nowrap; }
+.version-tag.current { background: var(--accent); color: var(--accent-ink); }
+.release h3 { margin: 0; }
+.release-notes { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+
 /* Onboarding */
 .onboarding { gap: 16px; }
 .trio { display: flex; justify-content: center; margin-top: 6vh; }
@@ -260,6 +268,98 @@ h3 { margin: 0 0 8px; font-size: 1rem; }
 @keyframes grow-in { from { transform: scale(0.6); opacity: 0.4; } to { transform: scale(1); opacity: 1; } }
 @keyframes hop { 0%,100% { transform: translateY(0); } 40% { transform: translateY(-10px); } }
 @keyframes fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* ---------- Activities (see companion/activities.ts) ----------
+   Props are hidden until the svg carries .act-<name>. Transform/opacity only (cheap on phones). */
+.companion .prop { display: none; }
+.companion .prop *, .companion .face, .companion .can, .companion .fly, .companion .flap { transform-box: fill-box; }
+.companion .face { transition: transform 0.6s ease; }
+.companion.sleeping .prop { display: none !important; }
+
+/* Read: a tiny open book, eyes down, pages turning */
+.companion.act-read .prop-read { display: inline; animation: prop-in 0.5s ease; }
+.companion.act-read .face { transform: translateY(2px); }
+.companion .book-cover { fill: var(--body-dark); }
+.companion .book-page { fill: #fffaf0; stroke: #e6dcc6; stroke-width: 0.5; }
+.companion .page-flip { transform-origin: left center; animation: page-flip 3s ease-in-out infinite; }
+
+/* Hum: notes drifting up */
+.companion.act-hum .prop-hum { display: inline; }
+.companion .note-glyph { fill: var(--muted); font: 700 10px system-ui, sans-serif; opacity: 0; animation: note-up 2.4s ease-out infinite; }
+.companion .note-glyph:nth-child(2) { animation-delay: 0.8s; }
+.companion .note-glyph:nth-child(3) { animation-delay: 1.6s; }
+.companion.act-hum .bounce { animation: sway-body 1.2s ease-in-out infinite; }
+
+/* Look around */
+.companion.act-look .face { animation: look 5s ease-in-out; }
+
+/* Stretch */
+.companion.act-stretch .bounce { animation: stretch 2.5s ease-in-out 2; }
+.companion.act-stretch .arm-l { animation: raise-l 2.5s ease-in-out 2; }
+.companion.act-stretch .arm-r { animation: raise-r 2.5s ease-in-out 2; }
+
+/* Bloomling: water its flower */
+.companion.act-water .prop-water { display: inline; animation: prop-in 0.5s ease; }
+.companion .can { transform-origin: center; animation: can-tilt 6s ease-in-out; }
+.companion .can-body { fill: #8fb8c9; }
+.companion .can-spout, .companion .can-handle { fill: none; stroke: #8fb8c9; stroke-width: 3; stroke-linecap: round; }
+.companion .drop { fill: #7cc4e0; opacity: 0; animation: drop-fall 0.9s ease-in 1.2s infinite; }
+.companion .drop:nth-of-type(2) { animation-delay: 1.5s; }
+.companion .drop:nth-of-type(3) { animation-delay: 1.8s; }
+
+/* Bloomling: a butterfly visits */
+.companion.act-butterfly .prop-butterfly { display: inline; }
+.companion .fly { animation: flutter-path 8s ease-in-out; }
+.companion .flap { transform-origin: center; animation: flap 0.25s ease-in-out infinite; }
+.companion .wing { fill: #f39ab8; }
+.companion .wing-body { fill: #6d5a50; }
+.companion.act-butterfly .face { animation: look-up 8s ease-in-out; }
+
+/* Kindle: sparks pop from its flame */
+.companion.act-sparks .prop-sparks { display: inline; }
+.companion .spark { fill: var(--flame-core); opacity: 0; animation: spark 1.1s ease-out infinite; }
+.companion .spark-0 { --dx: -14px; }
+.companion .spark-1 { --dx: -5px; animation-delay: 0.3s; }
+.companion .spark-2 { --dx: 6px; animation-delay: 0.6s; }
+.companion .spark-3 { --dx: 15px; animation-delay: 0.15s; }
+.companion.act-sparks .flicker { animation-duration: 0.6s; }
+
+/* Kindle: happy wiggle */
+.companion.act-wiggle .bounce { animation: wiggle 0.5s ease-in-out 8; }
+.companion.act-wiggle .tail { animation-duration: 0.4s; }
+
+/* Ripple: blow bubbles */
+.companion.act-bubbles .prop-bubbles { display: inline; }
+.companion .bubble { fill: #e1f3f8; fill-opacity: 0.5; stroke: #5fb2d3; stroke-width: 1.4; opacity: 0; animation: bubble 2s ease-out infinite; }
+.companion .bubble-1 { animation-delay: 0.5s; }
+.companion .bubble-2 { animation-delay: 1s; }
+.companion .bubble-3 { animation-delay: 1.5s; }
+
+/* Ripple: paddle side to side */
+.companion.act-swim .bounce { animation: swim 2s ease-in-out 3; }
+.companion.act-swim .arm-l { animation: wave-l 0.5s ease-in-out infinite; }
+.companion.act-swim .arm-r { animation: wave-r 0.5s ease-in-out infinite; }
+
+@keyframes prop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes page-flip { 0%,55% { transform: scaleX(1); } 75%,100% { transform: scaleX(-1); } }
+@keyframes note-up { 0% { opacity: 0; transform: translate(0, 0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(6px, -18px); } }
+@keyframes sway-body { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+@keyframes look { 0%,100% { transform: translateX(0); } 20%,40% { transform: translateX(-3px); } 60%,80% { transform: translateX(3px); } }
+@keyframes look-up { 0%,100% { transform: translate(0, 0); } 20%,80% { transform: translate(2px, -2px); } }
+@keyframes stretch { 0%,100% { transform: scale(1, 1); } 45%,60% { transform: scale(0.96, 1.07); } }
+@keyframes raise-l { 0%,100% { transform: rotate(0); } 45%,60% { transform: rotate(55deg); } }
+@keyframes raise-r { 0%,100% { transform: rotate(0); } 45%,60% { transform: rotate(-55deg); } }
+@keyframes can-tilt { 0%,10% { transform: rotate(0); } 20%,80% { transform: rotate(25deg); } 90%,100% { transform: rotate(0); } }
+@keyframes drop-fall { 0% { opacity: 0; transform: translateY(0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(14px); } }
+@keyframes flutter-path {
+  0% { transform: translate(40px, -30px); opacity: 0; } 10% { opacity: 1; }
+  30% { transform: translate(10px, -10px); } 45%,60% { transform: translate(-16px, -4px); }
+  80% { transform: translate(-30px, -30px); } 100% { transform: translate(-60px, -50px); opacity: 0; } }
+@keyframes flap { 0%,100% { transform: scaleX(1); } 50% { transform: scaleX(0.3); } }
+@keyframes spark { 0% { opacity: 0; transform: translate(0, 0); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx), -18px); } }
+@keyframes wiggle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+@keyframes bubble { 0% { opacity: 0; transform: translate(0, 0) scale(0.6); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(14px, -26px) scale(1.3); } }
+@keyframes swim { 0%,100% { transform: translateX(0) rotate(0); } 25% { transform: translateX(-4px) rotate(-3deg); } 75% { transform: translateX(4px) rotate(3deg); } }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

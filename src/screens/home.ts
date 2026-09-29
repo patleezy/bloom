@@ -1,3 +1,4 @@
+import { startActivities } from '../companion/activities';
 import { renderCompanion } from '../companion/render';
 import { SPECIES, stageName } from '../companion/species';
 import { copy } from '../copy';
@@ -10,8 +11,8 @@ export function homeScreen(
   companion: CompanionProfile,
   companionHistory: SessionRecord[],
   allHistory: readonly SessionRecord[],
-  actions: { onStart: () => void; onSettings: () => void },
-): HTMLElement {
+  actions: { onStart: () => void; onSettings: () => void; onWhatsNew?: () => void },
+): { el: HTMLElement; dispose: () => void } {
   const now = new Date();
   const total = totalMinutes(companionHistory);
   const stage = stageFor(total);
@@ -37,14 +38,17 @@ export function homeScreen(
         h('div', { class: 'week-track' }, col), h('span', {}, weekday));
     }));
 
-  return h('main', { class: 'screen home' },
+  const art = renderCompanion(companion.species, stage.index, { label: `${companion.name}, a ${current}` });
+  const activities = startActivities(art, companion.species, { gap: [25000, 50000] });
+
+  const el = h('main', { class: 'screen home' },
     h('header', { class: 'topbar' },
       h('h1', { class: 'brand' }, copy.appName),
       h('div', { class: 'row' },
         h('span', { class: `streak${s ? ' on' : ''}` }, s ? copy.streak(s) : copy.streakZero),
         h('button', { class: 'icon-btn', 'aria-label': copy.settings, title: copy.settings, onclick: actions.onSettings }, '⚙'))),
     h('section', { class: 'stage-wrap' },
-      renderCompanion(companion.species, stage.index, { label: `${companion.name}, a ${current}` }),
+      art,
       h('p', { class: 'companion-name' }, companion.name),
       h('p', { class: 'stage-name' }, h('span', { class: `element-tag species-${companion.species}` }, `${sp.emoji} ${current}`)),
       bar,
@@ -52,7 +56,9 @@ export function homeScreen(
         ? copy.fullyGrown
         : copy.toNext(toNext, stageName(companion.species, stage.index + 1))),
       h('p', { class: 'muted small' }, copy.totalMinutes(total))),
+    actions.onWhatsNew ? h('button', { class: 'pill', onclick: actions.onWhatsNew }, copy.whatsNewPill) : null,
     h('button', { class: 'btn primary big', onclick: actions.onStart }, copy.startCta),
     strip,
     h('footer', { class: 'foot' }, h('p', { class: 'muted small' }, copy.privacy)));
+  return { el, dispose: activities.dispose };
 }

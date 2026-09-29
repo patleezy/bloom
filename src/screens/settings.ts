@@ -1,3 +1,4 @@
+import { APP_VERSION } from '../changelog';
 import { copy } from '../copy';
 import { h } from '../dom';
 import type { SessionService } from '../domain/sessionService';
@@ -10,7 +11,7 @@ const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
 export function settingsScreen(
   svc: SessionService,
   prefs: Prefs,
-  actions: { onBack: () => void; onClear: () => void; onImported: () => void },
+  actions: { onBack: () => void; onClear: () => void; onImported: () => void; onWhatsNew: () => void },
 ): HTMLElement {
   const status = h('p', { class: 'muted small', role: 'status' });
 
@@ -90,7 +91,11 @@ export function settingsScreen(
       fileInput,
       h('p', { class: 'muted small' }, copy.installHint)),
     status,
+    h('section', { class: 'card' },
+      h('button', { class: 'row between plain', onclick: actions.onWhatsNew },
+        h('span', {}, copy.whatsNew), h('span', { class: 'muted' }, '›'))),
     h('footer', { class: 'foot' },
       h('p', { class: 'muted small' }, copy.privacy),
+      h('p', { class: 'muted small' }, copy.version(APP_VERSION)),
       h('button', { class: 'btn link small danger', onclick: actions.onClear }, copy.clearData)));
 }

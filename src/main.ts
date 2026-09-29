@@ -9,7 +9,9 @@ import { runningScreen } from './screens/running';
 import { settingsScreen } from './screens/settings';
 import { startScreen } from './screens/start';
 import { LocalRepository } from './state/localRepository';
-import { applyTheme, clearPrefs, loadPrefs } from './state/prefs';
+import { APP_VERSION } from './changelog';
+import { whatsNewScreen } from './screens/whatsNew';
+import { applyTheme, clearPrefs, loadPrefs, savePrefs } from './state/prefs';
 
 // Swap LocalRepository for an API-backed repository here when a backend exists.
 const svc = new SessionService(new LocalRepository());
@@ -32,19 +34,37 @@ function show(el: HTMLElement, cleanup: (() => void) | null = null) {
 function goOnboarding() {
   startOnboarding(show, async (species, name) => {
     await svc.adopt(species, name);
+    markSeen(); // new users don't need release notes
     goHome();
   });
 }
 
 function goHome() {
   if (!svc.companion) return goOnboarding();
-  show(homeScreen(svc.companion, svc.companionHistory, svc.history, { onStart: goStart, onSettings: goSettings }));
+  const unseen = prefs.lastSeenVersion !== APP_VERSION;
+  const home = homeScreen(svc.companion, svc.companionHistory, svc.history, {
+    onStart: goStart,
+    onSettings: goSettings,
+    onWhatsNew: unseen ? () => goWhatsNew(goHome) : undefined,
+  });
+  show(home.el, home.dispose);
+}
+
+function markSeen() {
+  prefs.lastSeenVersion = APP_VERSION;
+  savePrefs(prefs);
+}
+
+function goWhatsNew(back: () => void) {
+  markSeen();
+  show(whatsNewScreen({ onBack: back }));
 }
 
 function goSettings() {
   show(settingsScreen(svc, prefs, {
     onBack: goHome,
     onImported: goSettings,
+    onWhatsNew: () => goWhatsNew(goSettings),
     onClear: async () => {
       if (!confirm(copy.confirmClear)) return;
       await svc.clearAll();

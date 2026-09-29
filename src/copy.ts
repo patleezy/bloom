@@ -52,6 +52,9 @@ export const copy = {
   home: 'Back home',
 
   // Settings
+  whatsNew: 'What’s new',
+  whatsNewPill: '✨ What’s new',
+  version: (v: string) => `Bloom v${v}`,
   theme: 'Theme',
   themes: { auto: 'Auto', light: 'Light', night: 'Night' },
   sound: 'Chime when a session ends',

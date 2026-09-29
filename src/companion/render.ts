@@ -177,6 +177,58 @@ function leafArms(g: Geo, cls: string): string {
           <g class="arm arm-r">${leaf(X + g.rx - 3, g.cy + 4, 20, 0.6 * g.s, cls)}</g>`;
 }
 
+
+// ---------- activity props ----------
+// Hidden by default; CSS reveals one when the svg carries a matching .act-* class
+// (see companion/activities.ts). All static markup built from numbers only.
+
+function props(species: SpeciesId, g: Geo): string {
+  const { cy, ry, rx, top, s } = g;
+  const mouthY = cy - ry * 0.1 + 5 * s;
+  const by = cy + ry * 0.48; // book spine top (below the smile)
+  const common = `
+    <g class="prop prop-read">
+      <path class="book-cover" d="M${X} ${by + 2 * s} L${X - 14 * s} ${by - 2 * s} L${X - 14 * s} ${by + 10 * s} L${X} ${by + 14 * s} L${X + 14 * s} ${by + 10 * s} L${X + 14 * s} ${by - 2 * s} Z"/>
+      <path class="book-page" d="M${X} ${by + 1 * s} L${X - 12 * s} ${by - 2 * s} L${X - 12 * s} ${by + 9 * s} L${X} ${by + 12 * s} Z"/>
+      <path class="book-page" d="M${X} ${by + 1 * s} L${X + 12 * s} ${by - 2 * s} L${X + 12 * s} ${by + 9 * s} L${X} ${by + 12 * s} Z"/>
+      <path class="book-page page-flip" d="M${X} ${by + 1 * s} L${X + 12 * s} ${by - 2 * s} L${X + 12 * s} ${by + 9 * s} L${X} ${by + 12 * s} Z"/>
+    </g>
+    <g class="prop prop-hum">
+      <text class="note-glyph" x="${X + rx * 0.6}" y="${top + 4}">♪</text>
+      <text class="note-glyph" x="${X + rx * 0.9}" y="${top - 6}">♫</text>
+      <text class="note-glyph" x="${X + rx * 0.4}" y="${top - 10}">♪</text>
+    </g>`;
+  const own: Record<SpeciesId, string> = {
+    bloomling: `
+      <g class="prop prop-water">
+        <g class="can">
+          <path class="can-body" d="M${X - rx - 22} ${top - 30} h18 v14 a3 3 0 0 1 -3 3 h-12 a3 3 0 0 1 -3 -3 Z"/>
+          <path class="can-spout" d="M${X - rx - 4} ${top - 24} L${X - rx + 10} ${top - 32}"/>
+          <path class="can-handle" d="M${X - rx - 22} ${top - 26} q-6 4 0 10"/>
+        </g>
+        <circle class="drop" cx="${X - 6}" cy="${top - 26}" r="2.4"/>
+        <circle class="drop" cx="${X - 1}" cy="${top - 24}" r="2.1"/>
+        <circle class="drop" cx="${X - 11}" cy="${top - 22}" r="2"/>
+      </g>
+      <g class="prop prop-butterfly" transform="translate(${X + rx * 0.8} ${top - 8})">
+        <g class="fly"><g class="flap">
+          <ellipse class="wing" cx="-4.5" cy="0" rx="5.5" ry="7.5"/>
+          <ellipse class="wing" cx="4.5" cy="0" rx="5.5" ry="7.5"/>
+          <ellipse class="wing-body" cx="0" cy="0" rx="1.2" ry="5.5"/>
+        </g></g>
+      </g>`,
+    kindle: `
+      <g class="prop prop-sparks">
+        ${[-14, -5, 6, 15].map((dx, i) => `<circle class="spark spark-${i}" cx="${X + dx * 0.3}" cy="${top - 14}" r="1.8"/>`).join('')}
+      </g>`,
+    ripple: `
+      <g class="prop prop-bubbles">
+        ${[0, 1, 2, 3].map((i) => `<circle class="bubble bubble-${i}" cx="${X + 6 * s + i * 2}" cy="${mouthY}" r="${2.6 + (i % 2) * 1.2}"/>`).join('')}
+      </g>`,
+  };
+  return common + own[species];
+}
+
 const PARTS: Record<SpeciesId, (g: Geo) => Parts> = { bloomling, kindle, ripple };
 
 // ---------- assembly ----------
@@ -210,6 +262,7 @@ function creature(species: SpeciesId, stage: number): string {
       <ellipse class="belly" cx="${X}" cy="${cy + ry * 0.35}" rx="${rx * 0.55}" ry="${ry * 0.45}"/>
       ${p.front}
       ${face(g)}
+      ${props(species, g)}
     </g>
     ${elder ? `<g class="motes"><circle cx="38" cy="80" r="2.5"/><circle cx="164" cy="60" r="2"/><circle cx="160" cy="124" r="2.5"/></g>` : ''}
     <g class="zzz"><text x="${X + rx + 4}" y="${g.top}">z</text><text x="${X + rx + 16}" y="${g.top - 12}">z</text></g>`;

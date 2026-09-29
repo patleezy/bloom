@@ -1,8 +1,14 @@
+<p align="center"><img src="public/logo.svg" alt="Bloom" width="280"></p>
+
 # Bloom
 
 A gentle, mobile-first focus timer. Staying present grows a small companion through six stages.
 Pick one of three starters — 🌿 Bloomling (Leaf), 🔥 Kindle (Ember), 💧 Ripple (Tide).
 It encourages focus rather than enforcing it: no app blocking, no guilt.
+
+![Bloom share image](public/og-image.png)
+
+See [CHANGELOG.md](CHANGELOG.md) for release notes (also in-app under Settings → What’s new).
 
 ## Run
 ```sh

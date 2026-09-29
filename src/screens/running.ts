@@ -1,3 +1,4 @@
+import { startActivities } from '../companion/activities';
 import { renderCompanion, setGrowth, setSleeping } from '../companion/render';
 import { stageName } from '../companion/species';
 import { copy } from '../copy';
@@ -22,6 +23,8 @@ export function runningScreen(
   const art = renderCompanion(companion.species, stage.index,
     { label: `${companion.name}, a ${stageName(companion.species, stage.index)}, growing` });
   const lines = copy.running(companion.name);
+  const isPaused = () => svc.active?.clock.runningSince === null;
+  const activities = startActivities(art, companion.species, { gap: [15000, 35000], isResting: isPaused });
   const remainingAtStart = minutesToNext(baseTotal);
 
   const ring = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -68,7 +71,8 @@ export function runningScreen(
       toNext.textContent = copy.liveToNext(left, stageName(companion.species, stage.index + 1));
     }
 
-    const paused = svc.active?.clock.runningSince === null;
+    const paused = isPaused();
+    if (paused) activities.interrupt();
     el.classList.toggle('is-paused', paused);
     setSleeping(art, paused);
     resumeBtn.hidden = !paused;
@@ -110,6 +114,7 @@ export function runningScreen(
     dispose: () => {
       window.clearInterval(tick);
       document.removeEventListener('visibilitychange', onVisibility);
+      activities.dispose();
       void releaseWakeLock();
     },
   };
