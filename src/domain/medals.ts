@@ -154,8 +154,8 @@ export interface Unlockable {
 export const UNLOCKABLES: Unlockable[] = [
   { id: 'moss', name: 'Moss', element: 'Earth', icon: 'mushroom', medalId: 'hours-10', available: true, requirement: 'Focus for 10 hours',
     blurb: 'A cozy little mushroom that grows a mossy garden on its cap.' },
-  { id: 'nimbus', name: 'Nimbus', element: 'Sky', icon: 'cloud', medalId: 'streak-7', available: false, requirement: 'Reach a 7-day streak',
-    blurb: 'A fluffy cloud with tiny feet that grows rainbows.' },
+  { id: 'nimbus', name: 'Nimbus', element: 'Sky', icon: 'cloud', medalId: 'streak-7', available: true, requirement: 'Reach a 7-day streak',
+    blurb: 'A fluffy cloud with tiny feet that grows a rainbow.' },
   { id: 'lumi', name: 'Lumi', element: 'Light', icon: 'moon', medalId: 'night-owl', available: false, requirement: 'Finish a session after 10pm',
     blurb: 'A glowing moth whose wings brighten with every session.' },
 ];

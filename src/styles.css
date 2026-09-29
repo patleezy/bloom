@@ -101,6 +101,14 @@
   --cheek: #eea896; --tag: #f7e4d8; --tag-ink: #7a4a2f;
 }
 
+.species-nimbus {
+  --body: #e8ebfa; --body-dark: #c3c9ec; --belly: #fafbff; --outline: #b9c0e6;
+  --leaf: #b9c2ea; --leaf-dark: #a3addf; --stem: #a3addf;
+  --accent-a: #f7c6d9; --accent-b: #fde2a8; --accent-c: #fff1b8;
+  --rb-1: #f4b6c2; --rb-2: #fbd8a0; --rb-3: #bfe3b4; --rb-4: #b8d4f2;
+  --drop: #9fc7ec; --cheek: #f3b6c8; --tag: #e6e9f8; --tag-ink: #3f4a86;
+}
+
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
 body {
@@ -541,6 +549,26 @@ button.stat:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; 
 .companion.act-tip .cap-group { animation: tip 2s ease-in-out 2; }
 @keyframes spore { 0% { opacity: 0; transform: translate(0, 0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(6px, -28px); } }
 @keyframes tip { 0%,100% { transform: rotate(0); } 30% { transform: rotate(-8deg); } 60% { transform: rotate(5deg); } }
+
+/* Nimbus */
+.companion .puff { fill: var(--body); }
+.companion .cloud-outline { fill: var(--outline); }
+.companion .rain-cloud { fill: #dde1f3; }
+.companion .arm-puff { fill: var(--body-dark); }
+.companion .raindrop { fill: var(--drop); }
+.companion .rainbow { fill: none; stroke-width: 3.2; stroke-linecap: round; }
+.companion .rb-1 { stroke: var(--rb-1); } .companion .rb-2 { stroke: var(--rb-2); } .companion .rb-3 { stroke: var(--rb-3); } .companion .rb-4 { stroke: var(--rb-4); }
+.companion .sun { fill: #fbd38a; }
+.companion .moon { fill: #f3dc95; }
+.companion .sparkle-dot { fill: var(--accent-c); animation: float 3s ease-in-out infinite; }
+.companion .mini-cloud { animation: float 5s ease-in-out infinite; }
+.companion .drizzle .raindrop, .companion .prop-drizzle .raindrop { animation: drop-fall 1.2s ease-in infinite; }
+.companion .rd-1, .companion .fall-1 { animation-delay: 0.4s !important; }
+.companion .rd-2, .companion .fall-2 { animation-delay: 0.8s !important; }
+.companion .fall-3 { animation-delay: 0.2s !important; }
+.companion.act-drizzle .prop-drizzle { display: inline; }
+.companion.act-puff .bounce { animation: puff-up 1.5s ease-in-out 2; }
+@keyframes puff-up { 0%,100% { transform: scale(1, 1); } 45% { transform: scale(1.08, 1.05); } }
 
 /* Cinder: happy wiggle */
 .companion.act-wiggle .bounce { animation: wiggle 0.5s ease-in-out 8; }
