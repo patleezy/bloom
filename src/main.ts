@@ -22,6 +22,8 @@ import { LocalRepository } from './state/localRepository';
 import { APP_VERSION } from './changelog';
 import { whatsNewScreen } from './screens/whatsNew';
 import { evolutionScreen } from './screens/evolution';
+import { medalsScreen } from './screens/medals';
+import { evaluateMedals, newlyEarned } from './domain/medals';
 import { applyTheme, clearPrefs, loadPrefs, savePrefs } from './state/prefs';
 
 // Swap LocalRepository for an API-backed repository here when a backend exists.
@@ -62,9 +64,14 @@ function goHome() {
     onStart: goStart,
     onSettings: goSettings,
     onWhatsNew: unseen ? () => goWhatsNew(goHome) : undefined,
+    onMedals: () => goMedals(goHome),
     onEvolution: () => show(evolutionScreen(svc.companion!, totalMinutes(svc.companionHistory), { onBack: goHome })),
   });
   show(home.el, home.dispose);
+}
+
+function goMedals(back: () => void) {
+  show(medalsScreen(evaluateMedals(svc.history), { onBack: back }));
 }
 
 function markSeen() {
@@ -135,8 +142,12 @@ function goRunning(restored: boolean) {
         tasks: record.tasks.filter((t) => !t.done).map((t) => t.text),
       };
       const breakMin = breakMinutesAfter(svc.history, new Date());
+      const medalsNow = newlyEarned(svc.history.slice(0, -1), svc.history);
+      const back = () => goHome();
       show(endScreen(record, svc.companion!, svc.companionHistory, svc.history, {
         onHome: goHome,
+        onMedals: () => goMedals(back),
+        newMedals: medalsNow,
         breakOffer: prefs.breaks && record.completed
           ? { minutes: breakMin, long: breakMin === LONG_BREAK_MIN, onBreak: () => goBreak(breakMin) }
           : undefined,

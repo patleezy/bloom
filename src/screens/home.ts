@@ -4,7 +4,9 @@ import { renderCompanion } from '../companion/render';
 import { SPECIES, stageName } from '../companion/species';
 import { copy } from '../copy';
 import { h } from '../dom';
+import { evaluateMedals, nearestUnlock } from '../domain/medals';
 import { lastSevenDays, streak, totalMinutes } from '../domain/stats';
+import { progressLabel } from './medals';
 import type { CompanionProfile, SessionRecord } from '../domain/types';
 import { icon } from '../icons';
 import { minutesToNext, progressToNext, stageFor } from '../logic/growth';
@@ -20,6 +22,7 @@ export function homeScreen(
     onSettings: () => void;
     onWhatsNew?: () => void;
     onEvolution: () => void;
+    onMedals: () => void;
   },
 ): { el: HTMLElement; dispose: () => void } {
   const now = new Date();
@@ -79,6 +82,15 @@ export function homeScreen(
         } }, icon('close')))
     : null;
 
+  // Medals badge, plus a gentle nudge once an unlock is at least halfway there.
+  const medals = evaluateMedals(allHistory);
+  const medalCount = medals.filter((m) => m.earned).length;
+  const next = nearestUnlock(medals);
+  const hint = next && next.status.current / next.status.target >= 0.5
+    ? h('button', { class: 'unlock-hint', type: 'button', onclick: opts.onMedals }, icon(next.unlock.icon),
+        copy.unlockHint(next.unlock.requirement, progressLabel(next.status), next.unlock.name))
+    : null;
+
   const el = h('main', { class: 'screen home' },
     h('header', { class: 'topbar' },
       h('img', { class: 'logo', src: './logo.svg', alt: copy.appName, width: '112', height: '35' }),
@@ -97,7 +109,10 @@ export function homeScreen(
       h('p', { class: 'muted small' }, copy.totalMinutes(total))),
     h('div', { class: 'stats-row' },
       h('div', { class: `stat${s ? ' on' : ''}` }, icon('sprout'),
-        h('span', {}, h('strong', {}, s ? copy.streak(s) : copy.streakZero), h('small', {}, copy.streakTitle)))),
+        h('span', {}, h('strong', {}, s ? copy.streak(s) : copy.streakZero), h('small', {}, copy.streakTitle))),
+      h('button', { class: `stat${medalCount ? ' on' : ''}`, type: 'button', onclick: opts.onMedals, 'aria-label': `${copy.medalCount(medalCount)}. ${copy.medalsOpen}` },
+        icon('medal'), h('span', {}, h('strong', {}, String(medalCount)), h('small', {}, copy.medalsTitle)))),
+    hint,
     h('button', { class: 'btn primary big', onclick: opts.onStart }, copy.startCta),
     strip,
     h('footer', { class: 'foot' }, h('p', { class: 'muted small' }, copy.privacy)));

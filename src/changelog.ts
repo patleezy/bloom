@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.8.0';
+export const APP_VERSION = '0.9.0';
 
 export interface Release {
   version: string;
@@ -12,6 +12,17 @@ export interface Release {
 }
 
 export const CHANGELOG: Release[] = [
+  {
+    version: '0.9.0',
+    date: '2026-09-30',
+    title: 'Medals and new friends',
+    notes: [
+      'Medals! Earn 16 of them for focus time, streaks, habits like Night Owl and Early Bird, and helping your companion grow. They’re yours forever, even if a streak ends.',
+      'Medals count everything you’ve already done, so you may have a few waiting for you.',
+      'New friends on the way: Moss, Nimbus, and Lumi. See what unlocks each one on the Medals page.',
+      'The 7-day chart on the home screen shows your focus bars again.',
+    ],
+  },
   {
     version: '0.8.0',
     date: '2026-09-30',

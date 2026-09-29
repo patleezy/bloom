@@ -82,6 +82,23 @@ export const copy = {
   evoNeeds: (m: number) => `${m.toLocaleString()} min to go`,
   evoOpen: 'See the full journey',
 
+  // Medals
+  medalsTitle: 'Medals',
+  medalsSummary: (n: number, total: number) => `${n} of ${total} earned`,
+  medalsForever: 'Medals are yours to keep. They never go away, even if a streak ends.',
+  medalCount: (n: number) => (n === 1 ? '1 medal' : `${n} medals`),
+  medalsOpen: 'See your medals',
+  medalProgress: (cur: string, target: string) => `${cur} of ${target}`,
+  medalEarnedOn: (date: string) => `Earned ${date}`,
+  medalLocked: 'Not earned yet',
+  days: (n: number) => (n === 1 ? '1 day' : `${n} days`),
+  newMedal: 'New medal!',
+  newMedals: (n: number) => `${n} new medals!`,
+  unlocksTitle: 'New friends on the way',
+  unlocksIntro: 'Keep focusing to unlock new companions. They arrive in an upcoming update, and your progress counts starting now.',
+  unlockReady: (name: string) => `Unlocked! ${name} will be ready to adopt in an upcoming update.`,
+  unlockHint: (req: string, progress: string, name: string) => `${req} to meet ${name} · ${progress}`,
+
   // Breaks
   breakOffer: (m: number) => `Take a ${m}-minute break`,
   breakOfferLong: 'You’ve earned a longer one.',
