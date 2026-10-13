@@ -25,6 +25,7 @@ export function homeScreen(
     onEvolution: () => void;
     onMedals: () => void;
     onKeepsakes: () => void;
+    onDressUp: () => void;
     keepsakes: KeepsakeState;
     onGarden: () => void;
     waitingUnlock?: SpeciesId;
@@ -70,7 +71,7 @@ export function homeScreen(
       })),
     weekEmpty ? h('p', { class: 'muted small' }, copy.weekEmpty) : null);
 
-  const art = renderCompanion(companion.species, stage.index, { label: `${companion.name}, a ${current}` });
+  const art = renderCompanion(companion.species, stage.index, { label: `${companion.name}, a ${current}`, wear: companion.outfit.wear });
   const activities = startActivities(art, companion.species, { gap: [25000, 50000] });
   const petBtn = makePettable(art, {
     label: copy.pet(companion.name),
@@ -109,7 +110,10 @@ export function homeScreen(
     opts.onWhatsNew ? h('button', { class: 'pill', onclick: opts.onWhatsNew }, icon('sparkle'), copy.whatsNewPill) : null,
     h('section', { class: 'stage-wrap' },
       petBtn,
-      h('p', { class: 'companion-name' }, companion.name),
+      h('p', { class: 'companion-name' }, companion.name,
+        opts.keepsakes.owned.size
+          ? h('button', { class: 'icon-btn small dress-btn', type: 'button', 'aria-label': copy.dressOpen(companion.name), title: copy.dressTitle, onclick: opts.onDressUp }, icon('hanger'))
+          : null),
       h('p', { class: 'stage-name' },
         h('span', { class: `element-tag species-${companion.species}` }, icon(sp.icon), current)),
       journey,

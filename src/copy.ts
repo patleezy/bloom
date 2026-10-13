@@ -165,6 +165,15 @@ export const copy = {
   rename: 'Companion name',
   save: 'Save',
   saved: 'Saved.',
+  // Dress up
+  dressTitle: 'Dress up',
+  dressOpen: (name: string) => `Dress up ${name}`,
+  dressWho: 'Who’s getting dressed?',
+  dressNone: 'Nothing',
+  dressEmpty: 'Nothing to wear yet. Open gifts to find hats, scarves, and more.',
+  dressWearing: (name: string, item: string) => `${name}, wearing a ${item.toLowerCase()}`,
+  dressSoon: 'Little friends and backdrops are coming soon.',
+
   // Keepsakes
   keepsakesTitle: 'Keepsakes',
   keepsakesOpen: 'See your keepsakes',

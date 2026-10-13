@@ -7,11 +7,21 @@ import type { ClockState } from '../logic/timer';
  */
 export type SpeciesId = 'bloomling' | 'cinder' | 'ripple' | 'moss' | 'nimbus' | 'lumi';
 
+/** What a companion has on: keepsake item ids (or null) per slot. Each companion has its own. */
+export interface Outfit {
+  wear: string | null;
+  friend: string | null;
+  backdrop: string | null;
+}
+
+export const emptyOutfit = (): Outfit => ({ wear: null, friend: null, backdrop: null });
+
 export interface CompanionProfile {
   id: string;
   species: SpeciesId;
   name: string;
   adoptedAt: number; // epoch ms
+  outfit: Outfit;
 }
 
 /** One thing the user wants to get done in a session (up to MAX_TASKS). */

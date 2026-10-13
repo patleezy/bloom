@@ -1,4 +1,5 @@
 import type { SpeciesId } from '../domain/types';
+import { keepsakeMarkup } from './keepsakeArt';
 
 /**
  * Companion art. Each species is a small round creature that grows something on its head:
@@ -376,7 +377,42 @@ const PARTS: Record<SpeciesId, (g: Geo) => Parts> = { bloomling, cinder, ripple,
 
 // ---------- assembly ----------
 
-function creature(species: SpeciesId, stage: number): string {
+/**
+ * Where a worn keepsake sits, from the body's shape (shared by every species, so one rule fits
+ * all six stages). Hats tilt to one side so the species' own flower or flame stays visible.
+ * `w` is the drawn width as a share of the body width; `at` is the art's anchor point (48×48 art).
+ */
+const WEAR_FIT: Record<string, { spot: 'hat' | 'clip' | 'crown' | 'scarf'; w: number; at: [number, number] }> = {
+  'leaf-cap': { spot: 'hat', w: 0.95, at: [24, 30] },
+  'acorn-hat': { spot: 'hat', w: 0.9, at: [24, 28] },
+  'sun-hat': { spot: 'hat', w: 1.1, at: [24, 30] },
+  'mushroom-cap': { spot: 'hat', w: 1.0, at: [24, 28] },
+  beanie: { spot: 'hat', w: 0.9, at: [24, 33] },
+  'daisy-clip': { spot: 'clip', w: 0.6, at: [24, 24] },
+  'berry-bow': { spot: 'clip', w: 0.62, at: [24, 24] },
+  'flower-crown': { spot: 'crown', w: 1.25, at: [24, 29] },
+  'golden-crown': { spot: 'crown', w: 0.85, at: [24, 37] },
+  'cozy-scarf': { spot: 'scarf', w: 1.65, at: [24, 22] },
+  'star-scarf': { spot: 'scarf', w: 1.65, at: [24, 22] },
+};
+
+/** Item ids that can be worn (exported for tests and the dress-up screen). */
+export const WEARABLE = Object.keys(WEAR_FIT);
+
+function wearLayer(itemId: string | undefined, g: Geo): string {
+  const fit = itemId ? WEAR_FIT[itemId] : undefined;
+  if (!itemId || !fit) return '';
+  const k = (g.rx * fit.w) / 34; // art items are ~34 units wide
+  const [ax, ay] = fit.at;
+  const [x, y, r] =
+    fit.spot === 'hat' ? [X - g.rx * 0.38, g.top + g.ry * 0.16, -20]
+    : fit.spot === 'clip' ? [X + g.rx * 0.62, g.top + g.ry * 0.38, 15]
+    : fit.spot === 'crown' ? [X, g.top + g.ry * 0.1, 0]
+    : [X, g.cy + g.ry * 0.3, 0];
+  return `<g class="worn worn-${fit.spot}" transform="translate(${x} ${y}) rotate(${r}) scale(${k}) translate(${-ax} ${-ay})">${keepsakeMarkup(itemId)}</g>`;
+}
+
+function creature(species: SpeciesId, stage: number, wear?: string): string {
   const { rx, ry } = SIZES[stage];
   const hasFeet = stage >= 2;
   const cy = GROUND - ry - (hasFeet ? 4 : 0);
@@ -405,6 +441,7 @@ function creature(species: SpeciesId, stage: number): string {
       <ellipse class="belly" cx="${X}" cy="${cy + ry * 0.35}" rx="${rx * 0.55}" ry="${ry * 0.45}"/>
       ${p.front}
       ${face(g)}
+      ${wearLayer(wear, g)}
       ${props(species, g)}
     </g>
     ${elder ? `<g class="motes"><circle cx="38" cy="80" r="2.5"/><circle cx="164" cy="60" r="2"/><circle cx="160" cy="124" r="2.5"/></g>` : ''}
@@ -415,7 +452,7 @@ function creature(species: SpeciesId, stage: number): string {
 export function renderCompanion(
   species: SpeciesId,
   stage: number,
-  opts: { growth?: number; label: string },
+  opts: { growth?: number; label: string; wear?: string | null },
 ): SVGSVGElement {
   const idx = Math.max(0, Math.min(SIZES.length - 1, stage));
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -426,7 +463,7 @@ export function renderCompanion(
   svg.setAttribute('role', 'img');
   svg.setAttribute('aria-label', opts.label);
   // Static trusted template only.
-  svg.innerHTML = `<g class="plant">${creature(species, idx)}</g>`;
+  svg.innerHTML = `<g class="plant">${creature(species, idx, opts.wear ?? undefined)}</g>`;
   setGrowth(svg, opts.growth ?? 1);
   return svg;
 }

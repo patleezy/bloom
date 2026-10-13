@@ -3,6 +3,7 @@ import {
   DUPLICATE_SPARKLES, ITEMS, PICK_COST, PITY_EVERY, deriveGifts, keepsakeState, type Rarity,
 } from '../src/domain/keepsakes';
 import { hasArt } from '../src/companion/keepsakeArt';
+import { WEARABLE } from '../src/companion/render';
 import { emptyKeepsakes, type SessionRecord } from '../src/domain/types';
 
 const rec = (id: string, minutes: number, endedAt: number): SessionRecord => ({
@@ -40,6 +41,10 @@ describe('gifts', () => {
   it('every item has art and a unique id', () => {
     expect(ITEMS.every((i) => hasArt(i.id))).toBe(true);
     expect(new Set(ITEMS.map((i) => i.id)).size).toBe(ITEMS.length);
+  });
+
+  it('every wearable item has a place to sit', () => {
+    expect([...WEARABLE].sort()).toEqual(ITEMS.filter((i) => i.kind === 'wear').map((i) => i.id).sort());
   });
 
   it('can be any item in the catalog', () => {

@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to BloomyBuds (formerly Bloom). Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
 
+## 0.18.0 — Dress up (2026-10-13)
+- Dress up! Your companion can now wear the keepsakes you’ve found: hats, caps, clips, crowns, and scarves.
+- Tap the hanger next to your companion’s name (or Dress up in Keepsakes) to pick an outfit. Each companion has their own.
+- Outfits show everywhere your companion does: at home, during sessions, on breaks, and in your garden.
+- Little friends and backdrops are next.
+
 ## 0.17.0 — Keepsakes (2026-10-13)
 - Keepsakes! Every session of 5 minutes or more ends with a gift to open. Longer sessions bring rarer finds.
 - Four rarities to collect: Seed, Sprout, Bloom, and Golden Bloom. A Bloom or better turns up at least every 10 gifts.

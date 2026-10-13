@@ -40,6 +40,7 @@ export function giftCard(opts: { title: string; body?: string; open: () => Promi
 
 export function keepsakesScreen(state: KeepsakeState, opts: {
   onBack: () => void;
+  onDressUp: () => void;
   openGift: (sessionId: string) => Promise<OpenedGift | null>;
   pick: (itemId: string) => Promise<boolean>;
   refresh: () => void;
@@ -86,6 +87,7 @@ export function keepsakesScreen(state: KeepsakeState, opts: {
       h('h2', {}, copy.keepsakesTitle),
       h('span', { class: 'spacer' })),
     h('p', { class: 'muted' }, copy.keepsakesSummary(state.owned.size, ITEMS.length)),
+    state.owned.size ? h('button', { class: 'btn ghost', type: 'button', onclick: opts.onDressUp }, icon('hanger'), ' ', copy.dressTitle) : null,
     h('div', { class: 'card sparkles-card' },
       h('p', { class: 'sparkles-balance' }, icon('sparkle'), h('strong', {}, copy.sparkles(state.sparkles))),
       h('p', { class: 'muted small' }, copy.sparklesHelp)),

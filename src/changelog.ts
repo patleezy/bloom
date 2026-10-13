@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.17.0';
+export const APP_VERSION = '0.18.0';
 
 export interface Release {
   version: string;
@@ -12,6 +12,17 @@ export interface Release {
 }
 
 export const CHANGELOG: Release[] = [
+  {
+    version: '0.18.0',
+    date: '2026-10-13',
+    title: 'Dress up',
+    notes: [
+      'Dress up! Your companion can now wear the keepsakes you’ve found: hats, caps, clips, crowns, and scarves.',
+      'Tap the hanger next to your companion’s name (or Dress up in Keepsakes) to pick an outfit. Each companion has their own.',
+      'Outfits show everywhere your companion does: at home, during sessions, on breaks, and in your garden.',
+      'Little friends and backdrops are next.',
+    ],
+  },
   {
     version: '0.17.0',
     date: '2026-10-13',

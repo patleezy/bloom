@@ -26,7 +26,7 @@ export function endScreen(
   const s = streak([...allHistory], new Date());
   const newStage = stageName(companion.species, stageAfter.index);
 
-  const art = renderCompanion(companion.species, stageAfter.index, { label: `${companion.name}, a ${newStage}` });
+  const art = renderCompanion(companion.species, stageAfter.index, { label: `${companion.name}, a ${newStage}`, wear: companion.outfit.wear });
   art.classList.add(grew ? 'grew' : 'celebrate');
 
   return h('main', { class: 'screen end' },

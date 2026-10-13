@@ -6,9 +6,11 @@ import { countedMinutes } from '../logic/growth';
 import * as clock from '../logic/timer';
 import { cleanLabel, cleanName, parseSnapshot, serialize } from '../state/localRepository';
 import type { BloomRepository } from '../state/repository';
-import { MAX_TASKS, emptySnapshot, type ActiveSession, type BloomSnapshot, type CompanionProfile, type SessionRecord, type SpeciesId } from './types';
+import { MAX_TASKS, emptyOutfit, emptySnapshot, type ActiveSession, type BloomSnapshot, type CompanionProfile, type Outfit, type SessionRecord, type SpeciesId } from './types';
 
 export type Now = () => number;
+
+const SLOT_KIND = { wear: 'wear', friend: 'friend', backdrop: 'backdrop' } as const;
 
 /**
  * Application logic for focus sessions. Owns the in-memory snapshot and writes through
@@ -77,6 +79,7 @@ export class SessionService {
       species,
       name: cleanName(name) || 'Buddy',
       adoptedAt: this.now(),
+      outfit: emptyOutfit(),
     };
     this.snap.companions.push(companion);
     await this.repo.saveCompanion(companion);
@@ -123,6 +126,19 @@ export class SessionService {
     if (!item || state.owned.has(item.id) || state.sparkles < PICK_COST[item.rarity]) return false;
     this.snap.keepsakes.picked.push({ item: item.id, at: this.now() });
     await this.repo.saveKeepsakes(this.snap.keepsakes);
+    return true;
+  }
+
+  /** Put on (or take off, with null) a keepsake you own. Returns false if it isn't yours or doesn't fit the slot. */
+  async setOutfit(companionId: string, slot: keyof Outfit, itemId: string | null): Promise<boolean> {
+    const c = this.companionById(companionId);
+    if (!c) return false;
+    if (itemId !== null) {
+      const item = itemById(itemId);
+      if (!item || item.kind !== SLOT_KIND[slot] || !this.keepsakes().owned.has(item.id)) return false;
+    }
+    c.outfit = { ...c.outfit, [slot]: itemId };
+    await this.repo.saveCompanion(c);
     return true;
   }
 
