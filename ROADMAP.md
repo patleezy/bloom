@@ -16,15 +16,16 @@ A new Claude Code session should read this first.
 | 0.10 | #10 | Several companions, garden, "Who's joining you?" picker |
 | 0.11 | #11 | Moss (unlocked by Ten Hours) |
 | 0.12 | #12 | Nimbus (unlocked by a 7-day streak), ROADMAP.md and CLAUDE.md |
-| 0.13 | — | Lumi (unlocked by Night Owl); all three announced friends shipped |
+| 0.13 | #13 | Lumi (unlocked by Night Owl); all three announced friends shipped |
+| 0.14 | — | Renamed to **BloomyBuds** on bloomybuds.app: SEO title and description, canonical URL, structured data, robots.txt, sitemap, logo, share image |
 
 ## Next up (in order)
-1. **Scenes**: sound picker (‹ ›) during sessions with matching animated backgrounds. Scene 1 is the companion's signature sound; shared scenes: Rain, Night sky, Ocean, Snowfall, Silence. **Blocked on sound files from the owner** (see below).
-2. **Opt-in analytics**: Vercel Web Analytics, cookieless, opt-in during onboarding and in Settings. Owner must enable Analytics in the Vercel dashboard first. Add the endpoint to CSP `connect-src` only.
-3. **Earned cosmetics**: hats, pots, backgrounds unlocked by focus minutes or medals; some Scenes become unlockables. Largest art effort.
+1. **Scenes**: sound picker (‹ ›) during sessions with matching animated backgrounds. Scene 1 is the companion's signature sound; shared scenes: Rain, Night sky, Ocean, Snowfall, Silence. Sound files received (Pixabay, processed to seamless mono loops).
+2. **Opt-in analytics**: Vercel Web Analytics, cookieless, opt-in during onboarding and in Settings. Analytics is enabled in Vercel (Hobby). Add the endpoint to CSP `connect-src` only.
+3. **Collectibles (cosmetics)**: every session of 5+ minutes ends with a gift to open. Themed rarities: **Seed, Sprout, Bloom, Golden Bloom**. Longer sessions improve odds; a guaranteed rare at least every 10 sessions; duplicates become Sparkles to pick a specific item. Drops are derived from session history (seeded by session id, so they can't be rerolled). No retroactive gifts (no existing users). Never sell randomness. PR A: gifts + Keepsakes book. PR B: wearing items, little friends, backgrounds.
 4. **Weekly recap card**: shareable image generated on the device (minutes, medals, companion).
 5. **Floating mini-companion**: Document Picture-in-Picture, desktop Chrome and Edge only.
-6. **Launch prep**: final name (leaning **BloomBuds**; check USPTO and domains), rename throughout, store screenshots, real-phone testing.
+6. **Launch prep**: trademark check for BloomyBuds, store screenshots, real-phone testing.
 7. **More species** (optional, ongoing): follow "Adding a species" in CLAUDE.md. Each needs a new medal or reuses one as its unlock. Ideas: a crystal/gem friend (100 hours), a star friend (30-day streak).
 
 ## Later (needs a backend)
@@ -41,7 +42,6 @@ Accounts and sync (code is already behind a `BloomRepository` interface), remind
 - One PR per feature; bump version and changelog in each.
 
 ## Waiting on the owner
-- **Sound files for Scenes** (pixabay.com/sound-effects, free, MP3, 30–120 s, seamless loop, no voices or music): gentle rain, night crickets, calm ocean waves, soft winter wind, forest birds morning, fireplace crackling, small stream.
-- **Final name** (BloomBuds?) before the recap card and launch prep.
 - **Enable Vercel Analytics** before the analytics PR.
-- Turn on GitHub private vulnerability reporting (Settings → Code security) if not done.
+- Turn on GitHub private vulnerability reporting (Settings → Advanced Security) if not done.
+- Add bloomybuds.app in Vercel → Project → Settings → Domains, and set the repo's default branch to `main`.

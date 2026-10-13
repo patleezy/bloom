@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.13.0';
+export const APP_VERSION = '0.14.0';
 
 export interface Release {
   version: string;
@@ -12,6 +12,16 @@ export interface Release {
 }
 
 export const CHANGELOG: Release[] = [
+  {
+    version: '0.14.0',
+    date: '2026-10-13',
+    title: 'Hello, BloomyBuds',
+    notes: [
+      'Bloom is now BloomyBuds, with a new home at bloomybuds.app.',
+      'Fresh logo and link preview to match the new name.',
+      'Your companions, progress, and medals are unchanged.',
+    ],
+  },
   {
     version: '0.13.0',
     date: '2026-09-30',
