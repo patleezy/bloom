@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to BloomyBuds (formerly Bloom). Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
 
+## 0.16.0 — Softer scenes (2026-10-13)
+- Scenes have a fresh, softer look: pastel skies inspired by picture books instead of literal weather.
+- Rain now falls gently and smoothly, with misty hills and little ripples. No more skipping.
+- Ocean has a peach dusk and slow rolling waves, Night sky has a pale moon, and Snowfall drifts in soft layers.
+- Scenes look the same in Light and Night themes, and stay still if your device asks for reduced motion.
+
 ## 0.15.0 — Set the scene (2026-10-13)
 - Scenes! Use ‹ › next to the speaker during a session to change the mood: your companion’s signature sound, Rain, Night sky, Ocean, Snowfall, or Silence.
 - Each scene changes the session background too: rain streaks, a starry sky, rolling waves, or falling snow.
