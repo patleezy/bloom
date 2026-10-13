@@ -138,3 +138,42 @@ describe('away grace period', () => {
     expect(svc.isDone()).toBe(false);
   });
 });
+
+describe('keepsakes storage (schema v6)', () => {
+  const v5 = { schemaVersion: 5, companions: [{ id: 'c1', species: 'bloomling', name: 'Pip', adoptedAt: 1 }], currentId: 'c1', history: [rec('a')], active: null };
+
+  it('migrates v5 with gifts starting now (no retroactive gifts)', () => {
+    const s = parseStored(JSON.stringify(v5), 12345);
+    expect(s.keepsakes).toEqual({ giftsFrom: 12345, opened: [], picked: [] });
+    expect(s.history).toHaveLength(1);
+  });
+
+  it('parses keepsakes as untrusted', () => {
+    const s = parseStored(JSON.stringify({ ...v5, schemaVersion: 6, keepsakes: {
+      giftsFrom: 7,
+      opened: [{ id: 'a', at: 1 }, { id: 'a', at: 2 }, { id: '<b>', at: 1 }, { id: 'x', at: -1 }, 'junk'],
+      picked: [{ item: 'rainbow', at: 3 }, { item: 'dragon', at: 3 }, { item: 'rainbow', at: 4 }],
+    } }), 99);
+    expect(s.keepsakes).toEqual({ giftsFrom: 7, opened: [{ id: 'a', at: 1 }], picked: [{ item: 'rainbow', at: 3 }] });
+    expect(parseStored(JSON.stringify({ ...v5, schemaVersion: 6, keepsakes: 'nope' }), 99).keepsakes.giftsFrom).toBe(99);
+  });
+
+  it('opens gifts and saves them', async () => {
+    const storage = new MemStorage();
+    let t = 1_000_000;
+    const svc = new SessionService(new LocalRepository(storage), () => t, (() => { let i = 0; return () => `id${i++}`; })());
+    await svc.init();
+    await svc.adopt('bloomling', 'Pip');
+    await svc.start(25);
+    t += 25 * 60000;
+    const r = (await svc.finish())!;
+    expect(svc.giftFor(r.id)).not.toBeNull();
+    const opened = await svc.openGift(r.id);
+    expect(opened?.sparkles).toBe(0);
+    expect(await svc.openGift(r.id)).toBeNull(); // only once
+    const again = new SessionService(new LocalRepository(storage));
+    await again.init();
+    expect(again.keepsakes().owned.has(opened!.item.id)).toBe(true);
+    expect(await again.pickItem(opened!.item.id)).toBe(false); // already yours
+  });
+});

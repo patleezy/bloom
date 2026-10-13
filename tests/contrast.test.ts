@@ -32,6 +32,8 @@ const TEXT: [string, string][] = [
   ['ink', 'bg'], ['ink', 'surface'], ['muted', 'bg'], ['muted', 'surface'],
   ['accent', 'bg'], ['accent', 'surface'], ['ink', 'accent-soft'], ['accent-ink', 'accent'],
   ['danger', 'bg'], ['danger', 'surface'],
+  // Keepsake rarity chips
+  ['rar-seed-ink', 'rar-seed'], ['rar-sprout-ink', 'rar-sprout'], ['rar-bloom-ink', 'rar-bloom'], ['rar-golden-ink', 'rar-golden'],
 ];
 const UI: [string, string][] = [
   ['border', 'bg'], ['border', 'surface'], ['accent', 'track'], ['ink', 'bg'],
