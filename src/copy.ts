@@ -5,10 +5,10 @@ import type { SpeciesId } from './domain/types';
  * Each species has its own personality in the running lines.
  */
 export const copy = {
-  appName: 'Bloom',
+  appName: 'BloomyBuds',
 
   // Onboarding
-  welcomeTitle: 'Hi, welcome to Bloom',
+  welcomeTitle: 'Hi, welcome to BloomyBuds',
   welcomeLines: [
     'Focus for a bit and your companion grows. That’s the whole idea.',
     'Anything over 5 minutes counts toward growth.',
@@ -23,7 +23,7 @@ export const copy = {
   nameCta: 'Start growing',
 
   // Home
-  introCard: 'Bloom helps you focus by growing a companion with every minute you stay present.',
+  introCard: 'BloomyBuds helps you focus by growing a companion with every minute you stay present.',
   dismiss: 'Dismiss',
   startCta: 'Start a session',
   streak: (n: number) => (n === 1 ? '1 day' : `${n} days`),
@@ -168,12 +168,12 @@ export const copy = {
   importCta: 'Restore backup',
   importConfirm: 'Replace everything on this device with this backup?',
   importOk: 'Backup restored.',
-  importBad: 'That file isn’t a Bloom backup. Nothing changed.',
-  installHint: 'Add Bloom to your home screen and it works like an app, even offline.',
+  importBad: 'That file isn’t a BloomyBuds backup. Nothing changed.',
+  installHint: 'Add BloomyBuds to your home screen and it works like an app, even offline.',
   clearData: 'Delete my data',
   confirmClear: 'This deletes your companion and history from this device for good. Continue?',
   privacy: 'Everything stays on this device. No accounts, no tracking.',
   whatsNew: 'What’s new',
   whatsNewPill: 'What’s new',
-  version: (v: string) => `Bloom v${v}`,
+  version: (v: string) => `BloomyBuds v${v}`,
 };

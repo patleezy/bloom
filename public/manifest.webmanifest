@@ -1,6 +1,6 @@
 {
-  "name": "Bloom — focus companion",
-  "short_name": "Bloom",
+  "name": "BloomyBuds: focus companion",
+  "short_name": "BloomyBuds",
   "description": "A gentle focus timer that grows a companion as you focus.",
   "start_url": "./",
   "scope": "./",

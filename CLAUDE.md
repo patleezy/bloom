@@ -1,4 +1,6 @@
-# Bloom: notes for Claude
+# BloomyBuds (repo: bloom): notes for Claude
+
+The product name is **BloomyBuds** (domain: bloomybuds.app). Internal identifiers, storage keys (`bloom:*`) and the repo keep "bloom"; don't rename them, since that would break saved data.
 
 Gentle, mobile-first focus timer where focus time grows a companion. Vite + TypeScript, no framework.
 Read **ROADMAP.md** for what's shipped, what's next, and open decisions.

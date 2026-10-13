@@ -98,7 +98,7 @@ export function homeScreen(
 
   const el = h('main', { class: 'screen home' },
     h('header', { class: 'topbar' },
-      h('img', { class: 'logo', src: './logo.svg', alt: copy.appName, width: '112', height: '35' }),
+      h('img', { class: 'logo', src: './logo.svg', alt: copy.appName, width: '160', height: '35' }),
       h('div', { class: 'row' },
         h('button', { class: 'icon-btn', 'aria-label': copy.gardenOpen, title: copy.gardenTitle, onclick: opts.onGarden }, icon('garden')),
         h('button', { class: 'icon-btn', 'aria-label': copy.settings, title: copy.settings, onclick: opts.onSettings }, icon('settings')))),

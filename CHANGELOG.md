@@ -1,5 +1,10 @@
 # Changelog
-All notable changes to Bloom. Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
+All notable changes to BloomyBuds (formerly Bloom). Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
+
+## 0.14.0 — Hello, BloomyBuds (2026-10-13)
+- Bloom is now BloomyBuds, with a new home at bloomybuds.app.
+- Fresh logo and link preview to match the new name.
+- Your companions, progress, and medals are unchanged.
 
 ## 0.13.0 — Meet Lumi (2026-09-30)
 - Meet Lumi! A soft, glowing moth that starts as a cocoon and grows wings that shine with little constellations.
