@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.13.0';
+export const APP_VERSION = '0.17.0';
 
 export interface Release {
   version: string;
@@ -12,6 +12,50 @@ export interface Release {
 }
 
 export const CHANGELOG: Release[] = [
+  {
+    version: '0.17.0',
+    date: '2026-10-13',
+    title: 'Keepsakes',
+    notes: [
+      'Keepsakes! Every session of 5 minutes or more ends with a gift to open. Longer sessions bring rarer finds.',
+      'Four rarities to collect: Seed, Sprout, Bloom, and Golden Bloom. A Bloom or better turns up at least every 10 gifts.',
+      'Already have it? It becomes Sparkles, which you can use to pick a keepsake you’re missing.',
+      'New here? The start screen mentions the gift until you open your first one.',
+      'Gifts wait for you in Keepsakes (tap the gift on the home screen). Soon your companions can wear them, too.',
+    ],
+  },
+  {
+    version: '0.16.0',
+    date: '2026-10-13',
+    title: 'Softer scenes',
+    notes: [
+      'Scenes have a fresh, softer look: pastel skies inspired by picture books instead of literal weather.',
+      'Rain now falls gently and smoothly, with misty hills and little ripples. No more skipping.',
+      'Ocean has a peach dusk and slow rolling waves, Night sky has a pale moon, and Snowfall drifts in soft layers.',
+      'Scenes look the same in Light and Night themes, and stay still if your device asks for reduced motion.',
+    ],
+  },
+  {
+    version: '0.15.0',
+    date: '2026-10-13',
+    title: 'Set the scene',
+    notes: [
+      'Scenes! Use ‹ › next to the speaker during a session to change the mood: your companion’s signature sound, Rain, Night sky, Ocean, Snowfall, or Silence.',
+      'Each scene changes the session background too: rain streaks, a starry sky, rolling waves, or falling snow.',
+      'Bloomling, Cinder, and Ripple now have real recorded sounds: a forest morning, a fireside, and a brook.',
+      'Sounds load only when you pick them, and work offline after the first time. Your scene choice is remembered.',
+    ],
+  },
+  {
+    version: '0.14.0',
+    date: '2026-10-13',
+    title: 'Hello, BloomyBuds',
+    notes: [
+      'Bloom is now BloomyBuds, with a new home at bloomybuds.app.',
+      'Fresh logo and link preview to match the new name.',
+      'Your companions, progress, and medals are unchanged.',
+    ],
+  },
   {
     version: '0.13.0',
     date: '2026-09-30',

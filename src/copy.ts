@@ -5,10 +5,10 @@ import type { SpeciesId } from './domain/types';
  * Each species has its own personality in the running lines.
  */
 export const copy = {
-  appName: 'Bloom',
+  appName: 'BloomyBuds',
 
   // Onboarding
-  welcomeTitle: 'Hi, welcome to Bloom',
+  welcomeTitle: 'Hi, welcome to BloomyBuds',
   welcomeLines: [
     'Focus for a bit and your companion grows. That’s the whole idea.',
     'Anything over 5 minutes counts toward growth.',
@@ -23,7 +23,7 @@ export const copy = {
   nameCta: 'Start growing',
 
   // Home
-  introCard: 'Bloom helps you focus by growing a companion with every minute you stay present.',
+  introCard: 'BloomyBuds helps you focus by growing a companion with every minute you stay present.',
   dismiss: 'Dismiss',
   startCta: 'Start a session',
   streak: (n: number) => (n === 1 ? '1 day' : `${n} days`),
@@ -143,6 +143,9 @@ export const copy = {
   // Sound
   soundOn: 'Turn on ambient sound',
   soundOff: 'Turn off ambient sound',
+  sceneLabel: 'Scene',
+  scenePrev: 'Previous scene',
+  sceneNext: 'Next scene',
 
   // Settings
   theme: 'Theme',
@@ -162,18 +165,45 @@ export const copy = {
   rename: 'Companion name',
   save: 'Save',
   saved: 'Saved.',
+  // Keepsakes
+  keepsakesTitle: 'Keepsakes',
+  keepsakesOpen: 'See your keepsakes',
+  keepsakesIntro: 'Every session of 5 minutes or more brings a gift. Longer sessions bring rarer finds.',
+  keepsakesSummary: (n: number, total: number) => `${n} of ${total} collected`,
+  keepsakesSoon: 'Soon your companions can wear these, invite little friends over, and pick a backdrop.',
+  giftHint: 'Focus 5+ minutes and a gift awaits.',
+  giftTitle: 'A gift for you',
+  giftBody: (name: string) => `${name} found something while you focused.`,
+  giftWaits: 'It’ll wait in Keepsakes if you’d rather open it later.',
+  giftOpen: 'Open gift',
+  giftNew: 'New keepsake!',
+  giftDone: 'Done',
+  giftNext: 'Next gift',
+  giftDuplicate: (n: number) => `You already have this one, so it became ${n} Sparkles.`,
+  giftsWaiting: (n: number) => (n === 1 ? '1 gift waiting' : `${n} gifts waiting`),
+  giftShort: (n: number) => (n === 1 ? 'Gift' : 'Gifts'),
+  giftFrom: (date: string) => `From ${date}`,
+  sparkles: (n: number) => (n === 1 ? '1 Sparkle' : `${n} Sparkles`),
+  sparklesHelp: 'Gifts you already have turn into Sparkles. Use them to pick a keepsake you’re missing.',
+  pickFor: (n: number) => `Pick · ${n}`,
+  pickLabel: (name: string, n: number) => `Pick ${name} for ${n} Sparkles`,
+  pickConfirm: (name: string, n: number) => `Pick ${name} for ${n} Sparkles?`,
+  notFound: 'Not found yet',
+  rarity: { seed: 'Seed', sprout: 'Sprout', bloom: 'Bloom', golden: 'Golden Bloom' },
+  kind: { wear: 'To wear', friend: 'Little friend', backdrop: 'Backdrop' },
+
   backupTitle: 'Backup',
   backupHelp: 'Your progress lives only on this device. Save a backup file to keep it safe or move it somewhere else.',
   exportCta: 'Save backup',
   importCta: 'Restore backup',
   importConfirm: 'Replace everything on this device with this backup?',
   importOk: 'Backup restored.',
-  importBad: 'That file isn’t a Bloom backup. Nothing changed.',
-  installHint: 'Add Bloom to your home screen and it works like an app, even offline.',
+  importBad: 'That file isn’t a BloomyBuds backup. Nothing changed.',
+  installHint: 'Add BloomyBuds to your home screen and it works like an app, even offline.',
   clearData: 'Delete my data',
   confirmClear: 'This deletes your companion and history from this device for good. Continue?',
   privacy: 'Everything stays on this device. No accounts, no tracking.',
   whatsNew: 'What’s new',
   whatsNewPill: 'What’s new',
-  version: (v: string) => `Bloom v${v}`,
+  version: (v: string) => `BloomyBuds v${v}`,
 };

@@ -5,6 +5,7 @@ import { SPECIES, stageName } from '../companion/species';
 import { copy } from '../copy';
 import { h } from '../dom';
 import { evaluateMedals, nearestUnlock } from '../domain/medals';
+import type { KeepsakeState } from '../domain/keepsakes';
 import { lastSevenDays, streak, totalMinutes } from '../domain/stats';
 import { progressLabel } from './medals';
 import type { CompanionProfile, SessionRecord, SpeciesId } from '../domain/types';
@@ -23,6 +24,8 @@ export function homeScreen(
     onWhatsNew?: () => void;
     onEvolution: () => void;
     onMedals: () => void;
+    onKeepsakes: () => void;
+    keepsakes: KeepsakeState;
     onGarden: () => void;
     waitingUnlock?: SpeciesId;
   },
@@ -98,7 +101,7 @@ export function homeScreen(
 
   const el = h('main', { class: 'screen home' },
     h('header', { class: 'topbar' },
-      h('img', { class: 'logo', src: './logo.svg', alt: copy.appName, width: '112', height: '35' }),
+      h('img', { class: 'logo', src: './logo.svg', alt: copy.appName, width: '160', height: '35' }),
       h('div', { class: 'row' },
         h('button', { class: 'icon-btn', 'aria-label': copy.gardenOpen, title: copy.gardenTitle, onclick: opts.onGarden }, icon('garden')),
         h('button', { class: 'icon-btn', 'aria-label': copy.settings, title: copy.settings, onclick: opts.onSettings }, icon('settings')))),
@@ -118,10 +121,20 @@ export function homeScreen(
       h('div', { class: `stat${s ? ' on' : ''}` }, icon('sprout'),
         h('span', {}, h('strong', {}, s ? copy.streak(s) : copy.streakZero), h('small', {}, copy.streakTitle))),
       h('button', { class: `stat${medalCount ? ' on' : ''}`, type: 'button', onclick: opts.onMedals, 'aria-label': `${copy.medalCount(medalCount)}. ${copy.medalsOpen}` },
-        icon('medal'), h('span', {}, h('strong', {}, String(medalCount)), h('small', {}, copy.medalsTitle)))),
+        icon('medal'), h('span', {}, h('strong', {}, String(medalCount)), h('small', {}, copy.medalsTitle))),
+      keepsakeStat(opts.keepsakes, opts.onKeepsakes)),
     hint,
     h('button', { class: 'btn primary big', onclick: opts.onStart }, copy.startCta),
     strip,
     h('footer', { class: 'foot' }, h('p', { class: 'muted small' }, copy.privacy)));
   return { el, dispose: activities.dispose };
+}
+
+/** Keepsakes count, or a gentle "gift waiting" when there's one to open. */
+function keepsakeStat(k: KeepsakeState, onClick: () => void): HTMLElement {
+  const waiting = k.unopened.length;
+  const label = waiting ? copy.giftsWaiting(waiting) : copy.keepsakesTitle;
+  return h('button', { class: `stat${waiting || k.owned.size ? ' on' : ''}${waiting ? ' gift-ready' : ''}`, type: 'button', onclick: onClick,
+    'aria-label': `${label}. ${copy.keepsakesOpen}` },
+    icon('gift'), h('span', {}, h('strong', {}, String(waiting || k.owned.size)), h('small', {}, waiting ? copy.giftShort(waiting) : copy.keepsakesTitle)));
 }

@@ -7,6 +7,8 @@ import { streak, totalMinutes } from '../domain/stats';
 import type { Medal } from '../domain/medals';
 import type { CompanionProfile, SessionRecord } from '../domain/types';
 import { medalBadge } from './medals';
+import { giftCard } from './keepsakes';
+import type { OpenedGift } from '../domain/keepsakes';
 import { stageFor } from '../logic/growth';
 
 export function endScreen(
@@ -14,7 +16,7 @@ export function endScreen(
   companion: CompanionProfile,
   companionHistory: SessionRecord[],
   allHistory: readonly SessionRecord[],
-  actions: { onHome: () => void; onMedals: () => void; newMedals: Medal[]; newUnlocks: string[]; onGarden: () => void; breakOffer?: { minutes: number; long: boolean; onBreak: () => void } },
+  actions: { onHome: () => void; onMedals: () => void; newMedals: Medal[]; newUnlocks: string[]; onGarden: () => void; gift?: { open: () => Promise<OpenedGift | null>; onKeepsakes: () => void }; breakOffer?: { minutes: number; long: boolean; onBreak: () => void } },
 ): HTMLElement {
   const after = totalMinutes(companionHistory);
   const before = after - record.countedMinutes;
@@ -45,6 +47,12 @@ export function endScreen(
           h('h3', {}, actions.newMedals.length === 1 ? copy.newMedal : copy.newMedals(actions.newMedals.length)),
           ...actions.newMedals.map((m) => h('span', { class: 'new-medal-row' }, medalBadge(m, true, 'sm'),
             h('span', {}, h('strong', {}, m.name), h('span', { class: 'muted small' }, ` ${m.description}`)))))
+      : null,
+    actions.gift
+      ? giftCard({
+          title: copy.giftTitle, body: `${copy.giftBody(companion.name)} ${copy.giftWaits}`, open: actions.gift.open,
+          after: h('button', { class: 'btn link', type: 'button', onclick: actions.gift.onKeepsakes }, copy.keepsakesOpen),
+        })
       : null,
     ...actions.newUnlocks.map((name) => h('div', { class: 'card unlock-celebrate' },
       h('h3', {}, copy.unlockCelebrate(name)),

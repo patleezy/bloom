@@ -21,6 +21,10 @@
   --cat-streak: #fde0cf; --cat-streak-ink: #93441f;
   --cat-habit: #d9ecf5; --cat-habit-ink: #2d6b82;
   --cat-growth: #d8ebcf; --cat-growth-ink: #3f6b3a;
+  --rar-seed: #ebe3d3; --rar-seed-ink: #5e5139;
+  --rar-sprout: #d8ebcf; --rar-sprout-ink: #3f6b3a;
+  --rar-bloom: #f6dce8; --rar-bloom-ink: #8a3a5e;
+  --rar-golden: #fbeec2; --rar-golden-ink: #7a5a12;
   --radius: 20px;
   --silhouette: #d9d1c0;
   --font-display: 'Fredoka', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
@@ -46,6 +50,10 @@
   --cat-streak: #4d3326; --cat-streak-ink: #f6b999;
   --cat-habit: #203c48; --cat-habit-ink: #9fd3e6;
   --cat-growth: #2c4230; --cat-growth-ink: #b5dca5;
+  --rar-seed: #3d3a33; --rar-seed-ink: #e3d6bc;
+  --rar-sprout: #2c4230; --rar-sprout-ink: #b5dca5;
+  --rar-bloom: #4a2f3d; --rar-bloom-ink: #f4bdd5;
+  --rar-golden: #4a4128; --rar-golden-ink: #f3dc95;
   color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
@@ -67,6 +75,10 @@
     --cat-streak: #4d3326; --cat-streak-ink: #f6b999;
     --cat-habit: #203c48; --cat-habit-ink: #9fd3e6;
     --cat-growth: #2c4230; --cat-growth-ink: #b5dca5;
+    --rar-seed: #3d3a33; --rar-seed-ink: #e3d6bc;
+    --rar-sprout: #2c4230; --rar-sprout-ink: #b5dca5;
+    --rar-bloom: #4a2f3d; --rar-bloom-ink: #f4bdd5;
+    --rar-golden: #4a4128; --rar-golden-ink: #f3dc95;
     color-scheme: dark;
   }
 }
@@ -408,6 +420,182 @@ button.stat:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; 
 .break h2 { display: inline-flex; align-items: center; gap: 6px; color: var(--accent); }
 .btn.primary.big { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
 .slider { width: 50%; accent-color: var(--accent); }
+
+/* ---------- Scenes (running screen backgrounds) ----------
+   Soft, picture-book moods rather than literal weather. Each scene paints its own palette, so it
+   looks the same in Light and Night themes, and sets text tokens to match (checked in contrast tests).
+   Four fixed layers: the screen's ::before (sky), ::after (far layer), and .scene-fx ::before/::after
+   (near layers). Moving layers are one tile larger than the screen and travel exactly one tile per
+   loop, so the seam is invisible. Only transform/opacity animate, to stay smooth on phones. */
+.running.scene { position: relative; }
+.running.scene::before, .running.scene::after, .scene-fx, .scene-fx::before, .scene-fx::after {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; will-change: transform; }
+.scene-fx { display: none; }
+.running.scene-pastel .scene-fx, .running.scene-night .scene-fx { display: block; }
+.scene-picker { display: inline-flex; align-items: center; gap: 2px; margin-left: auto; background: var(--surface); border-radius: 999px; padding: 0 2px; }
+.scene-name { font-size: 0.85rem; font-weight: 700; min-width: 96px; text-align: center; color: var(--ink); }
+.running-top { align-items: center; gap: var(--space-2); }
+
+/* Shared pastel text palette (light scenes, in every theme) */
+.running.scene-pastel {
+  --ink: #2c3243; --muted: #474d61; --surface: #fbf8fb; --track: #e2dfe9; --border: #6f7489;
+  --accent: #3a6236; --accent-soft: #d3e6cb; --accent-ink: #fbf8fb; --shadow: #2c3243; color: var(--ink);
+}
+:root[data-theme='night'] .running.scene-pastel .companion, :root[data-theme='night'] .running.scene-pastel .clock { opacity: 1; }
+body:has(.running.scene-signature) { background: #f6f1e6; }
+body:has(.running.scene-rain) { background: #e1e2f0; }
+body:has(.running.scene-ocean) { background: #f4e2d6; }
+body:has(.running.scene-snow) { background: #f7ebe7; }
+
+/* Signature: a slow aurora in the companion's own colors on warm cream */
+.running.scene-signature { --scene-bg: #f6f1e6; --scene-deep: #efe4d2; }
+.running.scene-signature::before { background: linear-gradient(180deg, #f6f1e6, #efe4d2); }
+.running.scene-signature::after {
+  inset: -10%;
+  background:
+    radial-gradient(45% 35% at 28% 30%, color-mix(in srgb, var(--body) 55%, transparent), transparent 70%),
+    radial-gradient(40% 32% at 75% 55%, color-mix(in srgb, var(--accent-a) 50%, transparent), transparent 70%),
+    radial-gradient(55% 30% at 45% 92%, color-mix(in srgb, var(--accent-c) 60%, transparent), transparent 70%);
+  animation: aurora 24s ease-in-out infinite alternate; }
+@keyframes aurora { from { transform: translate(-2%, 0) scale(1); opacity: 0.8; } to { transform: translate(2%, -2%) scale(1.08); opacity: 1; } }
+
+/* Rain: lavender mist, misty hills, soft droplets at two depths, gentle ripples */
+.running.scene-rain { --scene-bg: #e1e2f0; --scene-deep: #d6d6ea; }
+.running.scene-rain::before {
+  background:
+    radial-gradient(70% 22% at 20% 100%, #d0cbe6, transparent 70%),
+    radial-gradient(60% 18% at 85% 100%, #cfdbea, transparent 70%),
+    linear-gradient(180deg, #d6d6ea 0%, #e3e1f0 55%, #efe4ec 100%); }
+.running.scene-rain::after {
+  top: -200px; background-size: 140px 200px;
+  background-image:
+    radial-gradient(1.5px 6px at 20px 30px, rgba(124, 128, 190, 0.4) 70%, transparent),
+    radial-gradient(1.5px 6px at 90px 110px, rgba(124, 128, 190, 0.35) 70%, transparent),
+    radial-gradient(1.5px 5px at 55px 170px, rgba(124, 128, 190, 0.3) 70%, transparent);
+  animation: fall-200 7s linear infinite; }
+.scene-rain .scene-fx::before {
+  top: -320px; background-size: 230px 320px;
+  background-image:
+    radial-gradient(2.5px 10px at 40px 60px, rgba(110, 116, 182, 0.45) 70%, transparent),
+    radial-gradient(2.5px 10px at 170px 210px, rgba(110, 116, 182, 0.4) 70%, transparent);
+  animation: fall-320 4.8s linear infinite; }
+.scene-rain .scene-fx::after {
+  top: auto; height: 18vh;
+  background:
+    radial-gradient(34px 7px at 22% 60%, transparent 62%, rgba(120, 124, 186, 0.35) 72%, transparent 82%),
+    radial-gradient(26px 5px at 68% 35%, transparent 62%, rgba(120, 124, 186, 0.3) 72%, transparent 82%),
+    radial-gradient(30px 6px at 86% 75%, transparent 62%, rgba(120, 124, 186, 0.3) 72%, transparent 82%);
+  animation: ripple 5s ease-out infinite; }
+@keyframes fall-200 { to { transform: translateY(200px); } }
+@keyframes fall-320 { to { transform: translateY(320px); } }
+@keyframes ripple { 0% { opacity: 0; transform: scale(0.9); } 30% { opacity: 1; } 100% { opacity: 0; transform: scale(1.1); } }
+
+/* Ocean: peach dusk over aqua, a warm sun, and rounded waves drifting both ways */
+.running.scene-ocean { --scene-bg: #f4e2d6; --scene-deep: #bcdfda; }
+.running.scene-ocean::before {
+  background:
+    radial-gradient(circle 70px at 50% 28%, #fff4de 92%, transparent),
+    radial-gradient(circle 190px at 50% 28%, rgba(255, 236, 205, 0.7), transparent 70%),
+    linear-gradient(180deg, #f6d9cb 0%, #f4e2d6 45%, #dcece6 100%); }
+.running.scene-ocean::after {
+  top: auto; height: 36vh; right: -400px;
+  background:
+    radial-gradient(50% 40px at 50% 100%, #d3eae5 98%, transparent) 0 0 / 400px 40px repeat-x,
+    linear-gradient(#d3eae5, #d3eae5) 0 39px / 100% 100% no-repeat;
+  animation: drift-400 46s linear infinite; }
+.scene-ocean .scene-fx::before {
+  top: auto; height: 24vh; left: -300px;
+  background:
+    radial-gradient(50% 32px at 50% 100%, #bcdfda 98%, transparent) 0 0 / 300px 32px repeat-x,
+    linear-gradient(#bcdfda, #bcdfda) 0 31px / 100% 100% no-repeat;
+  animation: drift-300 32s linear infinite; }
+@keyframes drift-400 { to { transform: translateX(-400px); } }
+@keyframes drift-300 { to { transform: translateX(300px); } }
+
+/* Night sky: dusty indigo to plum, a pale moon, stars twinkling out of step (dark in every theme) */
+.running.scene-night {
+  --ink: #ece9f4; --muted: #c4bfd8; --surface: #2c2c4c; --track: #3e3b60; --border: #8c88ad;
+  --accent: #b2d6a6; --accent-soft: #3a5440; --accent-ink: #1c1c33; --shadow: #000; color: var(--ink);
+  --scene-bg: #33305a; --scene-deep: #4a3b62;
+}
+body:has(.running.scene-night) { background: #33305a; }
+.running.scene-night::before {
+  background:
+    radial-gradient(circle 30px at 26% 24%, #f4edd8 94%, transparent),
+    radial-gradient(circle 120px at 26% 24%, rgba(244, 237, 216, 0.16), transparent 70%),
+    radial-gradient(80% 20% at 30% 100%, rgba(40, 36, 72, 0.7), transparent 70%),
+    linear-gradient(180deg, #282a4f 0%, #33305a 55%, #4a3b62 100%); }
+.running.scene-night::after, .scene-night .scene-fx::before {
+  background-image:
+    radial-gradient(circle 1.6px at 30px 40px, #fff6e0 90%, transparent),
+    radial-gradient(circle 1.1px at 150px 90px, #fff6e0 90%, transparent),
+    radial-gradient(circle 1.4px at 210px 200px, #fff6e0 90%, transparent),
+    radial-gradient(circle 1px at 90px 230px, #fff6e0 90%, transparent);
+  background-size: 260px 260px; animation: twinkle 6s ease-in-out infinite; }
+.scene-night .scene-fx::before { background-size: 330px 300px; background-position: 120px 60px; animation-duration: 8s; animation-delay: -3s; }
+@keyframes twinkle { 0%,100% { opacity: 0.45; } 50% { opacity: 1; } }
+
+/* Snowfall: blush to cream, snowy hills, flakes at two depths with a gentle sway */
+.running.scene-snow { --scene-bg: #f7ebe7; --scene-deep: #f3e0e2; }
+.running.scene-snow::before {
+  background:
+    radial-gradient(70% 20% at 25% 104%, #fffaf6, transparent 72%),
+    radial-gradient(60% 18% at 80% 106%, #fdf3f1, transparent 72%),
+    linear-gradient(180deg, #f3e0e2 0%, #f7ebe7 55%, #faf3ea 100%); }
+.running.scene-snow::after {
+  top: -240px; background-size: 180px 240px;
+  background-image:
+    radial-gradient(circle 2px at 30px 40px, #fff 70%, transparent),
+    radial-gradient(circle 1.8px at 120px 130px, #fff 70%, transparent),
+    radial-gradient(circle 2px at 70px 200px, #fff 70%, transparent);
+  filter: drop-shadow(0 0 1px rgba(190, 160, 180, 0.6));
+  animation: fall-240 24s linear infinite; }
+.scene-snow .scene-fx { animation: sway-x 7s ease-in-out infinite alternate; }
+.scene-snow .scene-fx::before {
+  top: -360px; background-size: 260px 360px;
+  background-image:
+    radial-gradient(circle 3.5px at 60px 80px, #fff 70%, transparent),
+    radial-gradient(circle 3px at 200px 250px, #fff 70%, transparent);
+  filter: drop-shadow(0 0 1.5px rgba(190, 160, 180, 0.6));
+  animation: fall-360 16s linear infinite; }
+@keyframes fall-240 { to { transform: translateY(240px); } }
+@keyframes fall-360 { to { transform: translateY(360px); } }
+@keyframes sway-x { from { transform: translateX(-10px); } to { transform: translateX(10px); } }
+
+/* ---------- Keepsakes ---------- */
+.stats-row { flex-wrap: wrap; gap: var(--space-2); }
+.stats-row .stat { padding: var(--space-2) var(--space-3); }
+.gift-hint { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0; }
+.gift-hint .icon { width: 18px; height: 18px; color: var(--accent); flex-shrink: 0; }
+.stat.gift-ready { box-shadow: 0 0 0 2px var(--accent-soft); }
+.stat.gift-ready .icon { animation: wiggle 2.4s ease-in-out infinite; }
+.rarity-chip { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; font-family: var(--font-body); }
+.rarity-seed { background: var(--rar-seed); color: var(--rar-seed-ink); }
+.rarity-sprout { background: var(--rar-sprout); color: var(--rar-sprout-ink); }
+.rarity-bloom { background: var(--rar-bloom); color: var(--rar-bloom-ink); }
+.rarity-golden { background: var(--rar-golden); color: var(--rar-golden-ink); }
+.keepsake-art { width: 64px; height: 64px; flex-shrink: 0; }
+.keepsake-art.locked * { fill: var(--silhouette) !important; stroke: var(--silhouette) !important; }
+.gift-card { max-width: 360px; width: 100%; align-items: center; text-align: center; border: 2px solid var(--accent-soft); animation: grow-in 0.6s cubic-bezier(.2,1.4,.4,1); }
+.gift-card h3, .gift-card p { margin: 0; }
+.gift-card .gift-art { width: 72px; height: 72px; animation: wiggle 2.4s ease-in-out infinite; }
+.gift-reveal { display: flex; flex-direction: column; align-items: center; gap: 6px; animation: grow-in 0.6s cubic-bezier(.2,1.4,.4,1); }
+.gift-reveal .keepsake-art { width: 88px; height: 88px; }
+.gift-item-name { font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; }
+.sparkles-card { width: 100%; }
+.sparkles-card p { margin: 0; }
+.sparkles-balance { display: flex; align-items: center; gap: var(--space-2); color: var(--accent); }
+.sparkles-balance strong { color: var(--ink); font-family: var(--font-display); font-size: 1.15rem; }
+.gifts-waiting { width: 100%; display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
+.gifts-waiting h3, .keepsake-section h3 { margin: 0; align-self: flex-start; }
+.keepsake-section { width: 100%; display: flex; flex-direction: column; gap: var(--space-2); }
+.keepsake-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+.keepsake-card { background: var(--surface); border-radius: var(--radius); padding: var(--space-3); display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.keepsake-card strong { font-family: var(--font-display); font-weight: 600; }
+.keepsake-card.missing strong { color: var(--muted); }
+.keepsake-card .pick { margin-top: 4px; display: inline-flex; align-items: center; gap: 4px; }
+.keepsake-card .pick .icon { width: 16px; height: 16px; }
+.keepsake-card .pick:disabled { opacity: 0.55; cursor: default; }
 
 /* End */
 .end { justify-content: center; min-height: 100vh; min-height: 100dvh; }
