@@ -2,6 +2,8 @@ import {
   MAX_TASKS,
   emptySnapshot,
   emptyKeepsakes,
+  emptyOutfit,
+  type Outfit,
   type FocusTask,
   type KeepsakeLog,
   type ActiveSession,
@@ -10,12 +12,12 @@ import {
   type SessionRecord,
   type SpeciesId,
 } from '../domain/types';
-import { ITEM_IDS } from '../domain/keepsakes';
+import { ITEM_IDS, itemById, type ItemKind } from '../domain/keepsakes';
 import type { BloomRepository } from './repository';
 
 /** All data stays in this browser's localStorage. Nothing is sent over the network. */
 const KEY = 'bloom:data';
-export const SCHEMA_VERSION = 6;
+export const SCHEMA_VERSION = 7;
 const MAX_COMPANIONS = 50;
 const MAX_LABEL = 60;
 export const MAX_NAME = 20;
@@ -23,8 +25,8 @@ const MAX_PLANNED_MS = 24 * 3600_000;
 const MAX_HISTORY = 20_000;
 const SPECIES: readonly SpeciesId[] = ['bloomling', 'cinder', 'ripple', 'moss', 'nimbus', 'lumi'];
 
-interface StoredV6 {
-  schemaVersion: 6;
+interface StoredV7 {
+  schemaVersion: 7;
   companions: CompanionProfile[];
   currentId: string | null;
   history: SessionRecord[];
@@ -51,12 +53,19 @@ function parseTasks(t: unknown): FocusTask[] {
 
 const isSpecies = (v: unknown): v is SpeciesId => SPECIES.includes(v as SpeciesId);
 
+/** Each slot must name a known item of the right kind; anything else is left empty. */
+function parseOutfit(raw: unknown): Outfit {
+  const o = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
+  const slot = (v: unknown, kind: ItemKind) => (typeof v === 'string' && itemById(v)?.kind === kind ? v : null);
+  return { ...emptyOutfit(), wear: slot(o.wear, 'wear'), friend: slot(o.friend, 'friend'), backdrop: slot(o.backdrop, 'backdrop') };
+}
+
 function parseCompanion(c: unknown): CompanionProfile | null {
   if (!c || typeof c !== 'object') return null;
   const o = c as Record<string, unknown>;
   if (!isId(o.id) || !isSpecies(o.species) || !isNum(o.adoptedAt)) return null;
   const name = cleanName(o.name);
-  return { id: o.id, species: o.species, name: name || 'Buddy', adoptedAt: o.adoptedAt };
+  return { id: o.id, species: o.species, name: name || 'Buddy', adoptedAt: o.adoptedAt, outfit: parseOutfit(o.outfit) };
 }
 
 function parseRecord(r: unknown): SessionRecord | null {
@@ -176,6 +185,11 @@ function migrate(o: Record<string, unknown>, now: number): Record<string, unknow
     // v6 adds keepsakes. Gifts start now: sessions from before the update don't bring one.
     cur = { ...cur, schemaVersion: 6, keepsakes: emptyKeepsakes(now) };
   }
+  if (cur.schemaVersion === 6) {
+    // v7 gives each companion an outfit (worn keepsakes), empty to start.
+    const companions = Array.isArray(cur.companions) ? cur.companions : [];
+    cur = { ...cur, schemaVersion: 7, companions: companions.map((c) => (c && typeof c === 'object' ? { ...c, outfit: emptyOutfit() } : c)) };
+  }
   return cur.schemaVersion === SCHEMA_VERSION ? cur : null; // unknown/newer version: don't guess
 }
 
@@ -209,8 +223,8 @@ export function parseSnapshot(raw: string | null, now = Date.now()): BloomSnapsh
 export const parseStored = (raw: string | null, now = Date.now()): BloomSnapshot => parseSnapshot(raw, now) ?? emptySnapshot();
 
 export function serialize(s: BloomSnapshot): string {
-  const stored: StoredV6 = {
-    schemaVersion: 6, companions: s.companions, currentId: s.currentId, history: s.history, active: s.active, keepsakes: s.keepsakes,
+  const stored: StoredV7 = {
+    schemaVersion: 7, companions: s.companions, currentId: s.currentId, history: s.history, active: s.active, keepsakes: s.keepsakes,
   };
   return JSON.stringify(stored);
 }

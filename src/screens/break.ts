@@ -19,7 +19,7 @@ export function breakScreen(
   opts: { onDone: () => void; onNext: () => void; onHome: () => void },
 ): { el: HTMLElement; dispose: () => void } {
   const c = clock.newClock(minutes * 60000, Date.now());
-  const art = renderCompanion(companion.species, stage, { label: `${companion.name}, on a break` });
+  const art = renderCompanion(companion.species, stage, { label: `${companion.name}, on a break`, wear: companion.outfit.wear });
   art.classList.add('act', 'act-snack');
 
   const ring = document.createElementNS('http://www.w3.org/2000/svg', 'svg');

@@ -177,3 +177,39 @@ describe('keepsakes storage (schema v6)', () => {
     expect(await again.pickItem(opened!.item.id)).toBe(false); // already yours
   });
 });
+
+describe('outfits (schema v7)', () => {
+  const v6 = { schemaVersion: 6, companions: [{ id: 'c1', species: 'bloomling', name: 'Pip', adoptedAt: 1 }], currentId: 'c1', history: [], active: null,
+    keepsakes: { giftsFrom: 0, opened: [], picked: [] } };
+
+  it('migrates v6 with an empty outfit for every companion', () => {
+    expect(parseStored(JSON.stringify(v6)).companions[0].outfit).toEqual({ wear: null, friend: null, backdrop: null });
+  });
+
+  it('only keeps known items in the right slot', () => {
+    const s = parseStored(JSON.stringify({ ...v6, schemaVersion: 7, companions: [{ ...v6.companions[0],
+      outfit: { wear: 'snail', friend: 'snail', backdrop: '<img src=x>' } }] }));
+    expect(s.companions[0].outfit).toEqual({ wear: null, friend: 'snail', backdrop: null });
+  });
+
+  it('wears only owned items that fit the slot, per companion', async () => {
+    let t = 1_000_000;
+    const svc = new SessionService(new LocalRepository(new MemStorage()), () => t, (() => { let i = 0; return () => `id${i++}`; })());
+    await svc.init();
+    const pip = await svc.adopt('bloomling', 'Pip');
+    const cinder = await svc.adopt('cinder', 'Cinder');
+    expect(await svc.setOutfit(pip.id, 'wear', 'beanie')).toBe(false); // not owned
+    await svc.start(25, [], pip.id);
+    t += 25 * 60000;
+    const r = (await svc.finish())!;
+    const item = (await svc.openGift(r.id))!.item;
+    const slot = item.kind;
+    const wrong = slot === 'wear' ? 'friend' : 'wear';
+    expect(await svc.setOutfit(pip.id, wrong, item.id)).toBe(false); // wrong slot
+    expect(await svc.setOutfit(pip.id, slot, item.id)).toBe(true);
+    expect(svc.companionById(pip.id)!.outfit[slot]).toBe(item.id);
+    expect(svc.companionById(cinder.id)!.outfit[slot]).toBeNull(); // each companion has its own
+    expect(await svc.setOutfit(pip.id, slot, null)).toBe(true);
+    expect(svc.companionById(pip.id)!.outfit[slot]).toBeNull();
+  });
+});

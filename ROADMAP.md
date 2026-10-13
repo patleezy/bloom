@@ -20,10 +20,11 @@ A new Claude Code session should read this first.
 | 0.14 | #15, #16 | Renamed to **BloomyBuds** on bloomybuds.app: SEO title and description, canonical URL, structured data, robots.txt, sitemap, logo, share image; CI audit fix |
 | 0.15 | — | Scenes: ‹ › sound picker with matching backgrounds (signature, Rain, Night sky, Ocean, Snowfall, Silence); recorded loops in public/sounds |
 | 0.16 | #18 | Scenes art pass: Ghibli-pastel skies with their own text palettes, seamless loops (fixed rain stutter) |
-| 0.17 | — | Collectibles PR A: a gift after each 5+ min session (derived from history, seeded by session id), 24 keepsakes in 4 rarities, pity every 10, duplicates → Sparkles to pick items, Keepsakes book; schema v6 |
+| 0.17 | #19 | Collectibles PR A: a gift after each 5+ min session (derived from history, seeded by session id), 24 keepsakes in 4 rarities, pity every 10, duplicates → Sparkles to pick items, Keepsakes book; schema v6 |
+| 0.18 | — | Collectibles PR B1: Dress up. Per-companion outfits (schema v7), worn keepsakes anchored from shared body geometry, Dress-up screen |
 
 ## Next up (in order)
-1. **Collectibles (cosmetics)**: every session of 5+ minutes ends with a gift to open. Themed rarities: **Seed, Sprout, Bloom, Golden Bloom**. Longer sessions improve odds; a guaranteed rare at least every 10 sessions; duplicates become Sparkles to pick a specific item. Drops are derived from session history (seeded by session id, so they can't be rerolled). No retroactive gifts (no existing users). Never sell randomness. PR A (gifts + Keepsakes book) shipped in 0.17. PR B (next): wearing items, little friends, backgrounds.
+1. **Collectibles (cosmetics)**: every session of 5+ minutes ends with a gift to open. Themed rarities: **Seed, Sprout, Bloom, Golden Bloom**. Longer sessions improve odds; a guaranteed rare at least every 10 sessions; duplicates become Sparkles to pick a specific item. Drops are derived from session history (seeded by session id, so they can't be rerolled). No retroactive gifts (no existing users). Never sell randomness. PR A (gifts + Keepsakes book) shipped in 0.17. PR B1 (wearing items, Dress-up screen) shipped in 0.18. PR B2 (next): little friends (also on the session screen) and backdrops; the outfit already has `friend` and `backdrop` slots, so no schema change is needed.
 2. **Opt-in analytics**: Vercel Web Analytics, cookieless, opt-in during onboarding and in Settings. Analytics is enabled in Vercel (Hobby). Add the endpoint to CSP `connect-src` only.
 3. **Weekly recap card**: shareable image generated on the device (minutes, medals, companion).
 4. **Floating mini-companion**: Document Picture-in-Picture, desktop Chrome and Edge only.

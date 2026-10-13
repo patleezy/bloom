@@ -172,7 +172,7 @@ p { margin: 0; }
   background: var(--surface); color: var(--ink); transition: transform 0.1s ease, opacity 0.2s;
 }
 .btn:active { transform: scale(0.97); }
-.btn:focus-visible, .chip:focus-visible, input:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.btn:focus-visible, .chip:focus-visible, .dress-option:focus-visible, input:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
 .btn.primary { background: var(--accent-soft); color: var(--ink); font-weight: 700; }
 .btn.primary:hover { filter: brightness(0.97); }
 .btn.big { width: 100%; padding: 16px; font-size: 1.1rem; }
@@ -391,7 +391,7 @@ button.stat:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; 
   background: var(--surface); color: var(--ink); cursor: pointer; text-align: center; width: 100%;
 }
 .custom-input { border: 1.5px solid var(--border); cursor: text; }
-.chip[aria-pressed='true'] { border-color: var(--accent); font-weight: 700; }
+.chip[aria-pressed='true'], .chip[aria-checked='true'] { border-color: var(--accent); font-weight: 700; }
 .custom-input::placeholder, .label-input::placeholder { color: var(--muted); }
 .label-input { font: inherit; padding: 13px 15px; border-radius: var(--radius); border: 1.5px solid var(--border); background: var(--surface); color: var(--ink); width: 100%; }
 
@@ -596,6 +596,23 @@ body:has(.running.scene-night) { background: #33305a; }
 .keepsake-card .pick { margin-top: 4px; display: inline-flex; align-items: center; gap: 4px; }
 .keepsake-card .pick .icon { width: 16px; height: 16px; }
 .keepsake-card .pick:disabled { opacity: 0.55; cursor: default; }
+
+/* ---------- Dress up ---------- */
+.companion-name { display: inline-flex; align-items: center; gap: var(--space-2); }
+.dress-btn .icon { width: 20px; height: 20px; }
+.dress-preview { width: 200px; height: 200px; }
+.dress-preview .companion { width: 100%; height: 100%; }
+.dress-section { width: 100%; display: flex; flex-direction: column; gap: var(--space-2); }
+.dress-section h3 { margin: 0; }
+.dress-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
+.dress-option { font: inherit; color: var(--ink); background: var(--surface); border: 2px solid transparent; border-radius: var(--radius);
+  padding: var(--space-2); min-height: 44px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+.dress-option .keepsake-art { width: 48px; height: 48px; }
+.dress-option .dress-none { width: 48px; height: 48px; padding: 12px; color: var(--muted); }
+.dress-option.on { border-color: var(--accent); background: var(--accent-soft); }
+.dress-empty { width: 100%; align-items: center; text-align: center; }
+.dress-empty p { margin: 0; }
+.worn { pointer-events: none; }
 
 /* End */
 .end { justify-content: center; min-height: 100vh; min-height: 100dvh; }

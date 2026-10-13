@@ -33,7 +33,7 @@ export function gardenScreen(
 
   const cards = ordered.map((e) => {
     const sp = SPECIES[e.species];
-    const art = renderCompanion(e.species, e.stage, { label: '' });
+    const art = renderCompanion(e.species, e.stage, { label: '', wear: e.companion?.outfit.wear });
     art.removeAttribute('role');
     art.setAttribute('aria-hidden', 'true');
 

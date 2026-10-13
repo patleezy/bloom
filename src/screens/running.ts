@@ -33,7 +33,7 @@ export function runningScreen(
   const baseTotal = totalMinutes(svc.historyFor(companion.id));
   const stage = stageFor(baseTotal);
   const art = renderCompanion(companion.species, stage.index,
-    { label: `${companion.name}, a ${stageName(companion.species, stage.index)}, growing` });
+    { label: `${companion.name}, a ${stageName(companion.species, stage.index)}, growing`, wear: companion.outfit.wear });
   const lines = copy.running[companion.species](companion.name);
   const remainingAtStart = minutesToNext(baseTotal);
   const isPaused = () => svc.active?.clock.runningSince === null;

@@ -26,6 +26,7 @@ import { whatsNewScreen } from './screens/whatsNew';
 import { evolutionScreen } from './screens/evolution';
 import { medalsScreen } from './screens/medals';
 import { keepsakesScreen } from './screens/keepsakes';
+import { dressUpScreen } from './screens/dressUp';
 import { UNLOCKABLES, evaluateMedals, newlyEarned } from './domain/medals';
 import { progressLabel } from './screens/medals';
 import { applyTheme, clearPrefs, loadPrefs, savePrefs } from './state/prefs';
@@ -70,6 +71,7 @@ function goHome() {
     onWhatsNew: unseen ? () => goWhatsNew(goHome) : undefined,
     onMedals: () => goMedals(goHome),
     onKeepsakes: () => goKeepsakes(goHome),
+    onDressUp: () => goDressUp(goHome),
     keepsakes: svc.keepsakes(),
     onEvolution: () => goJourney(svc.companion!.id, goHome),
     onGarden: () => goGarden(goHome),
@@ -121,10 +123,26 @@ function goMedals(back: () => void) {
   show(medalsScreen(evaluateMedals(svc.history), { onBack: back }));
 }
 
+function goDressUp(back: () => void, companionId = svc.companion?.id) {
+  const c = (companionId && svc.companionById(companionId)) || svc.companion;
+  if (!c) return back();
+  const again = () => goDressUp(back, c.id);
+  show(dressUpScreen(svc.companions, c, (x) => stageFor(totalMinutes(svc.historyFor(x.id))).index, new Set(svc.keepsakes().owned.keys()), {
+    onBack: back,
+    onPick: (id) => goDressUp(back, id),
+    onWear: async (itemId) => {
+      await svc.setOutfit(c.id, 'wear', itemId);
+      again();
+    },
+    onKeepsakes: () => goKeepsakes(again),
+  }));
+}
+
 function goKeepsakes(back: () => void) {
   const refresh = () => goKeepsakes(back);
   show(keepsakesScreen(svc.keepsakes(), {
     onBack: back,
+    onDressUp: () => goDressUp(() => goKeepsakes(back)),
     openGift: (id) => svc.openGift(id),
     pick: (item) => svc.pickItem(item),
     refresh,
@@ -162,6 +180,7 @@ let lastSession: { minutes: number; tasks: string[] } | null = null;
 function goStart() {
   const choices: CompanionChoice[] = gardenEntries().filter((e) => !e.locked).map((e) => ({
     species: e.species, companionId: e.companion?.id ?? null, name: e.companion?.name ?? SPECIES[e.species].name, stage: e.stage,
+    wear: e.companion?.outfit.wear ?? null,
   }));
   show(startScreen({
     onBack: goHome,

@@ -10,6 +10,7 @@ export interface CompanionChoice {
   companionId: string | null; // null = not adopted yet
   name: string;
   stage: number;
+  wear: string | null;
 }
 import { icon } from '../icons';
 
@@ -25,7 +26,7 @@ export function startScreen(
   // Who's joining: a radio group of companion faces, defaulting to the current companion.
   let who = choices.find((c) => c.species === selectedSpecies) ?? choices[0];
   const whoButtons = choices.map((c) => {
-    const art = renderCompanion(c.species, c.stage, { label: '' });
+    const art = renderCompanion(c.species, c.stage, { label: '', wear: c.wear });
     art.removeAttribute('role');
     art.setAttribute('aria-hidden', 'true');
     art.classList.add('mini');
