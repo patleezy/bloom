@@ -1,4 +1,5 @@
 import { setAmbientVolume, startAmbient, stopAmbient } from '../audio/ambient';
+import { nextScene, sceneFor } from '../audio/scenes';
 import { startActivities } from '../companion/activities';
 import { makePettable } from '../companion/react';
 import { renderCompanion, setGrowth, setSleeping } from '../companion/render';
@@ -12,6 +13,9 @@ import { countedMinutes, minutesToNext, stageFor } from '../logic/growth';
 import { unlockAudio } from '../feedback';
 import { savePrefs, type Prefs } from '../state/prefs';
 import { acquireWakeLock, releaseWakeLock } from '../wakeLock';
+
+/** Light pastel scenes share one text palette (see .scene-pastel in styles.css). */
+const PASTEL = new Set(['signature', 'rain', 'ocean', 'snow']);
 
 const RING = 2 * Math.PI * 54;
 /** Leaving for less than this doesn't pause (a quick glance at another tab or a text). */
@@ -67,36 +71,57 @@ export function runningScreen(
       }))
     : null;
 
-  // Ambient sound: plays while focusing, fades out while the companion naps.
+  // Scene: a sound + matching background. ‹ › cycles scenes; the speaker mutes or unmutes.
   const { prefs } = opts;
   setAmbientVolume(prefs.volume);
   const soundBtn = h('button', { class: 'icon-btn sound-toggle' });
-  function renderSoundBtn() {
+  const sceneName = h('span', { class: 'scene-name', 'aria-live': 'polite' });
+  const prevBtn = h('button', { class: 'icon-btn small scene-step', 'aria-label': copy.scenePrev }, icon('back'));
+  const nextBtn = h('button', { class: 'icon-btn small scene-step', 'aria-label': copy.sceneNext }, icon('chevron'));
+  function renderScene() {
+    const sc = sceneFor(prefs.scene, companion.species);
+    sceneName.textContent = sc.name;
     soundBtn.replaceChildren(icon(prefs.ambient ? 'sound' : 'mute'));
     soundBtn.setAttribute('aria-label', prefs.ambient ? copy.soundOff : copy.soundOn);
     soundBtn.setAttribute('aria-pressed', String(prefs.ambient));
+    for (const c of [...el.classList]) if (c.startsWith('scene-')) el.classList.remove(c);
+    el.classList.add('scene', `scene-${sc.id}`, `species-${companion.species}`);
+    if (PASTEL.has(sc.id)) el.classList.add('scene-pastel');
   }
+  function stepScene(step: 1 | -1) {
+    unlockAudio();
+    prefs.scene = nextScene(prefs.scene, step);
+    if (prefs.scene !== 'silence') prefs.ambient = true; // picking a scene means you want to hear it
+    savePrefs(prefs);
+    renderScene();
+    syncSound();
+  }
+  prevBtn.addEventListener('click', () => stepScene(-1));
+  nextBtn.addEventListener('click', () => stepScene(1));
   soundBtn.addEventListener('click', () => {
     unlockAudio(); // this click counts as the user gesture browsers require
     prefs.ambient = !prefs.ambient;
     savePrefs(prefs);
-    renderSoundBtn();
+    renderScene();
     syncSound();
   });
   function syncSound() {
-    if (prefs.ambient && !isPaused() && !finishing) startAmbient(companion.species);
+    const sc = sceneFor(prefs.scene, companion.species);
+    if (prefs.ambient && sc.id !== 'silence' && !isPaused() && !finishing) startAmbient(companion.species, sc.file);
     else stopAmbient();
   }
-  renderSoundBtn();
 
   const el = h('main', { class: 'screen running' },
-    h('div', { class: 'running-top' }, soundBtn),
+    h('div', { class: 'running-top' }, soundBtn,
+      h('div', { class: 'scene-picker', role: 'group', 'aria-label': copy.sceneLabel }, prevBtn, sceneName, nextBtn)),
     h('div', { class: 'ring-wrap' }, ring, makePettable(art, {
       label: copy.pet(companion.name),
       mood: () => (isPaused() ? 'sleep' : 'focus'),
       onReact: () => activities.interrupt(),
     })),
+    h('div', { class: 'scene-fx', 'aria-hidden': 'true' }),
     time, toNext, note, checklist, resumeBtn, endBtn);
+  renderScene();
 
   let finishing = false;
   let msgIdx = 0;

@@ -25,6 +25,7 @@ import { APP_VERSION } from './changelog';
 import { whatsNewScreen } from './screens/whatsNew';
 import { evolutionScreen } from './screens/evolution';
 import { medalsScreen } from './screens/medals';
+import { keepsakesScreen } from './screens/keepsakes';
 import { UNLOCKABLES, evaluateMedals, newlyEarned } from './domain/medals';
 import { progressLabel } from './screens/medals';
 import { applyTheme, clearPrefs, loadPrefs, savePrefs } from './state/prefs';
@@ -68,6 +69,8 @@ function goHome() {
     onSettings: goSettings,
     onWhatsNew: unseen ? () => goWhatsNew(goHome) : undefined,
     onMedals: () => goMedals(goHome),
+    onKeepsakes: () => goKeepsakes(goHome),
+    keepsakes: svc.keepsakes(),
     onEvolution: () => goJourney(svc.companion!.id, goHome),
     onGarden: () => goGarden(goHome),
     waitingUnlock: SPECIES_ORDER.find((sp) => SPECIES[sp].unlockMedal && svc.canAdopt(sp) && !svc.companions.some((c) => c.species === sp)),
@@ -118,6 +121,16 @@ function goMedals(back: () => void) {
   show(medalsScreen(evaluateMedals(svc.history), { onBack: back }));
 }
 
+function goKeepsakes(back: () => void) {
+  const refresh = () => goKeepsakes(back);
+  show(keepsakesScreen(svc.keepsakes(), {
+    onBack: back,
+    openGift: (id) => svc.openGift(id),
+    pick: (item) => svc.pickItem(item),
+    refresh,
+  }));
+}
+
 function markSeen() {
   prefs.lastSeenVersion = APP_VERSION;
   savePrefs(prefs);
@@ -159,7 +172,7 @@ function goStart() {
       await svc.start(minutes, tasks, id);
       goRunning(false);
     },
-  }, lastSession ?? {}, choices, svc.companion?.species));
+  }, lastSession ?? {}, choices, svc.companion?.species, { gift: !svc.keepsakes().opened.length }));
 }
 
 function goBreak(minutes: number, companionId: string) {
@@ -200,6 +213,9 @@ function goRunning(restored: boolean) {
         newMedals: medalsNow,
         newUnlocks: UNLOCKABLES.filter((u) => u.available && medalsNow.some((m) => m.id === u.medalId)).map((u) => u.name),
         onGarden: () => goGarden(goHome),
+        gift: svc.giftFor(record.id)
+          ? { open: () => svc.openGift(record.id), onKeepsakes: () => goKeepsakes(back) }
+          : undefined,
         breakOffer: prefs.breaks && record.completed
           ? { minutes: breakMin, long: breakMin === LONG_BREAK_MIN, onBreak: () => goBreak(breakMin, record.companionId) }
           : undefined,

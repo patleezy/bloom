@@ -45,12 +45,26 @@ export interface ActiveSession {
   checkpointMs: number;
 }
 
+/**
+ * The only stored keepsake data: when gifts started, which gifts were opened, and which
+ * items were picked with Sparkles. Gift contents and balances are derived (domain/keepsakes).
+ */
+export interface KeepsakeLog {
+  /** Sessions ending before this (epoch ms) don't bring a gift: no retroactive gifts. */
+  giftsFrom: number;
+  opened: { id: string; at: number }[];
+  picked: { item: string; at: number }[];
+}
+
+export const emptyKeepsakes = (giftsFrom = 0): KeepsakeLog => ({ giftsFrom, opened: [], picked: [] });
+
 export interface BloomSnapshot {
   companions: CompanionProfile[];
   /** The companion shown on home and preselected for the next session. */
   currentId: string | null;
   history: SessionRecord[];
   active: ActiveSession | null;
+  keepsakes: KeepsakeLog;
 }
 
-export const emptySnapshot = (): BloomSnapshot => ({ companions: [], currentId: null, history: [], active: null });
+export const emptySnapshot = (): BloomSnapshot => ({ companions: [], currentId: null, history: [], active: null, keepsakes: emptyKeepsakes() });

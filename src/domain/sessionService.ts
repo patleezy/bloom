@@ -1,6 +1,7 @@
 import { isUnlocked } from '../companion/species';
 import { dayKey } from '../logic/dates';
 import { earnedMedalIds } from './medals';
+import { PICK_COST, itemById, keepsakeState, type Gift, type KeepsakeState, type OpenedGift } from './keepsakes';
 import { countedMinutes } from '../logic/growth';
 import * as clock from '../logic/timer';
 import { cleanLabel, cleanName, parseSnapshot, serialize } from '../state/localRepository';
@@ -95,6 +96,34 @@ export class SessionService {
     if (!c || !clean) return;
     c.name = clean;
     await this.repo.saveCompanion(c);
+  }
+
+  /** Gifts, collection and Sparkles, derived from history and the keepsake log. */
+  keepsakes(): KeepsakeState {
+    return keepsakeState(this.snap.history, this.snap.keepsakes);
+  }
+
+  /** The unopened gift a session brought, if any. */
+  giftFor(sessionId: string): Gift | null {
+    return this.keepsakes().unopened.find((g) => g.sessionId === sessionId) ?? null;
+  }
+
+  /** Open a gift. Returns what was inside (and any Sparkles), or null if there's no such unopened gift. */
+  async openGift(sessionId: string): Promise<OpenedGift | null> {
+    if (!this.giftFor(sessionId)) return null;
+    this.snap.keepsakes.opened.push({ id: sessionId, at: this.now() });
+    await this.repo.saveKeepsakes(this.snap.keepsakes);
+    return this.keepsakes().opened.find((o) => o.sessionId === sessionId) ?? null;
+  }
+
+  /** Pick a specific item with Sparkles. Refused if it's already yours or you don't have enough. */
+  async pickItem(itemId: string): Promise<boolean> {
+    const item = itemById(itemId);
+    const state = this.keepsakes();
+    if (!item || state.owned.has(item.id) || state.sparkles < PICK_COST[item.rarity]) return false;
+    this.snap.keepsakes.picked.push({ item: item.id, at: this.now() });
+    await this.repo.saveKeepsakes(this.snap.keepsakes);
+    return true;
   }
 
   /** Backup file contents. Stays on the device; the user decides where it goes. */

@@ -19,7 +19,7 @@ interface Scene {
 
 let master: GainNode | null = null;
 let scene: Scene | null = null;
-let current: SpeciesId | null = null;
+let current: string | null = null;
 let volume = 0.5;
 
 function noiseBuffer(c: AudioContext, kind: 'white' | 'brown' | 'pink'): AudioBuffer {
@@ -184,17 +184,61 @@ function teardown(s: Scene) {
   }
 }
 
-export function startAmbient(species: SpeciesId): void {
+/** Decoded recordings, kept so switching back to a scene is instant. */
+const decoded = new Map<string, Promise<AudioBuffer>>();
+
+function loadRecording(c: AudioContext, file: string): Promise<AudioBuffer> {
+  let p = decoded.get(file);
+  if (!p) {
+    // Same-origin file from public/sounds; the service worker caches it for offline use.
+    p = fetch(`./sounds/${encodeURIComponent(file)}.mp3`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`sound ${file}: ${r.status}`);
+        return r.arrayBuffer();
+      })
+      .then((b) => c.decodeAudioData(b));
+    p.catch(() => decoded.delete(file)); // allow a retry later
+    decoded.set(file, p);
+  }
+  return p;
+}
+
+function playRecording(c: AudioContext, file: string, out: AudioNode): Scene {
+  const s: Scene = { nodes: [], timers: [] };
+  void loadRecording(c, file).then((buf) => {
+    if (scene !== s) return; // switched away while loading
+    const src = c.createBufferSource();
+    src.buffer = buf;
+    src.loop = true;
+    // Skip the MP3 encoder padding at each end so the loop has no gap.
+    src.loopStart = Math.min(0.06, buf.duration / 4);
+    src.loopEnd = Math.max(src.loopStart + 0.1, buf.duration - 0.06);
+    src.connect(out);
+    src.start(0, src.loopStart);
+    s.nodes.push(src);
+  }).catch(() => {
+    /* offline and never played before: stay quiet rather than error */
+  });
+  return s;
+}
+
+/**
+ * Start a sound. `key` identifies it so asking for the same sound again is a no-op.
+ * Pass a recording name (public/sounds/<file>.mp3) or null for the species' synthesized scene.
+ */
+export function startAmbient(species: SpeciesId, file: string | null = null): void {
   const c = audioContext();
   if (!c) return;
-  if (scene && current === species) return;
+  const key = file ? `file:${file}` : `synth:${species}`;
+  if (scene && current === key) return;
   stopAmbient(true);
   master = c.createGain();
   master.gain.setValueAtTime(0, c.currentTime);
   master.gain.linearRampToValueAtTime(volume * 0.6, c.currentTime + FADE_S);
   master.connect(c.destination);
-  scene = build(c, species, master);
-  current = species;
+  current = key;
+  scene = { nodes: [], timers: [] }; // placeholder so builders can check identity
+  scene = file ? playRecording(c, file, master) : build(c, species, master);
 }
 
 export function stopAmbient(immediate = false): void {

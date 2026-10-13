@@ -1,4 +1,4 @@
-import type { ActiveSession, BloomSnapshot, CompanionProfile, SessionRecord } from '../domain/types';
+import type { ActiveSession, BloomSnapshot, CompanionProfile, KeepsakeLog, SessionRecord } from '../domain/types';
 
 /**
  * Persistence boundary. The UI only depends on this interface.
@@ -12,6 +12,8 @@ export interface BloomRepository {
   setCurrent(companionId: string): Promise<void>;
   saveActive(active: ActiveSession | null): Promise<void>;
   appendSession(record: SessionRecord): Promise<void>;
+  /** Replace the keepsake log (opened gifts, Sparkle picks). */
+  saveKeepsakes(log: KeepsakeLog): Promise<void>;
   /** Replace everything (used by backup import). */
   replaceAll(snapshot: BloomSnapshot): Promise<void>;
   clearAll(): Promise<void>;

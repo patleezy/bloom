@@ -10,7 +10,8 @@ const CSP = [
   "script-src 'self'",
   "style-src 'self'",
   "img-src 'self' data:",
-  "connect-src 'none'",
+  "connect-src 'self'", // only to load Bloom's own sound files
+  "media-src 'self'",
   "font-src 'self'",
   "worker-src 'self'",
   "manifest-src 'self'",

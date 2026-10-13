@@ -1,6 +1,8 @@
-<p align="center"><img src="public/logo.svg" alt="Bloom" width="280"></p>
+<p align="center"><img src="public/logo.svg" alt="BloomyBuds" width="320"></p>
 
-# Bloom
+# BloomyBuds
+
+Live at **https://bloomybuds.app**. (The code and repo still use the working name "bloom".)
 
 A gentle, mobile-first focus timer. Staying present grows a small companion through six stages.
 Pick one of three starters: Bloomling (Leaf), Cinder (Ember), Ripple (Tide).
