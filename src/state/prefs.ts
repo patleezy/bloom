@@ -2,6 +2,8 @@
  * Per-device preferences. Kept separate from BloomSnapshot on purpose: these describe this
  * device (theme, sound), not the user's progress, so they should never sync to a backend.
  */
+import { isSceneId, type SceneId } from '../audio/scenes';
+
 export type Theme = 'auto' | 'light' | 'night';
 
 export interface Prefs {
@@ -12,10 +14,11 @@ export interface Prefs {
   ambient: boolean; // species soundscape during sessions
   volume: number; // 0–1
   breaks: boolean; // offer a break after completed sessions
+  scene: SceneId; // sound + background during sessions
 }
 
 const KEY = 'bloom:prefs';
-const DEFAULTS: Prefs = { theme: 'auto', sound: true, lastSeenVersion: null, introDismissed: false, ambient: false, volume: 0.5, breaks: true };
+const DEFAULTS: Prefs = { theme: 'auto', sound: true, lastSeenVersion: null, introDismissed: false, ambient: false, volume: 0.5, breaks: true, scene: 'signature' };
 
 export function loadPrefs(): Prefs {
   try {
@@ -28,6 +31,7 @@ export function loadPrefs(): Prefs {
       ambient: o?.ambient === true,
       volume: typeof o?.volume === 'number' && o.volume >= 0 && o.volume <= 1 ? o.volume : DEFAULTS.volume,
       breaks: typeof o?.breaks === 'boolean' ? o.breaks : DEFAULTS.breaks,
+      scene: isSceneId(o?.scene) ? o.scene : DEFAULTS.scene,
     };
   } catch {
     return { ...DEFAULTS };

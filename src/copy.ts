@@ -143,6 +143,9 @@ export const copy = {
   // Sound
   soundOn: 'Turn on ambient sound',
   soundOff: 'Turn off ambient sound',
+  sceneLabel: 'Scene',
+  scenePrev: 'Previous scene',
+  sceneNext: 'Next scene',
 
   // Settings
   theme: 'Theme',

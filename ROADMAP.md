@@ -17,16 +17,16 @@ A new Claude Code session should read this first.
 | 0.11 | #11 | Moss (unlocked by Ten Hours) |
 | 0.12 | #12 | Nimbus (unlocked by a 7-day streak), ROADMAP.md and CLAUDE.md |
 | 0.13 | #13 | Lumi (unlocked by Night Owl); all three announced friends shipped |
-| 0.14 | — | Renamed to **BloomyBuds** on bloomybuds.app: SEO title and description, canonical URL, structured data, robots.txt, sitemap, logo, share image |
+| 0.14 | #15, #16 | Renamed to **BloomyBuds** on bloomybuds.app: SEO title and description, canonical URL, structured data, robots.txt, sitemap, logo, share image; CI audit fix |
+| 0.15 | — | Scenes: ‹ › sound picker with matching backgrounds (signature, Rain, Night sky, Ocean, Snowfall, Silence); recorded loops in public/sounds |
 
 ## Next up (in order)
-1. **Scenes**: sound picker (‹ ›) during sessions with matching animated backgrounds. Scene 1 is the companion's signature sound; shared scenes: Rain, Night sky, Ocean, Snowfall, Silence. Sound files received (Pixabay, processed to seamless mono loops).
+1. **Collectibles (cosmetics)**: every session of 5+ minutes ends with a gift to open. Themed rarities: **Seed, Sprout, Bloom, Golden Bloom**. Longer sessions improve odds; a guaranteed rare at least every 10 sessions; duplicates become Sparkles to pick a specific item. Drops are derived from session history (seeded by session id, so they can't be rerolled). No retroactive gifts (no existing users). Never sell randomness. PR A: gifts + Keepsakes book. PR B: wearing items, little friends, backgrounds.
 2. **Opt-in analytics**: Vercel Web Analytics, cookieless, opt-in during onboarding and in Settings. Analytics is enabled in Vercel (Hobby). Add the endpoint to CSP `connect-src` only.
-3. **Collectibles (cosmetics)**: every session of 5+ minutes ends with a gift to open. Themed rarities: **Seed, Sprout, Bloom, Golden Bloom**. Longer sessions improve odds; a guaranteed rare at least every 10 sessions; duplicates become Sparkles to pick a specific item. Drops are derived from session history (seeded by session id, so they can't be rerolled). No retroactive gifts (no existing users). Never sell randomness. PR A: gifts + Keepsakes book. PR B: wearing items, little friends, backgrounds.
-4. **Weekly recap card**: shareable image generated on the device (minutes, medals, companion).
-5. **Floating mini-companion**: Document Picture-in-Picture, desktop Chrome and Edge only.
-6. **Launch prep**: trademark check for BloomyBuds, store screenshots, real-phone testing.
-7. **More species** (optional, ongoing): follow "Adding a species" in CLAUDE.md. Each needs a new medal or reuses one as its unlock. Ideas: a crystal/gem friend (100 hours), a star friend (30-day streak).
+3. **Weekly recap card**: shareable image generated on the device (minutes, medals, companion).
+4. **Floating mini-companion**: Document Picture-in-Picture, desktop Chrome and Edge only.
+5. **Launch prep**: trademark check for BloomyBuds, store screenshots, real-phone testing.
+6. **More species** (optional, ongoing): follow "Adding a species" in CLAUDE.md. Each needs a new medal or reuses one as its unlock. Ideas: a crystal/gem friend (100 hours), a star friend (30-day streak).
 
 ## Later (needs a backend)
 Accounts and sync (code is already behind a `BloomRepository` interface), reminders via push, focus rooms with friends, optional paid tier (extra species, cosmetics, scenes; growth always free). Follow the pre-backend checklist in SECURITY.md.

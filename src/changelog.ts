@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.14.0';
+export const APP_VERSION = '0.15.0';
 
 export interface Release {
   version: string;
@@ -12,6 +12,17 @@ export interface Release {
 }
 
 export const CHANGELOG: Release[] = [
+  {
+    version: '0.15.0',
+    date: '2026-10-13',
+    title: 'Set the scene',
+    notes: [
+      'Scenes! Use ‹ › next to the speaker during a session to change the mood: your companion’s signature sound, Rain, Night sky, Ocean, Snowfall, or Silence.',
+      'Each scene changes the session background too: rain streaks, a starry sky, rolling waves, or falling snow.',
+      'Bloomling, Cinder, and Ripple now have real recorded sounds: a forest morning, a fireside, and a brook.',
+      'Sounds load only when you pick them, and work offline after the first time. Your scene choice is remembered.',
+    ],
+  },
   {
     version: '0.14.0',
     date: '2026-10-13',
