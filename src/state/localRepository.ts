@@ -1,18 +1,21 @@
 import {
   MAX_TASKS,
   emptySnapshot,
+  emptyKeepsakes,
   type FocusTask,
+  type KeepsakeLog,
   type ActiveSession,
   type BloomSnapshot,
   type CompanionProfile,
   type SessionRecord,
   type SpeciesId,
 } from '../domain/types';
+import { ITEM_IDS } from '../domain/keepsakes';
 import type { BloomRepository } from './repository';
 
 /** All data stays in this browser's localStorage. Nothing is sent over the network. */
 const KEY = 'bloom:data';
-export const SCHEMA_VERSION = 5;
+export const SCHEMA_VERSION = 6;
 const MAX_COMPANIONS = 50;
 const MAX_LABEL = 60;
 export const MAX_NAME = 20;
@@ -20,12 +23,13 @@ const MAX_PLANNED_MS = 24 * 3600_000;
 const MAX_HISTORY = 20_000;
 const SPECIES: readonly SpeciesId[] = ['bloomling', 'cinder', 'ripple', 'moss', 'nimbus', 'lumi'];
 
-interface StoredV5 {
-  schemaVersion: 5;
+interface StoredV6 {
+  schemaVersion: 6;
   companions: CompanionProfile[];
   currentId: string | null;
   history: SessionRecord[];
   active: ActiveSession | null;
+  keepsakes: KeepsakeLog;
 }
 
 function cleanText(raw: unknown, max: number): string {
@@ -95,10 +99,27 @@ function parseActive(a: unknown): ActiveSession | null {
   };
 }
 
+function parseKeepsakes(k: unknown, now: number): KeepsakeLog {
+  if (!k || typeof k !== 'object') return emptyKeepsakes(now);
+  const o = k as Record<string, unknown>;
+  const list = (v: unknown) => (Array.isArray(v) ? v.slice(0, MAX_HISTORY) : [])
+    .map((x) => (x && typeof x === 'object' ? (x as Record<string, unknown>) : {}));
+  const openedIds = new Set<string>();
+  const opened = list(o.opened)
+    .filter((x) => isId(x.id) && isNum(x.at) && !openedIds.has(x.id) && !!openedIds.add(x.id))
+    .map((x) => ({ id: x.id as string, at: x.at as number }));
+  const pickedIds = new Set<string>();
+  const picked = list(o.picked)
+    .filter((x) => typeof x.item === 'string' && ITEM_IDS.has(x.item) && isNum(x.at) && !pickedIds.has(x.item) && !!pickedIds.add(x.item))
+    .map((x) => ({ item: x.item as string, at: x.at as number }));
+  // Missing or bad start time: start now rather than granting gifts for past sessions.
+  return { giftsFrom: isNum(o.giftsFrom) ? o.giftsFrom : now, opened, picked };
+}
+
 const LEGACY_COMPANION_ID = 'legacy-bloomling';
 
 /** Upgrade older stored shapes to the current one, one version at a time. */
-function migrate(o: Record<string, unknown>): Record<string, unknown> | null {
+function migrate(o: Record<string, unknown>, now: number): Record<string, unknown> | null {
   let cur = o;
   if (cur.schemaVersion === 1) {
     // v1 had a single implicit Bloomling and no companionId on sessions.
@@ -151,16 +172,20 @@ function migrate(o: Record<string, unknown>): Record<string, unknown> | null {
       active: a && typeof a === 'object' ? { ...a, companionId: id } : null,
     };
   }
+  if (cur.schemaVersion === 5) {
+    // v6 adds keepsakes. Gifts start now: sessions from before the update don't bring one.
+    cur = { ...cur, schemaVersion: 6, keepsakes: emptyKeepsakes(now) };
+  }
   return cur.schemaVersion === SCHEMA_VERSION ? cur : null; // unknown/newer version: don't guess
 }
 
 /** Parse untrusted JSON (from storage or an imported backup). Malformed data yields null. */
-export function parseSnapshot(raw: string | null): BloomSnapshot | null {
+export function parseSnapshot(raw: string | null, now = Date.now()): BloomSnapshot | null {
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object') return null;
-    const o = migrate(parsed as Record<string, unknown>);
+    const o = migrate(parsed as Record<string, unknown>, now);
     if (!o) return null;
     const seen = new Set<string>();
     const history = (Array.isArray(o.history) ? o.history : [])
@@ -175,16 +200,18 @@ export function parseSnapshot(raw: string | null): BloomSnapshot | null {
     const currentId = typeof o.currentId === 'string' && ids.has(o.currentId) ? o.currentId : companions[0]?.id ?? null;
     let active = parseActive(o.active);
     if (active && !ids.has(active.companionId)) active = null; // orphaned session: drop it
-    return { companions, currentId, history, active };
+    return { companions, currentId, history, active, keepsakes: parseKeepsakes(o.keepsakes, now) };
   } catch {
     return null;
   }
 }
 
-export const parseStored = (raw: string | null): BloomSnapshot => parseSnapshot(raw) ?? emptySnapshot();
+export const parseStored = (raw: string | null, now = Date.now()): BloomSnapshot => parseSnapshot(raw, now) ?? emptySnapshot();
 
 export function serialize(s: BloomSnapshot): string {
-  const stored: StoredV5 = { schemaVersion: 5, companions: s.companions, currentId: s.currentId, history: s.history, active: s.active };
+  const stored: StoredV6 = {
+    schemaVersion: 6, companions: s.companions, currentId: s.currentId, history: s.history, active: s.active, keepsakes: s.keepsakes,
+  };
   return JSON.stringify(stored);
 }
 
@@ -228,6 +255,12 @@ export class LocalRepository implements BloomRepository {
   async appendSession(record: SessionRecord): Promise<void> {
     const s = await this.current();
     if (!s.history.some((r) => r.id === record.id)) s.history.push(structuredClone(record));
+    this.persist(s);
+  }
+
+  async saveKeepsakes(log: KeepsakeLog): Promise<void> {
+    const s = await this.current();
+    s.keepsakes = structuredClone(log);
     this.persist(s);
   }
 

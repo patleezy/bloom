@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to BloomyBuds (formerly Bloom). Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
 
+## 0.17.0 — Keepsakes (2026-10-13)
+- Keepsakes! Every session of 5 minutes or more ends with a gift to open. Longer sessions bring rarer finds.
+- Four rarities to collect: Seed, Sprout, Bloom, and Golden Bloom. A Bloom or better turns up at least every 10 gifts.
+- Already have it? It becomes Sparkles, which you can use to pick a keepsake you’re missing.
+- Gifts wait for you in Keepsakes (tap the gift on the home screen). Soon your companions can wear them, too.
+
 ## 0.16.0 — Softer scenes (2026-10-13)
 - Scenes have a fresh, softer look: pastel skies inspired by picture books instead of literal weather.
 - Rain now falls gently and smoothly, with misty hills and little ripples. No more skipping.
