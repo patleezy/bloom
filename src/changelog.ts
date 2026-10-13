@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.15.0';
+export const APP_VERSION = '0.16.0';
 
 export interface Release {
   version: string;
@@ -12,6 +12,17 @@ export interface Release {
 }
 
 export const CHANGELOG: Release[] = [
+  {
+    version: '0.16.0',
+    date: '2026-10-13',
+    title: 'Softer scenes',
+    notes: [
+      'Scenes have a fresh, softer look: pastel skies inspired by picture books instead of literal weather.',
+      'Rain now falls gently and smoothly, with misty hills and little ripples. No more skipping.',
+      'Ocean has a peach dusk and slow rolling waves, Night sky has a pale moon, and Snowfall drifts in soft layers.',
+      'Scenes look the same in Light and Night themes, and stay still if your device asks for reduced motion.',
+    ],
+  },
   {
     version: '0.15.0',
     date: '2026-10-13',

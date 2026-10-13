@@ -59,3 +59,29 @@ describe('species tags meet WCAG AA', () => {
     expect(contrast(t['tag-ink'], t.tag)).toBeGreaterThanOrEqual(4.5);
   });
 });
+
+describe('scene palettes meet WCAG AA', () => {
+  const pastel = block('.running.scene-pastel {');
+  const night = block('.running.scene-night {');
+  const scenes: [string, Record<string, string>][] = [
+    ['signature', { ...pastel, ...block('.running.scene-signature {') }],
+    ['rain', { ...pastel, ...block('.running.scene-rain {') }],
+    ['ocean', { ...pastel, ...block('.running.scene-ocean {') }],
+    ['snow', { ...pastel, ...block('.running.scene-snow {') }],
+    ['night', night],
+  ];
+  describe.each(scenes)('%s scene', (_name, t) => {
+    // Text sits over the whole sky, so check both ends of its gradient.
+    it.each([['ink'], ['muted'], ['accent']])('%s text on the sky', (fg) => {
+      expect(contrast(t[fg], t['scene-bg'])).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(t[fg], t['scene-deep'])).toBeGreaterThanOrEqual(4.5);
+    });
+    it.each([['ink', 'surface'], ['muted', 'surface'], ['accent-ink', 'accent']])('%s on %s', (fg, bg) => {
+      expect(contrast(t[fg], t[bg])).toBeGreaterThanOrEqual(4.5);
+    });
+    it('UI parts ≥ 3:1', () => {
+      expect(contrast(t.border, t['scene-bg'])).toBeGreaterThanOrEqual(3);
+      expect(contrast(t.accent, t.track)).toBeGreaterThanOrEqual(3);
+    });
+  });
+});

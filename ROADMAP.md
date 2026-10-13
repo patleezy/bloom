@@ -19,6 +19,7 @@ A new Claude Code session should read this first.
 | 0.13 | #13 | Lumi (unlocked by Night Owl); all three announced friends shipped |
 | 0.14 | #15, #16 | Renamed to **BloomyBuds** on bloomybuds.app: SEO title and description, canonical URL, structured data, robots.txt, sitemap, logo, share image; CI audit fix |
 | 0.15 | — | Scenes: ‹ › sound picker with matching backgrounds (signature, Rain, Night sky, Ocean, Snowfall, Silence); recorded loops in public/sounds |
+| 0.16 | — | Scenes art pass: Ghibli-pastel skies with their own text palettes, seamless loops (fixed rain stutter) |
 
 ## Next up (in order)
 1. **Collectibles (cosmetics)**: every session of 5+ minutes ends with a gift to open. Themed rarities: **Seed, Sprout, Bloom, Golden Bloom**. Longer sessions improve odds; a guaranteed rare at least every 10 sessions; duplicates become Sparkles to pick a specific item. Drops are derived from session history (seeded by session id, so they can't be rerolled). No retroactive gifts (no existing users). Never sell randomness. PR A: gifts + Keepsakes book. PR B: wearing items, little friends, backgrounds.

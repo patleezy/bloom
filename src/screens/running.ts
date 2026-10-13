@@ -14,6 +14,9 @@ import { unlockAudio } from '../feedback';
 import { savePrefs, type Prefs } from '../state/prefs';
 import { acquireWakeLock, releaseWakeLock } from '../wakeLock';
 
+/** Light pastel scenes share one text palette (see .scene-pastel in styles.css). */
+const PASTEL = new Set(['signature', 'rain', 'ocean', 'snow']);
+
 const RING = 2 * Math.PI * 54;
 /** Leaving for less than this doesn't pause (a quick glance at another tab or a text). */
 export const AWAY_GRACE_MS = 60_000;
@@ -83,6 +86,7 @@ export function runningScreen(
     soundBtn.setAttribute('aria-pressed', String(prefs.ambient));
     for (const c of [...el.classList]) if (c.startsWith('scene-')) el.classList.remove(c);
     el.classList.add('scene', `scene-${sc.id}`, `species-${companion.species}`);
+    if (PASTEL.has(sc.id)) el.classList.add('scene-pastel');
   }
   function stepScene(step: 1 | -1) {
     unlockAudio();
@@ -115,6 +119,7 @@ export function runningScreen(
       mood: () => (isPaused() ? 'sleep' : 'focus'),
       onReact: () => activities.interrupt(),
     })),
+    h('div', { class: 'scene-fx', 'aria-hidden': 'true' }),
     time, toNext, note, checklist, resumeBtn, endBtn);
   renderScene();
 
