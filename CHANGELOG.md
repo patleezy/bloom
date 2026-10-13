@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to BloomyBuds (formerly Bloom). Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
 
+## 0.15.0 — Set the scene (2026-10-13)
+- Scenes! Use ‹ › next to the speaker during a session to change the mood: your companion’s signature sound, Rain, Night sky, Ocean, Snowfall, or Silence.
+- Each scene changes the session background too: rain streaks, a starry sky, rolling waves, or falling snow.
+- Bloomling, Cinder, and Ripple now have real recorded sounds: a forest morning, a fireside, and a brook.
+- Sounds load only when you pick them, and work offline after the first time. Your scene choice is remembered.
+
 ## 0.14.0 — Hello, BloomyBuds (2026-10-13)
 - Bloom is now BloomyBuds, with a new home at bloomybuds.app.
 - Fresh logo and link preview to match the new name.

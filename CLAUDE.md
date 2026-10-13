@@ -30,6 +30,9 @@ Read **ROADMAP.md** for what's shipped, what's next, and open decisions.
 - Tone: warm, short, never guilt. No emoji as icons; use `src/icons.ts`.
 - Data changes: bump `SCHEMA_VERSION`, add a migration step, add a migration test.
 
+## Sounds
+- Recorded loops live in `public/sounds/` (Pixabay license: free, no attribution). Process new ones to mono 32 kHz, ≤60 s, with a 2 s crossfade loop seam, ~48 kbps MP3. Scenes are defined in `src/audio/scenes.ts`.
+
 ## Adding a species
 1. `SpeciesId` in `src/domain/types.ts` and the allow-list in `src/state/localRepository.ts`.
 2. Entry in `SPECIES` (+ `SPECIES_ORDER`, `unlockMedal` if unlockable) in `src/companion/species.ts`.
