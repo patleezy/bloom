@@ -565,6 +565,8 @@ body:has(.running.scene-night) { background: #33305a; }
 /* ---------- Keepsakes ---------- */
 .stats-row { flex-wrap: wrap; gap: var(--space-2); }
 .stats-row .stat { padding: var(--space-2) var(--space-3); }
+.gift-hint { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0; }
+.gift-hint .icon { width: 18px; height: 18px; color: var(--accent); flex-shrink: 0; }
 .stat.gift-ready { box-shadow: 0 0 0 2px var(--accent-soft); }
 .stat.gift-ready .icon { animation: wiggle 2.4s ease-in-out infinite; }
 .rarity-chip { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; font-family: var(--font-body); }

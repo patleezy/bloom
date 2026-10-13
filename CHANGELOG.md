@@ -5,6 +5,7 @@ All notable changes to BloomyBuds (formerly Bloom). Newest first. Mirrors `src/c
 - Keepsakes! Every session of 5 minutes or more ends with a gift to open. Longer sessions bring rarer finds.
 - Four rarities to collect: Seed, Sprout, Bloom, and Golden Bloom. A Bloom or better turns up at least every 10 gifts.
 - Already have it? It becomes Sparkles, which you can use to pick a keepsake you’re missing.
+- New here? The start screen mentions the gift until you open your first one.
 - Gifts wait for you in Keepsakes (tap the gift on the home screen). Soon your companions can wear them, too.
 
 ## 0.16.0 — Softer scenes (2026-10-13)

@@ -171,6 +171,7 @@ export const copy = {
   keepsakesIntro: 'Every session of 5 minutes or more brings a gift. Longer sessions bring rarer finds.',
   keepsakesSummary: (n: number, total: number) => `${n} of ${total} collected`,
   keepsakesSoon: 'Soon your companions can wear these, invite little friends over, and pick a backdrop.',
+  giftHint: 'Focus 5+ minutes and a gift awaits.',
   giftTitle: 'A gift for you',
   giftBody: (name: string) => `${name} found something while you focused.`,
   giftWaits: 'It’ll wait in Keepsakes if you’d rather open it later.',

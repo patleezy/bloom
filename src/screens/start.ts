@@ -20,6 +20,7 @@ export function startScreen(
   initial: { minutes?: number; tasks?: string[] } = {},
   choices: CompanionChoice[] = [],
   selectedSpecies?: SpeciesId,
+  hints: { gift?: boolean } = {},
 ): HTMLElement {
   // Who's joining: a radio group of companion faces, defaulting to the current companion.
   let who = choices.find((c) => c.species === selectedSpecies) ?? choices[0];
@@ -111,6 +112,8 @@ export function startScreen(
     h('div', { class: 'tasks-block' },
       h('h3', {}, copy.tasksTitle, ' ', h('span', { class: 'muted small' }, copy.tasksHint)),
       list, addBtn),
+    // Until the first gift is opened, a gentle note that focusing brings one.
+    hints.gift ? h('p', { class: 'gift-hint muted small' }, icon('gift'), copy.giftHint) : null,
     h('button', { class: 'btn primary big', type: 'submit' }, copy.begin));
   form.addEventListener('submit', (e) => {
     e.preventDefault();

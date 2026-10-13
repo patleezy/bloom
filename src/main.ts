@@ -172,7 +172,7 @@ function goStart() {
       await svc.start(minutes, tasks, id);
       goRunning(false);
     },
-  }, lastSession ?? {}, choices, svc.companion?.species));
+  }, lastSession ?? {}, choices, svc.companion?.species, { gift: !svc.keepsakes().opened.length }));
 }
 
 function goBreak(minutes: number, companionId: string) {
