@@ -7,6 +7,7 @@ All notable changes to BloomyBuds (formerly Bloom). Newest first. Mirrors `src/c
 - Your newest plants each get their own spot. Older ones slowly grow together into bushes and trees, so the meadow keeps filling in and nothing ever wilts.
 - The end of a session tells you what you just planted.
 - The garden screen shows the whole meadow, and it follows your Light or Night theme.
+- BloomyBuds works offline again once you have opened it online, including after an update.
 
 ## 0.17.0 — Keepsakes (2026-10-13)
 - Keepsakes! Every session of 5 minutes or more ends with a gift to open. Longer sessions bring rarer finds.

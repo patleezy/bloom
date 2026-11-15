@@ -21,7 +21,7 @@ A new Claude Code session should read this first.
 | 0.15 | — | Scenes: ‹ › sound picker with matching backgrounds (signature, Rain, Night sky, Ocean, Snowfall, Silence); recorded loops in public/sounds |
 | 0.16 | #18 | Scenes art pass: Ghibli-pastel skies with their own text palettes, seamless loops (fixed rain stutter) |
 | 0.17 | — | Collectibles PR A: a gift after each 5+ min session (derived from history, seeded by session id), 24 keepsakes in 4 rarities, pity every 10, duplicates → Sparkles to pick items, Keepsakes book; schema v6 |
-| 0.18 | — | A garden to grow: a meadow backdrop on home and in the garden; every counted session plants a flower, bush (50+ min) or tree (90+ min), derived from history; older plants merge upward; no schema change |
+| 0.18 | — | A garden to grow: a meadow backdrop on home and in the garden; every counted session plants a flower, bush (50+ min) or tree (90+ min), derived from history; older plants merge upward; no schema change. Also restored the service worker (emptied by accident in 0.7), with a test that keeps its cache name on the package version |
 
 ## Next up (in order)
 1. **Collectibles (cosmetics)**: every session of 5+ minutes ends with a gift to open. Themed rarities: **Seed, Sprout, Bloom, Golden Bloom**. Longer sessions improve odds; a guaranteed rare at least every 10 sessions; duplicates become Sparkles to pick a specific item. Drops are derived from session history (seeded by session id, so they can't be rerolled). No retroactive gifts (no existing users). Never sell randomness. PR A (gifts + Keepsakes book) shipped in 0.17. PR B (next): wearing items, little friends, backgrounds. Little friends and backgrounds should appear in the meadow (0.18).
