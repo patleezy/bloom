@@ -25,6 +25,10 @@
   --rar-sprout: #d8ebcf; --rar-sprout-ink: #3f6b3a;
   --rar-bloom: #f6dce8; --rar-bloom-ink: #8a3a5e;
   --rar-golden: #fbeec2; --rar-golden-ink: #7a5a12;
+  --mdw-sky-a: #d9ebf3; --mdw-sky-b: #fbf3e2; --mdw-sun: #fbe2a2; --mdw-cloud: #fffdfa;
+  --mdw-hill-far: #e6efd3; --mdw-hill-mid: #dbe9c0; --mdw-ground: #d1e4ae; --mdw-shade: #b4cf93;
+  --mdw-trunk: #b48e6c; --mdw-canopy: #84b47a; --mdw-canopy-lit: #9bc68d; --mdw-bush: #74a56d; --mdw-bush-lit: #8cba80; --mdw-stem: #5f8a5a;
+  --mdw-petal-0: #f1a596; --mdw-petal-1: #f5cd72; --mdw-petal-2: #c5b0e8; --mdw-petal-3: #fffaf0; --mdw-heart: #f3c65a;
   --radius: 20px;
   --silhouette: #d9d1c0;
   --font-display: 'Fredoka', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
@@ -33,6 +37,10 @@
   color-scheme: light;
 }
 :root[data-theme='night'] {
+  --mdw-sky-a: #1c2431; --mdw-sky-b: #2b3140; --mdw-sun: #ece6c8; --mdw-cloud: #39424f;
+  --mdw-hill-far: #27352f; --mdw-hill-mid: #2c3f34; --mdw-ground: #324a39; --mdw-shade: #263a2c;
+  --mdw-trunk: #75604f; --mdw-canopy: #44684a; --mdw-canopy-lit: #527a56; --mdw-bush: #3e6045; --mdw-bush-lit: #4b7051; --mdw-stem: #6b9668;
+  --mdw-petal-0: #d68e82; --mdw-petal-1: #d9b662; --mdw-petal-2: #a694cc; --mdw-petal-3: #e4dece; --mdw-heart: #e2bd5e;
   --bg: #171b1e;
   --surface: #21272a;
   --ink: #e3e7e1;
@@ -58,6 +66,10 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
+    --mdw-sky-a: #1c2431; --mdw-sky-b: #2b3140; --mdw-sun: #ece6c8; --mdw-cloud: #39424f;
+    --mdw-hill-far: #27352f; --mdw-hill-mid: #2c3f34; --mdw-ground: #324a39; --mdw-shade: #263a2c;
+    --mdw-trunk: #75604f; --mdw-canopy: #44684a; --mdw-canopy-lit: #527a56; --mdw-bush: #3e6045; --mdw-bush-lit: #4b7051; --mdw-stem: #6b9668;
+    --mdw-petal-0: #d68e82; --mdw-petal-1: #d9b662; --mdw-petal-2: #a694cc; --mdw-petal-3: #e4dece; --mdw-heart: #e2bd5e;
     --bg: #171b1e;
     --surface: #21272a;
     --ink: #e3e7e1;
@@ -826,6 +838,40 @@ body:has(.running.scene-night) { background: #33305a; }
 @keyframes wiggle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
 @keyframes bubble { 0% { opacity: 0; transform: translate(0, 0) scale(0.6); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(14px, -26px) scale(1.3); } }
 @keyframes swim { 0%,100% { transform: translateX(0) rotate(0); } 25% { transform: translateX(-4px) rotate(-3deg); } 75% { transform: translateX(4px) rotate(3deg); } }
+
+/* ---------- Meadow (home backdrop + garden) ---------- */
+.meadow { position: relative; width: 100%; aspect-ratio: 6 / 5; border-radius: var(--radius); overflow: hidden; isolation: isolate;
+  background: linear-gradient(var(--mdw-sky-a), var(--mdw-sky-b) 58%); }
+.meadow-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.mdw-sun { fill: var(--mdw-sun); }
+.mdw-cloud { fill: var(--mdw-cloud); opacity: 0.85; }
+.mdw-cloud.drift-a { animation: drift 46s ease-in-out infinite alternate; }
+.mdw-cloud.drift-b { animation: drift 62s ease-in-out infinite alternate-reverse; }
+.mdw-hill-far { fill: var(--mdw-hill-far); }
+.mdw-hill-mid { fill: var(--mdw-hill-mid); }
+.mdw-ground { fill: var(--mdw-ground); }
+.mdw-shade { fill: var(--mdw-shade); opacity: 0.6; }
+.mdw-trunk { fill: var(--mdw-trunk); }
+.mdw-canopy { fill: var(--mdw-canopy); }
+.mdw-canopy.lit { fill: var(--mdw-canopy-lit); }
+.mdw-bush { fill: var(--mdw-bush); }
+.mdw-bush.lit { fill: var(--mdw-bush-lit); }
+.mdw-stem { fill: none; stroke: var(--mdw-stem); stroke-width: 1.8; stroke-linecap: round; }
+.mdw-leaf { fill: var(--mdw-stem); }
+.mdw-heart { fill: var(--mdw-heart); }
+.mdw-petal.t0 { fill: var(--mdw-petal-0); }
+.mdw-petal.t1 { fill: var(--mdw-petal-1); }
+.mdw-petal.t2 { fill: var(--mdw-petal-2); }
+.mdw-petal.t3 { fill: var(--mdw-petal-3); }
+.meadow .mdw-flower { transform-box: fill-box; transform-origin: center bottom; animation: sway 6s ease-in-out infinite; }
+.meadow-friend { position: absolute; height: auto; pointer-events: none; }
+.meadow .companion .shadow { opacity: 0.16; }
+.meadow .pet-btn { position: absolute; left: 50%; bottom: 2%; width: 48%; margin-left: -24%; border-radius: 45%; }
+.meadow .pet-btn .companion { width: 100%; display: block; }
+.meadow .pet-btn:focus-visible { outline-offset: -3px; }
+.planted { display: flex; align-items: center; justify-content: center; gap: var(--space-2); color: var(--muted); }
+.plant-icon { width: 30px; height: 36px; flex-shrink: 0; }
+@keyframes drift { from { transform: translateX(-10px); } to { transform: translateX(16px); } }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

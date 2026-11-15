@@ -70,6 +70,11 @@ export const copy = {
   earlyTitle: 'Nice work',
   doneBody: (m: number, name: string) => `${m} focused minutes. ${name} felt every one.`,
   shortBody: (name: string) => `Under 5 minutes doesn’t grow ${name} yet, but showing up counts.`,
+  planted: {
+    flower: 'A new flower is growing in your garden.',
+    bush: 'A new bush is growing in your garden.',
+    tree: 'A new tree is growing in your garden.',
+  },
   tasksDone: (done: number, total: number) => `${done} of ${total} done`,
   stageUp: (name: string, stage: string) => `${name} grew into a ${stage}!`,
   home: 'Back home',
@@ -92,6 +97,11 @@ export const copy = {
   gardenTitle: 'Your garden',
   gardenOpen: 'Open your garden',
   gardenIntro: 'Each companion grows from the sessions you share. Pick whoever suits your mood.',
+  meadowCount: (n: number) => (n === 0
+    ? 'Your first session plants the first flower here.'
+    : n === 1
+    ? 'One session planted here so far. Longer ones grow bushes and trees.'
+    : `${n.toLocaleString()} sessions planted here. Longer ones grow bushes and trees.`),
   gardenOnHome: 'On home',
   gardenSetHome: 'Show on home',
   gardenJourney: 'Journey',

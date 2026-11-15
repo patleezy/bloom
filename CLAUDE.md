@@ -19,7 +19,7 @@ Read **ROADMAP.md** for what's shipped, what's next, and open decisions.
 - `src/logic/`: pure rules (growth, streak, timer, dates)
 - `src/domain/`: types, SessionService, medals (derived from history, never stored), breaks, evolution, stats
 - `src/state/`: `BloomRepository` interface + `LocalRepository` (localStorage, schema-versioned with migrations in `migrate()`; parse all stored data as untrusted), device prefs
-- `src/companion/`: species registry, SVG art (`render.ts`), activities, tap reactions
+- `src/companion/`: species registry, SVG art (`render.ts`), meadow art (`meadowArt.ts`; rules in `src/domain/meadow.ts`, derived from history), activities, tap reactions
 - `src/screens/`: one file per screen; `src/main.ts` wires navigation
 - `src/copy.ts`: all user-facing text
 
