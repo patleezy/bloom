@@ -1,10 +1,12 @@
 import { startActivities } from '../companion/activities';
+import { meadowScene, type MeadowFriend } from '../companion/meadowArt';
 import { makePettable } from '../companion/react';
 import { renderCompanion } from '../companion/render';
 import { SPECIES, stageName } from '../companion/species';
 import { copy } from '../copy';
 import { h } from '../dom';
 import { evaluateMedals, nearestUnlock } from '../domain/medals';
+import { meadow } from '../domain/meadow';
 import type { KeepsakeState } from '../domain/keepsakes';
 import { lastSevenDays, streak, totalMinutes } from '../domain/stats';
 import { progressLabel } from './medals';
@@ -28,6 +30,8 @@ export function homeScreen(
     keepsakes: KeepsakeState;
     onGarden: () => void;
     waitingUnlock?: SpeciesId;
+    /** Other adopted companions, shown standing behind the current one. */
+    friends: readonly MeadowFriend[];
   },
 ): { el: HTMLElement; dispose: () => void } {
   const now = new Date();
@@ -78,6 +82,10 @@ export function homeScreen(
     onReact: () => activities.interrupt(),
   });
 
+  // The meadow is the backdrop: plants from every session, friends behind, the companion in front.
+  const scene = meadowScene(meadow(allHistory), opts.friends, 'home');
+  scene.append(petBtn);
+
   const intro = opts.showIntro
     ? h('aside', { class: 'intro-card' },
         h('p', {}, copy.introCard),
@@ -108,7 +116,7 @@ export function homeScreen(
     intro,
     opts.onWhatsNew ? h('button', { class: 'pill', onclick: opts.onWhatsNew }, icon('sparkle'), copy.whatsNewPill) : null,
     h('section', { class: 'stage-wrap' },
-      petBtn,
+      scene,
       h('p', { class: 'companion-name' }, companion.name),
       h('p', { class: 'stage-name' },
         h('span', { class: `element-tag species-${companion.species}` }, icon(sp.icon), current)),

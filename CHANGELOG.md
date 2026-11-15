@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to BloomyBuds (formerly Bloom). Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
 
+## 0.18.0 — A garden to grow (2026-11-15)
+- Your garden is a real place now. The home screen opens onto a little meadow, with your companion out front and the rest of your friends close by.
+- Every session of 5 minutes or more plants something: a flower, a bush for 50 minutes or more, or a tree for 90 and up.
+- Your newest plants each get their own spot. Older ones slowly grow together into bushes and trees, so the meadow keeps filling in and nothing ever wilts.
+- The end of a session tells you what you just planted.
+- The garden screen shows the whole meadow, and it follows your Light or Night theme.
+
 ## 0.17.0 — Keepsakes (2026-10-13)
 - Keepsakes! Every session of 5 minutes or more ends with a gift to open. Longer sessions bring rarer finds.
 - Four rarities to collect: Seed, Sprout, Bloom, and Golden Bloom. A Bloom or better turns up at least every 10 gifts.

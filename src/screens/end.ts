@@ -1,3 +1,4 @@
+import { plantIcon } from '../companion/meadowArt';
 import { renderCompanion } from '../companion/render';
 import { stageName } from '../companion/species';
 import { copy } from '../copy';
@@ -5,6 +6,7 @@ import { h } from '../dom';
 import { icon } from '../icons';
 import { streak, totalMinutes } from '../domain/stats';
 import type { Medal } from '../domain/medals';
+import { plantFor } from '../domain/meadow';
 import type { CompanionProfile, SessionRecord } from '../domain/types';
 import { medalBadge } from './medals';
 import { giftCard } from './keepsakes';
@@ -26,6 +28,8 @@ export function endScreen(
   const s = streak([...allHistory], new Date());
   const newStage = stageName(companion.species, stageAfter.index);
 
+  const planted = plantFor(record.countedMinutes);
+
   const art = renderCompanion(companion.species, stageAfter.index, { label: `${companion.name}, a ${newStage}` });
   art.classList.add(grew ? 'grew' : 'celebrate');
 
@@ -36,6 +40,7 @@ export function endScreen(
     h('p', {}, record.countedMinutes > 0
       ? copy.doneBody(record.countedMinutes, companion.name)
       : copy.shortBody(companion.name)),
+    planted ? h('p', { class: 'planted' }, plantIcon(planted), copy.planted[planted]) : null,
     record.tasks.length
       ? h('section', { class: 'card task-summary' },
           h('h3', {}, copy.tasksDone(record.tasks.filter((t) => t.done).length, record.tasks.length)),

@@ -19,6 +19,7 @@ import { runningScreen } from './screens/running';
 import { settingsScreen } from './screens/settings';
 import { startScreen, type CompanionChoice } from './screens/start';
 import { gardenScreen, type GardenEntry } from './screens/garden';
+import { meadow } from './domain/meadow';
 import { SPECIES, SPECIES_ORDER } from './companion/species';
 import { LocalRepository } from './state/localRepository';
 import { APP_VERSION } from './changelog';
@@ -73,6 +74,7 @@ function goHome() {
     keepsakes: svc.keepsakes(),
     onEvolution: () => goJourney(svc.companion!.id, goHome),
     onGarden: () => goGarden(goHome),
+    friends: gardenEntries().filter((e) => e.companion && !e.isCurrent).map((e) => ({ species: e.species, stage: e.stage })),
     waitingUnlock: SPECIES_ORDER.find((sp) => SPECIES[sp].unlockMedal && svc.canAdopt(sp) && !svc.companions.some((c) => c.species === sp)),
   });
   show(home.el, home.dispose);
@@ -96,7 +98,7 @@ function gardenEntries(): GardenEntry[] {
 }
 
 function goGarden(back: () => void) {
-  show(gardenScreen(gardenEntries(), {
+  show(gardenScreen(gardenEntries(), meadow(svc.history), {
     onBack: back,
     onSetHome: async (id) => {
       await svc.setCurrent(id);

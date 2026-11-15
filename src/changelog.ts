@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.17.0';
+export const APP_VERSION = '0.18.0';
 
 export interface Release {
   version: string;
@@ -12,6 +12,18 @@ export interface Release {
 }
 
 export const CHANGELOG: Release[] = [
+  {
+    version: '0.18.0',
+    date: '2026-11-15',
+    title: 'A garden to grow',
+    notes: [
+      'Your garden is a real place now. The home screen opens onto a little meadow, with your companion out front and the rest of your friends close by.',
+      'Every session of 5 minutes or more plants something: a flower, a bush for 50 minutes or more, or a tree for 90 and up.',
+      'Your newest plants each get their own spot. Older ones slowly grow together into bushes and trees, so the meadow keeps filling in and nothing ever wilts.',
+      'The end of a session tells you what you just planted.',
+      'The garden screen shows the whole meadow, and it follows your Light or Night theme.',
+    ],
+  },
   {
     version: '0.17.0',
     date: '2026-10-13',
