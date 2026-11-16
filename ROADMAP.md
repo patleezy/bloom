@@ -22,9 +22,10 @@ A new Claude Code session should read this first.
 | 0.16 | #18 | Scenes art pass: Ghibli-pastel skies with their own text palettes, seamless loops (fixed rain stutter) |
 | 0.17 | — | Collectibles PR A: a gift after each 5+ min session (derived from history, seeded by session id), 24 keepsakes in 4 rarities, pity every 10, duplicates → Sparkles to pick items, Keepsakes book; schema v6 |
 | 0.18 | — | A garden to grow: a meadow backdrop on home and in the garden; every counted session plants a flower, bush (50+ min) or tree (90+ min), derived from history; older plants merge upward; no schema change |
+| 0.19 | — | Collectibles PR B1: little friends and backdrops appear in the meadow; toggles in Keepsakes; schema v7 (`keepsakes.away`, `keepsakes.backdrop`). Also restored the service worker (emptied by accident in 0.7), with a test that keeps its cache name on the package version |
 
 ## Next up (in order)
-1. **Collectibles (cosmetics)**: every session of 5+ minutes ends with a gift to open. Themed rarities: **Seed, Sprout, Bloom, Golden Bloom**. Longer sessions improve odds; a guaranteed rare at least every 10 sessions; duplicates become Sparkles to pick a specific item. Drops are derived from session history (seeded by session id, so they can't be rerolled). No retroactive gifts (no existing users). Never sell randomness. PR A (gifts + Keepsakes book) shipped in 0.17. PR B (next): wearing items, little friends, backgrounds. Little friends and backgrounds should appear in the meadow (0.18).
+1. **Collectibles (cosmetics)**: every session of 5+ minutes ends with a gift to open. Themed rarities: **Seed, Sprout, Bloom, Golden Bloom**. Longer sessions improve odds; a guaranteed rare at least every 10 sessions; duplicates become Sparkles to pick a specific item. Drops are derived from session history (seeded by session id, so they can't be rerolled). No retroactive gifts (no existing users). Never sell randomness. PR A (gifts + Keepsakes book) shipped in 0.17. PR B1 (friends and backdrops in the meadow) shipped in 0.19. PR B2 (next): wearing items, which need a fit on each species at each stage.
 2. **Opt-in analytics**: Vercel Web Analytics, cookieless, opt-in during onboarding and in Settings. Analytics is enabled in Vercel (Hobby). Add the endpoint to CSP `connect-src` only.
 3. **Weekly recap card**: shareable image generated on the device (minutes, medals, companion).
 4. **Floating mini-companion**: Document Picture-in-Picture, desktop Chrome and Edge only.
@@ -40,6 +41,7 @@ Accounts and sync (code is already behind a `BloomRepository` interface), remind
 - Keepsake odds (percent Seed/Sprout/Bloom/Golden): 60/28/10/2 under 25 min, 50/32/15/3 for 25–49, 40/35/20/5 for 50+. Duplicates give 1/3/8/20 Sparkles; picking costs 5/15/40/100. The odds and the catalog are in `src/domain/keepsakes.ts`; changing them changes what unopened gifts contain.
 - Gifts only count sessions after the v6 migration (`keepsakes.giftsFrom`); fresh installs start at 0.
 - Meadow: derived from history like medals (`src/domain/meadow.ts`). The newest 12 sessions are their own plants; older ones merge 5 flowers → 1 bush, 5 bushes → 1 tree, up to 8 trees. Nothing wilts or disappears.
+- Owned little friends are out in the meadow by default; the user can tuck one away. One backdrop at a time. Only these choices are stored; whether an item is owned is always re-derived.
 - All three starters are free. Unlockables (Moss, Nimbus, Lumi, future species) need a medal.
 - Each companion grows separately; streaks and medals are account-wide.
 - The start screen asks "Who's joining you?" every session.

@@ -1,5 +1,7 @@
+import type { Decor } from '../domain/keepsakes';
 import type { Meadow, Plant, PlantKind } from '../domain/meadow';
 import type { SpeciesId } from '../domain/types';
+import { keepsakeMarkup } from './keepsakeArt';
 import { renderCompanion } from './render';
 
 /**
@@ -87,6 +89,64 @@ export function plantIcon(kind: PlantKind, tint = 0): SVGSVGElement {
   return svgEl(box, `plant-icon mdw-plant mdw-${kind}`, SHAPES[kind](tint));
 }
 
+// ---------- keepsakes in the meadow ----------
+
+/**
+ * Where each little friend lives and how it moves (a CSS class, see .fr-* in styles.css).
+ * Ground friends give a position and depth; flyers give a point in the sky.
+ */
+const FRIEND_SPOTS: Record<string, { at: readonly [number, number]; fly?: true; move: string }> = {
+  snail: { at: [0.33, 0.93], move: 'creep' },
+  ladybug: { at: [0.71, 0.97], move: 'amble' },
+  pebble: { at: [0.23, 0.8], move: 'still' },
+  frog: { at: [0.63, 0.5], move: 'hop' },
+  bumblebee: { at: [112, 158], fly: true, move: 'buzz' },
+  butterfly: { at: [238, 132], fly: true, move: 'flutter' },
+  songbird: { at: [0.5, 0.06], move: 'bob' },
+};
+
+function friendMarkup(id: string): string {
+  const spot = FRIEND_SPOTS[id];
+  if (!spot) return '';
+  // Keepsake drawings are 48×48 with their feet near y=40.
+  const g = spot.fly ? { x: spot.at[0], y: spot.at[1], scale: 0.4 } : place(spot.at[0], spot.at[1]);
+  const s = r1(spot.fly ? 0.4 : g.scale * 0.36);
+  return `<g transform="translate(${r1(g.x - 24 * s)} ${r1(g.y - 40 * s)}) scale(${s})"><g class="mdw-critter fr-${spot.move}">${keepsakeMarkup(id)}</g></g>`;
+}
+
+/** Deterministic scatter for the wildflower backdrop. */
+const WILDFLOWERS = Array.from({ length: 34 }, (_, i) => {
+  const { x, y } = place(((i * 37) % 100) / 100, 0.04 + ((i * 53) % 90) / 100);
+  return `<circle class="mdw-petal t${i % 4}" cx="${x}" cy="${r1(y - 2)}" r="${i % 3 ? 1.6 : 2.1}"/>`;
+}).join('');
+
+/** Backdrops: `behind` is painted before the hills, `ground` on them (under the plants), `front` last. */
+const BACKDROPS: Record<string, { behind?: string; ground?: string; front?: string }> = {
+  meadow: { ground: WILDFLOWERS },
+  picnic: { ground: `
+    <path d="M34 266 72 246 132 252 98 274Z" fill="#fbe3e0"/>
+    <path d="M47 259 109 265M60 252 121 258M53 256 85 272M72 246 110 270M91 248 123 262" stroke="#ec9c95" stroke-width="2.4" fill="none" opacity=".8"/>
+    <path d="M96 246h20l-3 12H99Z" fill="#d6ad7c"/><path d="M98 246c1-9 15-9 16 0" fill="none" stroke="#b98a5e" stroke-width="2"/>` },
+  pond: { ground: `
+    <ellipse cx="276" cy="216" rx="50" ry="11" fill="#a9d6e6"/>
+    <ellipse cx="270" cy="214" rx="34" ry="6" fill="#c9e7f1"/>
+    <ellipse cx="252" cy="218" rx="8" ry="2.6" fill="#7fb874"/><ellipse cx="296" cy="213" rx="7" ry="2.3" fill="#7fb874"/>
+    <circle cx="296" cy="211.5" r="2.2" fill="#f6c6d6"/>` },
+  'sunset-hill': {},
+  blossom: { front: `
+    <path d="M0 22C40 26 76 40 118 34" fill="none" stroke="#8f6844" stroke-width="5" stroke-linecap="round"/>
+    <path d="M52 30C60 44 74 52 88 54" fill="none" stroke="#8f6844" stroke-width="3" stroke-linecap="round"/>
+    ${[[14, 20, 9], [36, 28, 10], [60, 30, 8], [84, 38, 10], [110, 34, 8], [70, 48, 8], [90, 56, 7]].map(([x, y, r]) =>
+      `<circle cx="${x}" cy="${y}" r="${r}" fill="#f6c3d2"/><circle cx="${x - 2}" cy="${y - 2}" r="${r * 0.55}" fill="#fbdde6"/>`).join('')}
+    ${[[60, 0], [130, 4], [200, 1], [270, 6], [320, 2]].map(([x, d], i) =>
+      `<ellipse class="mdw-fall d${d}" cx="${x}" cy="${70 + i * 9}" rx="2.6" ry="1.6" fill="#f6c3d2"/>`).join('')}` },
+  rainbow: { behind: ['#f2a99a', '#f5cd72', '#b6dba3', '#a9d6e6', '#c5b0e8'].map((c, i) =>
+    `<circle cx="180" cy="214" r="${150 - i * 9}" fill="none" stroke="${c}" stroke-width="9" opacity=".75"/>`).join('') },
+};
+
+/** Exposed for tests: every friend and backdrop in the catalog must show up in the meadow. */
+export const hasMeadowArt = (itemId: string) => itemId in FRIEND_SPOTS || itemId in BACKDROPS;
+
 export interface MeadowFriend {
   species: SpeciesId;
   stage: number;
@@ -101,15 +161,24 @@ const BEHIND: readonly (readonly [number, number, number])[] = [
  * The meadow with companions standing in it. `home` leaves the middle of the foreground
  * free (the home screen puts the pettable companion there); `garden` lines everyone up.
  */
-export function meadowScene(m: Meadow, friends: readonly MeadowFriend[], layout: 'home' | 'garden'): HTMLElement {
+export function meadowScene(
+  m: Meadow,
+  friends: readonly MeadowFriend[],
+  layout: 'home' | 'garden',
+  decor: Decor = { friends: [], backdrop: null },
+): HTMLElement {
+  const bd = decor.backdrop ? BACKDROPS[decor.backdrop] : undefined;
   const el = document.createElement('div');
-  el.className = `meadow meadow-${layout}`;
+  el.className = `meadow meadow-${layout}${bd ? ` bd-${decor.backdrop}` : ''}`;
   el.append(svgEl(`0 0 ${W} ${H}`, 'meadow-svg', `
     <circle class="mdw-sun" cx="286" cy="62" r="26"/>
     <g class="mdw-cloud drift-a"><ellipse cx="78" cy="58" rx="30" ry="11"/><ellipse cx="98" cy="50" rx="18" ry="11"/></g>
     <g class="mdw-cloud drift-b"><ellipse cx="212" cy="96" rx="22" ry="8"/><ellipse cx="226" cy="90" rx="13" ry="8"/></g>
+    <g class="mdw-decor">${bd?.behind ?? ''}</g>
     ${hill(farTop, 'mdw-hill-far')}${hill(midTop, 'mdw-hill-mid')}${hill(frontTop, 'mdw-ground')}
-    ${m.plants.map(plantMarkup).join('')}`));
+    <g class="mdw-decor">${bd?.ground ?? ''}</g>
+    ${m.plants.map(plantMarkup).join('')}
+    <g class="mdw-decor">${decor.friends.map(friendMarkup).join('')}${bd?.front ?? ''}</g>`));
 
   const n = friends.length;
   friends.slice(0, layout === 'home' ? BEHIND.length : n).forEach((f, i) => {

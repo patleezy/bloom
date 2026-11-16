@@ -3,6 +3,7 @@ import { renderCompanion } from '../companion/render';
 import { SPECIES, SPECIES_ORDER, stageName } from '../companion/species';
 import { copy } from '../copy';
 import { h } from '../dom';
+import type { Decor } from '../domain/keepsakes';
 import type { Meadow } from '../domain/meadow';
 import type { CompanionProfile, SpeciesId } from '../domain/types';
 import { icon } from '../icons';
@@ -24,6 +25,7 @@ export interface GardenEntry {
 export function gardenScreen(
   entries: GardenEntry[],
   meadow: Meadow,
+  decor: Decor,
   opts: {
     onBack: () => void;
     onSetHome: (id: string) => void;
@@ -85,7 +87,7 @@ export function gardenScreen(
       h('button', { class: 'btn link back', onclick: opts.onBack }, icon('back'), copy.back),
       h('h2', {}, copy.gardenTitle),
       h('span', { class: 'spacer' })),
-    meadowScene(meadow, ordered.filter((e) => e.companion).map((e) => ({ species: e.species, stage: e.stage })), 'garden'),
+    meadowScene(meadow, ordered.filter((e) => e.companion).map((e) => ({ species: e.species, stage: e.stage })), 'garden', decor),
     h('p', { class: 'muted small' }, copy.meadowCount(meadow.planted)),
     h('p', { class: 'muted small' }, copy.gardenIntro),
     h('ul', { class: 'garden-list' }, ...cards),

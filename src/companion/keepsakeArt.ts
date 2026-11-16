@@ -117,5 +117,8 @@ export function keepsakeArt(itemId: string, opts: { locked?: boolean; label?: st
 
 export const giftArt = (label?: string) => svg(GIFT, 'keepsake-art gift-art', label);
 
+/** An item's shapes (a 48×48 drawing), for placing inside another SVG such as the meadow. */
+export const keepsakeMarkup = (itemId: string): string => ART[itemId] ?? '';
+
 /** Exposed for tests: every catalog item must have art. */
 export const hasArt = (itemId: string) => itemId in ART;

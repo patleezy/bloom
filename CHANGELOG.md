@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to BloomyBuds (formerly Bloom). Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
 
+## 0.19.0 — Friends in the garden (2026-11-16)
+- Little friends move in. Every friend in your Keepsakes now lives in your garden: the snail creeps along, the frog hops now and then, and the pebble, true to itself, stays put.
+- Backdrops change the whole meadow: a picnic blanket, wildflowers, a lily pond, a sunset sky, a cherry blossom bough, or a rainbow.
+- In Keepsakes, tap “In the garden” on a friend to tuck it away or bring it back, and on a backdrop to use it. One backdrop at a time.
+- BloomyBuds works offline again once you have opened it online, including after an update.
+- Wearable keepsakes are next.
+
 ## 0.18.0 — A garden to grow (2026-11-15)
 - Your garden is a real place now. The home screen opens onto a little meadow, with your companion out front and the rest of your friends close by.
 - Every session of 5 minutes or more plants something: a flower, a bush for 50 minutes or more, or a tree for 90 and up.

@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
-  DUPLICATE_SPARKLES, ITEMS, PICK_COST, PITY_EVERY, deriveGifts, keepsakeState, type Rarity,
+  DUPLICATE_SPARKLES, ITEMS, PICK_COST, PITY_EVERY, decorFor, deriveGifts, keepsakeState, type Rarity,
 } from '../src/domain/keepsakes';
 import { hasArt } from '../src/companion/keepsakeArt';
+import { hasMeadowArt } from '../src/companion/meadowArt';
 import { emptyKeepsakes, type SessionRecord } from '../src/domain/types';
 
 const rec = (id: string, minutes: number, endedAt: number): SessionRecord => ({
@@ -40,6 +41,15 @@ describe('gifts', () => {
   it('every item has art and a unique id', () => {
     expect(ITEMS.every((i) => hasArt(i.id))).toBe(true);
     expect(new Set(ITEMS.map((i) => i.id)).size).toBe(ITEMS.length);
+  });
+
+  it('every friend and backdrop shows up in the meadow', () => {
+    expect(ITEMS.filter((i) => i.kind !== 'wear').every((i) => hasMeadowArt(i.id))).toBe(true);
+  });
+
+  it('ignores meadow choices for items that are not owned', () => {
+    const none = keepsakeState([], emptyKeepsakes());
+    expect(decorFor(none, { ...emptyKeepsakes(), backdrop: 'pond' })).toEqual({ friends: [], backdrop: null });
   });
 
   it('can be any item in the catalog', () => {

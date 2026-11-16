@@ -10,12 +10,12 @@ import {
   type SessionRecord,
   type SpeciesId,
 } from '../domain/types';
-import { ITEM_IDS } from '../domain/keepsakes';
+import { ITEM_IDS, itemById } from '../domain/keepsakes';
 import type { BloomRepository } from './repository';
 
 /** All data stays in this browser's localStorage. Nothing is sent over the network. */
 const KEY = 'bloom:data';
-export const SCHEMA_VERSION = 6;
+export const SCHEMA_VERSION = 7;
 const MAX_COMPANIONS = 50;
 const MAX_LABEL = 60;
 export const MAX_NAME = 20;
@@ -23,8 +23,8 @@ const MAX_PLANNED_MS = 24 * 3600_000;
 const MAX_HISTORY = 20_000;
 const SPECIES: readonly SpeciesId[] = ['bloomling', 'cinder', 'ripple', 'moss', 'nimbus', 'lumi'];
 
-interface StoredV6 {
-  schemaVersion: 6;
+interface StoredV7 {
+  schemaVersion: 7;
   companions: CompanionProfile[];
   currentId: string | null;
   history: SessionRecord[];
@@ -113,7 +113,11 @@ function parseKeepsakes(k: unknown, now: number): KeepsakeLog {
     .filter((x) => typeof x.item === 'string' && ITEM_IDS.has(x.item) && isNum(x.at) && !pickedIds.has(x.item) && !!pickedIds.add(x.item))
     .map((x) => ({ item: x.item as string, at: x.at as number }));
   // Missing or bad start time: start now rather than granting gifts for past sessions.
-  return { giftsFrom: isNum(o.giftsFrom) ? o.giftsFrom : now, opened, picked };
+  // Meadow choices: only known items of the right kind. Whether they're owned is checked when shown.
+  const away = [...new Set((Array.isArray(o.away) ? o.away.slice(0, ITEM_IDS.size) : [])
+    .filter((x): x is string => typeof x === 'string' && itemById(x)?.kind === 'friend'))];
+  const backdrop = typeof o.backdrop === 'string' && itemById(o.backdrop)?.kind === 'backdrop' ? o.backdrop : null;
+  return { giftsFrom: isNum(o.giftsFrom) ? o.giftsFrom : now, opened, picked, away, backdrop };
 }
 
 const LEGACY_COMPANION_ID = 'legacy-bloomling';
@@ -176,6 +180,11 @@ function migrate(o: Record<string, unknown>, now: number): Record<string, unknow
     // v6 adds keepsakes. Gifts start now: sessions from before the update don't bring one.
     cur = { ...cur, schemaVersion: 6, keepsakes: emptyKeepsakes(now) };
   }
+  if (cur.schemaVersion === 6) {
+    // v7 lets keepsakes dress the meadow: friends are out by default, no backdrop chosen.
+    const k = cur.keepsakes && typeof cur.keepsakes === 'object' ? (cur.keepsakes as Record<string, unknown>) : {};
+    cur = { ...cur, schemaVersion: 7, keepsakes: { ...k, away: [], backdrop: null } };
+  }
   return cur.schemaVersion === SCHEMA_VERSION ? cur : null; // unknown/newer version: don't guess
 }
 
@@ -209,8 +218,8 @@ export function parseSnapshot(raw: string | null, now = Date.now()): BloomSnapsh
 export const parseStored = (raw: string | null, now = Date.now()): BloomSnapshot => parseSnapshot(raw, now) ?? emptySnapshot();
 
 export function serialize(s: BloomSnapshot): string {
-  const stored: StoredV6 = {
-    schemaVersion: 6, companions: s.companions, currentId: s.currentId, history: s.history, active: s.active, keepsakes: s.keepsakes,
+  const stored: StoredV7 = {
+    schemaVersion: 7, companions: s.companions, currentId: s.currentId, history: s.history, active: s.active, keepsakes: s.keepsakes,
   };
   return JSON.stringify(stored);
 }

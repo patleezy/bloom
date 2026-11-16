@@ -1,7 +1,7 @@
 import { isUnlocked } from '../companion/species';
 import { dayKey } from '../logic/dates';
 import { earnedMedalIds } from './medals';
-import { PICK_COST, itemById, keepsakeState, type Gift, type KeepsakeState, type OpenedGift } from './keepsakes';
+import { PICK_COST, decorFor, itemById, keepsakeState, type Decor, type Gift, type KeepsakeState, type OpenedGift } from './keepsakes';
 import { countedMinutes } from '../logic/growth';
 import * as clock from '../logic/timer';
 import { cleanLabel, cleanName, parseSnapshot, serialize } from '../state/localRepository';
@@ -122,6 +122,28 @@ export class SessionService {
     const state = this.keepsakes();
     if (!item || state.owned.has(item.id) || state.sparkles < PICK_COST[item.rarity]) return false;
     this.snap.keepsakes.picked.push({ item: item.id, at: this.now() });
+    await this.repo.saveKeepsakes(this.snap.keepsakes);
+    return true;
+  }
+
+  /** Little friends that are out and the backdrop in use (owned items only). */
+  decor(): Decor {
+    return decorFor(this.keepsakes(), this.snap.keepsakes);
+  }
+
+  /** Send an owned little friend out into the meadow, or tuck it away. */
+  async setFriendOut(itemId: string, out: boolean): Promise<boolean> {
+    if (itemById(itemId)?.kind !== 'friend' || !this.keepsakes().owned.has(itemId)) return false;
+    const away = this.snap.keepsakes.away.filter((id) => id !== itemId);
+    this.snap.keepsakes.away = out ? away : [...away, itemId];
+    await this.repo.saveKeepsakes(this.snap.keepsakes);
+    return true;
+  }
+
+  /** Use an owned backdrop, or pass null for the plain meadow. */
+  async setBackdrop(itemId: string | null): Promise<boolean> {
+    if (itemId !== null && (itemById(itemId)?.kind !== 'backdrop' || !this.keepsakes().owned.has(itemId))) return false;
+    this.snap.keepsakes.backdrop = itemId;
     await this.repo.saveKeepsakes(this.snap.keepsakes);
     return true;
   }

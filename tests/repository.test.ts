@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { SessionService } from '../src/domain/sessionService';
 import { emptySnapshot } from '../src/domain/types';
-import { LocalRepository, parseStored } from '../src/state/localRepository';
+import { ITEMS } from '../src/domain/keepsakes';
+import { LocalRepository, parseStored, serialize } from '../src/state/localRepository';
 
 class MemStorage implements Storage {
   private m = new Map<string, string>();
@@ -144,7 +145,7 @@ describe('keepsakes storage (schema v6)', () => {
 
   it('migrates v5 with gifts starting now (no retroactive gifts)', () => {
     const s = parseStored(JSON.stringify(v5), 12345);
-    expect(s.keepsakes).toEqual({ giftsFrom: 12345, opened: [], picked: [] });
+    expect(s.keepsakes).toEqual({ giftsFrom: 12345, opened: [], picked: [], away: [], backdrop: null });
     expect(s.history).toHaveLength(1);
   });
 
@@ -154,7 +155,7 @@ describe('keepsakes storage (schema v6)', () => {
       opened: [{ id: 'a', at: 1 }, { id: 'a', at: 2 }, { id: '<b>', at: 1 }, { id: 'x', at: -1 }, 'junk'],
       picked: [{ item: 'rainbow', at: 3 }, { item: 'dragon', at: 3 }, { item: 'rainbow', at: 4 }],
     } }), 99);
-    expect(s.keepsakes).toEqual({ giftsFrom: 7, opened: [{ id: 'a', at: 1 }], picked: [{ item: 'rainbow', at: 3 }] });
+    expect(s.keepsakes).toEqual({ giftsFrom: 7, opened: [{ id: 'a', at: 1 }], picked: [{ item: 'rainbow', at: 3 }], away: [], backdrop: null });
     expect(parseStored(JSON.stringify({ ...v5, schemaVersion: 6, keepsakes: 'nope' }), 99).keepsakes.giftsFrom).toBe(99);
   });
 
@@ -175,5 +176,59 @@ describe('keepsakes storage (schema v6)', () => {
     await again.init();
     expect(again.keepsakes().owned.has(opened!.item.id)).toBe(true);
     expect(await again.pickItem(opened!.item.id)).toBe(false); // already yours
+  });
+});
+
+describe('meadow choices storage (schema v7)', () => {
+  const v6 = {
+    schemaVersion: 6, companions: [{ id: 'c1', species: 'bloomling', name: 'Pip', adoptedAt: 1 }], currentId: 'c1',
+    history: [rec('a')], active: null, keepsakes: { giftsFrom: 7, opened: [{ id: 'a', at: 9 }], picked: [] },
+  };
+
+  it('migrates v6, keeping gifts, with friends out and no backdrop', () => {
+    const s = parseStored(JSON.stringify(v6), 99);
+    expect(s.keepsakes).toEqual({ giftsFrom: 7, opened: [{ id: 'a', at: 9 }], picked: [], away: [], backdrop: null });
+    expect(JSON.parse(serialize(s)).schemaVersion).toBe(7);
+  });
+
+  it('parses meadow choices as untrusted', () => {
+    const s = parseStored(JSON.stringify({ ...v6, schemaVersion: 7, keepsakes: {
+      ...v6.keepsakes, away: ['snail', 'snail', 'rainbow', 'dragon', '<b>', 7, null], backdrop: 'snail',
+    } }), 99);
+    expect(s.keepsakes.away).toEqual(['snail']); // friends only, known ids, no repeats
+    expect(s.keepsakes.backdrop).toBeNull(); // a friend is not a backdrop
+    const ok = parseStored(JSON.stringify({ ...v6, schemaVersion: 7, keepsakes: { ...v6.keepsakes, away: 'x', backdrop: 'pond' } }), 99);
+    expect(ok.keepsakes).toMatchObject({ away: [], backdrop: 'pond' });
+  });
+
+  it('only lets owned items dress the meadow, and saves the choice', async () => {
+    const storage = new MemStorage();
+    let t = 1_000_000;
+    const svc = new SessionService(new LocalRepository(storage), () => t, (() => { let i = 0; return () => `id${i++}`; })());
+    await svc.init();
+    await svc.adopt('bloomling', 'Pip');
+    expect(await svc.setBackdrop('pond')).toBe(false); // not owned
+    expect(await svc.setFriendOut('snail', false)).toBe(false);
+    expect(await svc.setBackdrop('snail')).toBe(false); // wrong kind
+    // Focus until a friend and a backdrop have turned up.
+    const owned = (kind: string) => ITEMS.find((i) => i.kind === kind && svc.keepsakes().owned.has(i.id));
+    for (let n = 0; n < 400 && !(owned('friend') && owned('backdrop')); n++) {
+      await svc.start(25);
+      t += 25 * 60000;
+      await svc.openGift((await svc.finish())!.id);
+    }
+    const friend = owned('friend')!.id, backdrop = owned('backdrop')!.id;
+    expect(svc.decor().friends).toContain(friend); // out by default
+    expect(svc.decor().backdrop).toBeNull();
+    expect(await svc.setFriendOut(friend, false)).toBe(true);
+    expect(await svc.setBackdrop(backdrop)).toBe(true);
+    const again = new SessionService(new LocalRepository(storage));
+    await again.init();
+    expect(again.decor().friends).not.toContain(friend);
+    expect(again.decor().backdrop).toBe(backdrop);
+    expect(await again.setFriendOut(friend, true)).toBe(true);
+    expect(await again.setBackdrop(null)).toBe(true);
+    expect(again.decor()).toMatchObject({ backdrop: null });
+    expect(again.decor().friends).toContain(friend);
   });
 });

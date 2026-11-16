@@ -12,7 +12,7 @@ Read **ROADMAP.md** for what's shipped, what's next, and open decisions.
 
 ## Workflow
 - Work on the designated branch; before starting a new PR, sync it to `origin/main` after the previous PR merged.
-- One feature per PR. In each PR: bump `package.json` version, add an entry to `src/changelog.ts` **and** `CHANGELOG.md` (a test keeps them in sync), bump `VERSION` in `public/sw.js`, update ROADMAP.md.
+- One feature per PR. In each PR: bump `package.json` version, add an entry to `src/changelog.ts` **and** `CHANGELOG.md` (a test keeps them in sync), set `VERSION` in `public/sw.js` to `bloom-<version>` (a test checks it), update ROADMAP.md.
 - Verify before pushing: `npm test`, `npm run build`, and a browser pass for UI changes (Playwright with `executablePath: '/opt/pw-browsers/chromium'`; use `bypassCSP: true` to inject axe-core).
 
 ## Architecture

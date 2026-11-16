@@ -46,17 +46,21 @@ export interface ActiveSession {
 }
 
 /**
- * The only stored keepsake data: when gifts started, which gifts were opened, and which
- * items were picked with Sparkles. Gift contents and balances are derived (domain/keepsakes).
+ * The only stored keepsake data: when gifts started, which gifts were opened, which items
+ * were picked with Sparkles, and how the meadow is dressed (friends tucked away, backdrop). Gift contents and balances are derived (domain/keepsakes).
  */
 export interface KeepsakeLog {
   /** Sessions ending before this (epoch ms) don't bring a gift: no retroactive gifts. */
   giftsFrom: number;
   opened: { id: string; at: number }[];
   picked: { item: string; at: number }[];
+  /** Little friends the user tucked away. Owned friends are out in the meadow by default. */
+  away: string[];
+  /** The backdrop in use (an owned backdrop item), or null for the plain meadow. */
+  backdrop: string | null;
 }
 
-export const emptyKeepsakes = (giftsFrom = 0): KeepsakeLog => ({ giftsFrom, opened: [], picked: [] });
+export const emptyKeepsakes = (giftsFrom = 0): KeepsakeLog => ({ giftsFrom, opened: [], picked: [], away: [], backdrop: null });
 
 export interface BloomSnapshot {
   companions: CompanionProfile[];

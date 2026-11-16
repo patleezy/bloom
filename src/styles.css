@@ -869,6 +869,37 @@ body:has(.running.scene-night) { background: #33305a; }
 .meadow .pet-btn { position: absolute; left: 50%; bottom: 2%; width: 48%; margin-left: -24%; border-radius: 45%; }
 .meadow .pet-btn .companion { width: 100%; display: block; }
 .meadow .pet-btn:focus-visible { outline-offset: -3px; }
+/* Keepsakes in the meadow: little friends and backdrops */
+.mdw-critter { transform-box: fill-box; transform-origin: center bottom; }
+.fr-creep { animation: fr-creep 70s linear infinite alternate; }
+.fr-amble { animation: fr-amble 16s ease-in-out infinite; }
+.fr-hop { animation: fr-hop 7s ease-in-out infinite; }
+.fr-buzz { animation: fr-buzz 9s ease-in-out infinite; }
+.fr-flutter { animation: fr-flutter 15s ease-in-out infinite; }
+.fr-bob { animation: fr-bob 3.4s ease-in-out infinite; }
+.mdw-fall { animation: mdw-fall 11s linear infinite; }
+.mdw-fall.d4 { animation-delay: -4s; } .mdw-fall.d1 { animation-delay: -7s; } .mdw-fall.d6 { animation-delay: -2s; } .mdw-fall.d2 { animation-delay: -9s; }
+.meadow.bd-sunset-hill { --mdw-sky-a: #f3bfb4; --mdw-sky-b: #fde6c0; --mdw-sun: #f6a56f; --mdw-cloud: #fdeee4; }
+.meadow.bd-blossom { --mdw-canopy: #f0b4c6; --mdw-canopy-lit: #f8d2dd; }
+:root[data-theme='night'] .meadow.bd-sunset-hill { --mdw-sky-a: #33294a; --mdw-sky-b: #7b4b5c; --mdw-sun: #eea172; --mdw-cloud: #5a4560; }
+:root[data-theme='night'] .meadow.bd-blossom { --mdw-canopy: #9c6c81; --mdw-canopy-lit: #b48296; }
+:root[data-theme='night'] .mdw-decor { opacity: 0.82; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .meadow.bd-sunset-hill { --mdw-sky-a: #33294a; --mdw-sky-b: #7b4b5c; --mdw-sun: #eea172; --mdw-cloud: #5a4560; }
+  :root:not([data-theme='light']) .meadow.bd-blossom { --mdw-canopy: #9c6c81; --mdw-canopy-lit: #b48296; }
+  :root:not([data-theme='light']) .mdw-decor { opacity: 0.82; }
+}
+@keyframes fr-creep { from { transform: translateX(0); } to { transform: translateX(46px); } }
+@keyframes fr-amble { 0%,100% { transform: translateX(0) rotate(0); } 40% { transform: translateX(-14px) rotate(-6deg); } 70% { transform: translateX(6px) rotate(5deg); } }
+@keyframes fr-hop { 0%,80%,100% { transform: translateY(0) scaleY(1); } 84% { transform: translateY(0) scaleY(0.86); } 90% { transform: translateY(-16px) scaleY(1.05); } 96% { transform: translateY(0) scaleY(0.94); } }
+@keyframes fr-buzz { 0%,100% { transform: translate(0, 0); } 25% { transform: translate(18px, -9px); } 50% { transform: translate(34px, 3px); } 75% { transform: translate(14px, 10px); } }
+@keyframes fr-flutter { 0%,100% { transform: translate(0, 0) scaleX(1); } 20% { transform: translate(-16px, 12px) scaleX(0.8); } 50% { transform: translate(-34px, -6px) scaleX(1); } 75% { transform: translate(-12px, -14px) scaleX(0.8); } }
+@keyframes fr-bob { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-7deg); } }
+@keyframes mdw-fall { from { transform: translate(0, -80px) rotate(0); opacity: 0; } 12% { opacity: 1; } 85% { opacity: 1; } to { transform: translate(-46px, 190px) rotate(260deg); opacity: 0; } }
+.garden-toggle { margin-top: 4px; display: inline-flex; align-items: center; gap: 4px; background: transparent; border: 2px solid var(--border); color: var(--ink); }
+.garden-toggle .icon { width: 16px; height: 16px; display: none; }
+.garden-toggle[aria-pressed='true'] { background: var(--accent-soft); border-color: var(--accent); font-weight: 700; }
+.garden-toggle[aria-pressed='true'] .icon { display: inline; }
 .planted { display: flex; align-items: center; justify-content: center; gap: var(--space-2); color: var(--muted); }
 .plant-icon { width: 30px; height: 36px; flex-shrink: 0; }
 @keyframes drift { from { transform: translateX(-10px); } to { transform: translateX(16px); } }

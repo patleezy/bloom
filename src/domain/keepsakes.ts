@@ -152,3 +152,19 @@ export function keepsakeState(history: readonly SessionRecord[], log: KeepsakeLo
   const openedIds = new Set(opened.map((o) => o.sessionId));
   return { unopened: gifts.filter((g) => !openedIds.has(g.sessionId)), opened, owned, sparkles };
 }
+
+/** What dresses the meadow: little friends that are out, and the backdrop in use. */
+export interface Decor {
+  friends: string[];
+  backdrop: string | null;
+}
+
+/** Only owned items count, whatever the log says: every owned friend is out unless tucked away. */
+export function decorFor(state: KeepsakeState, log: KeepsakeLog): Decor {
+  const away = new Set(log.away);
+  const backdrop = log.backdrop ? itemById(log.backdrop) : undefined;
+  return {
+    friends: ITEMS.filter((i) => i.kind === 'friend' && state.owned.has(i.id) && !away.has(i.id)).map((i) => i.id),
+    backdrop: backdrop && backdrop.kind === 'backdrop' && state.owned.has(backdrop.id) ? backdrop.id : null,
+  };
+}
