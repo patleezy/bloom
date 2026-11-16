@@ -20,6 +20,17 @@ export interface Plant {
   tint: number;
   /** One of the newest sessions, shown on its own. */
   recent: boolean;
+  /** The session a recent plant grew from. Merged plants have no single session. */
+  session: SessionRecord | null;
+}
+
+/** What the merged (older) plants stand for, together. */
+export interface OlderSessions {
+  sessions: number;
+  minutes: number;
+  /** YYYY-MM-DD of the earliest and latest of them. */
+  firstDay: string;
+  lastDay: string;
 }
 
 export interface Meadow {
@@ -27,6 +38,8 @@ export interface Meadow {
   plants: Plant[];
   /** Sessions that have planted something, ever. */
   planted: number;
+  /** The sessions behind the merged plants, or null while every plant is its own session. */
+  older: OlderSessions | null;
 }
 
 export const BUSH_MINUTES = 50;
@@ -72,20 +85,21 @@ export function meadow(history: readonly SessionRecord[]): Meadow {
 
   // Older sessions: count by kind, then exchange small plants for bigger ones.
   const old = { flower: 0, bush: 0, tree: 0 };
-  for (const r of counted.slice(0, firstRecent)) old[plantFor(r.countedMinutes)!]++;
+  const merged = counted.slice(0, firstRecent);
+  for (const r of merged) old[plantFor(r.countedMinutes)!]++;
   const bushesAll = old.bush + Math.floor(old.flower / MERGE_EVERY);
   const flowers = old.flower % MERGE_EVERY;
   const bushes = bushesAll % MERGE_EVERY;
   const trees = Math.min(MAX_TREES, old.tree + Math.floor(bushesAll / MERGE_EVERY));
 
   const grown = (kind: PlantKind, n: number, slots: readonly Slot[]): Plant[] =>
-    Array.from({ length: n }, (_, i) => ({ kind, x: slots[i][0], depth: slots[i][1], tint: i % TINTS, recent: false }));
+    Array.from({ length: n }, (_, i) => ({ kind, x: slots[i][0], depth: slots[i][1], tint: i % TINTS, recent: false, session: null }));
 
   // A session keeps its slot for as long as it is one of the newest; the next new session
   // takes over the slot of the one that just merged.
   const recent = counted.slice(firstRecent).map((r, i): Plant => {
     const [x, depth] = RECENT_SLOTS[(firstRecent + i) % RECENT_PLANTS];
-    return { kind: plantFor(r.countedMinutes)!, x, depth, tint: hash(r.id) % TINTS, recent: true };
+    return { kind: plantFor(r.countedMinutes)!, x, depth, tint: hash(r.id) % TINTS, recent: true, session: r };
   });
 
   const plants = [
@@ -94,5 +108,13 @@ export function meadow(history: readonly SessionRecord[]): Meadow {
     ...grown('flower', flowers, FLOWER_SLOTS),
     ...recent,
   ].sort((a, b) => a.depth - b.depth);
-  return { plants, planted: counted.length };
+  const older = merged.length
+    ? {
+        sessions: merged.length,
+        minutes: merged.reduce((sum, r) => sum + r.countedMinutes, 0),
+        firstDay: merged[0].day,
+        lastDay: merged[merged.length - 1].day,
+      }
+    : null;
+  return { plants, planted: counted.length, older };
 }

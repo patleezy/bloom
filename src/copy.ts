@@ -102,6 +102,22 @@ export const copy = {
     : n === 1
     ? 'One session planted here so far. Longer ones grow bushes and trees.'
     : `${n.toLocaleString()} sessions planted here. Longer ones grow bushes and trees.`),
+  plantHint: 'Tap a plant to see the session it grew from.',
+  plantName: { flower: 'Flower', bush: 'Bush', tree: 'Tree' },
+  plantLabel: (plant: string, day: string, m: number) => `${plant}, ${day}, ${m.toLocaleString()} min`,
+  plantOlderLabel: (n: number) => (n === 1 ? 'Older plants, from 1 earlier session' : `Older plants, from ${n.toLocaleString()} earlier sessions`),
+  plantSession: (m: number, name: string | null) =>
+    `${m.toLocaleString()} focused ${m === 1 ? 'minute' : 'minutes'}${name ? ` with ${name}` : ''}.`,
+  plantTasks: 'What you focused on',
+  plantNoTasks: 'No focus items that time. Just you and the timer.',
+  plantTaskDone: 'Done',
+  plantTaskOpen: 'Not ticked',
+  plantOlderTitle: 'Older plants',
+  plantOlder: (n: number, m: number) => (n === 1
+    ? `These grew from 1 earlier session: ${m.toLocaleString()} focused minutes.`
+    : `These grew together from ${n.toLocaleString()} earlier sessions: ${m.toLocaleString()} focused minutes.`),
+  plantOlderRange: (first: string, last: string) => (first === last ? `All on ${first}.` : `From ${first} to ${last}.`),
+  plantClose: 'Close plant details',
   gardenOnHome: 'On home',
   gardenSetHome: 'Show on home',
   gardenJourney: 'Journey',

@@ -3,7 +3,7 @@
  * caches user data, which lives in localStorage. VERSION must match package.json
  * (tests/serviceWorker.test.ts checks it), so every release drops the old cache.
  */
-const VERSION = 'bloom-0.19.0';
+const VERSION = 'bloom-0.20.0';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './logo.svg'];
 
 /** These are static files, the same for everyone, so a Vary header must not cause a cache miss. */
