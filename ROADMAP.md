@@ -25,12 +25,30 @@ A new Claude Code session should read this first.
 | 0.19 | — | Collectibles PR B1: little friends and backdrops appear in the meadow; toggles in Keepsakes; schema v7 (`keepsakes.away`, `keepsakes.backdrop`). Also restored the service worker (emptied by accident in 0.7), with a test that keeps its cache name on the package version |
 
 ## Next up (in order)
-1. **Collectibles (cosmetics)**: every session of 5+ minutes ends with a gift to open. Themed rarities: **Seed, Sprout, Bloom, Golden Bloom**. Longer sessions improve odds; a guaranteed rare at least every 10 sessions; duplicates become Sparkles to pick a specific item. Drops are derived from session history (seeded by session id, so they can't be rerolled). No retroactive gifts (no existing users). Never sell randomness. PR A (gifts + Keepsakes book) shipped in 0.17. PR B1 (friends and backdrops in the meadow) shipped in 0.19. PR B2 (next): wearing items, which need a fit on each species at each stage.
-2. **Opt-in analytics**: Vercel Web Analytics, cookieless, opt-in during onboarding and in Settings. Analytics is enabled in Vercel (Hobby). Add the endpoint to CSP `connect-src` only.
-3. **Weekly recap card**: shareable image generated on the device (minutes, medals, companion).
-4. **Floating mini-companion**: Document Picture-in-Picture, desktop Chrome and Edge only.
-5. **Launch prep**: trademark check for BloomyBuds, store screenshots, real-phone testing.
-6. **More species** (optional, ongoing): follow "Adding a species" in CLAUDE.md. Each needs a new medal or reuses one as its unlock. Ideas: a crystal/gem friend (100 hours), a star friend (30-day streak).
+1. **Tap a plant to see its session**: in the meadow, tapping one of the newest plants shows the session it came from (day, minutes, focus items). Recommended before B2 because it makes the meadow a personal record rather than decoration. Derived from history; nothing new stored, nothing leaves the device. Focus-item text must go through `h()`. Merged older plants have no single session, so decide what tapping them shows (for example a count).
+2. **Collectibles (cosmetics)**: every session of 5+ minutes ends with a gift to open. Themed rarities: **Seed, Sprout, Bloom, Golden Bloom**. Longer sessions improve odds; a guaranteed rare at least every 10 sessions; duplicates become Sparkles to pick a specific item. Drops are derived from session history (seeded by session id, so they can't be rerolled). No retroactive gifts (no existing users). Never sell randomness. PR A (gifts + Keepsakes book) shipped in 0.17. PR B1 (friends and backdrops in the meadow) shipped in 0.19. PR B2 (next): wearing items, which need a fit on each species at each stage.
+3. **Opt-in analytics**: Vercel Web Analytics, cookieless, opt-in during onboarding and in Settings. Analytics is enabled in Vercel (Hobby). Add the endpoint to CSP `connect-src` only.
+4. **Weekly recap card**: shareable image generated on the device (minutes, medals, companion).
+5. **Floating mini-companion**: Document Picture-in-Picture, desktop Chrome and Edge only.
+6. **Launch prep**: trademark check for BloomyBuds, store screenshots, real-phone testing.
+7. **More species** (optional, ongoing): follow "Adding a species" in CLAUDE.md. Each needs a new medal or reuses one as its unlock. Ideas: a crystal/gem friend (100 hours), a star friend (30-day streak).
+
+## Art direction: making it feel hand-made
+Open ideas from the 0.18–0.19 review. The app currently reads as generic: round symmetric shapes, pastel gradients, rounded fonts, perfect geometry. None of these are decided; the first and third need the owner.
+1. **The owner's hand in the art**: the owner sketches the companions on paper and the lines get traced, instead of perfect ellipses. Wobble and asymmetry do the most here.
+2. **The meadow as a real record**: see "Tap a plant" in Next up.
+3. **A point of view per companion**: a temperament that shows in its running lines and behavior (for example Cinder impatient, Moss slow and literal), written by the owner.
+4. **Drop borrowed game framing**: rarity tiers, Sparkles and pity counters come from gacha games. Consider a plainer rule such as "every tenth session brings something special". This changes `src/domain/keepsakes.ts` and what unopened gifts contain, so it needs its own decision.
+5. **Lean into the stance**: no accounts, no tracking, nothing dies. Say it plainly in onboarding and copy.
+6. **Small odd details**: like the pebble friend that never moves. A few choices like that, chosen by the owner.
+
+Smaller follow-ups from the same review:
+- Scenes during a session are flat gradients: give them a horizon and ground, and let the companion react (umbrella in Rain, scarf in Snowfall). The Ocean hill currently cuts through the timer digits and the Night sky moon overlaps the ring.
+- Tint the meadow by time of day from the device clock.
+- Medal icons repeat (four streak medals share a flame, two hour medals share a star); early growth stages look alike at small sizes.
+- The meadow stops changing past 8 merged trees (about 200 older sessions); add a further tier.
+- On home, the lily pond and picnic blanket can sit partly behind companions.
+- Keepsakes opens gifts one at a time; add "open all" for a stack.
 
 ## Later (needs a backend)
 Accounts and sync (code is already behind a `BloomRepository` interface), reminders via push, focus rooms with friends, optional paid tier (extra species, cosmetics, scenes; growth always free). Follow the pre-backend checklist in SECURITY.md.
