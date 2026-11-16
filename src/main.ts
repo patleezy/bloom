@@ -74,6 +74,7 @@ function goHome() {
     keepsakes: svc.keepsakes(),
     onEvolution: () => goJourney(svc.companion!.id, goHome),
     onGarden: () => goGarden(goHome),
+    decor: svc.decor(),
     friends: gardenEntries().filter((e) => e.companion && !e.isCurrent).map((e) => ({ species: e.species, stage: e.stage })),
     waitingUnlock: SPECIES_ORDER.find((sp) => SPECIES[sp].unlockMedal && svc.canAdopt(sp) && !svc.companions.some((c) => c.species === sp)),
   });
@@ -98,7 +99,7 @@ function gardenEntries(): GardenEntry[] {
 }
 
 function goGarden(back: () => void) {
-  show(gardenScreen(gardenEntries(), meadow(svc.history), {
+  show(gardenScreen(gardenEntries(), meadow(svc.history), svc.decor(), {
     onBack: back,
     onSetHome: async (id) => {
       await svc.setCurrent(id);
@@ -129,6 +130,9 @@ function goKeepsakes(back: () => void) {
     onBack: back,
     openGift: (id) => svc.openGift(id),
     pick: (item) => svc.pickItem(item),
+    decor: svc.decor(),
+    setFriendOut: (item, out) => svc.setFriendOut(item, out),
+    setBackdrop: (item) => svc.setBackdrop(item),
     refresh,
   }));
 }

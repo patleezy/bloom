@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.18.0';
+export const APP_VERSION = '0.19.0';
 
 export interface Release {
   version: string;
@@ -13,6 +13,18 @@ export interface Release {
 
 export const CHANGELOG: Release[] = [
   {
+    version: '0.19.0',
+    date: '2026-11-16',
+    title: 'Friends in the garden',
+    notes: [
+      'Little friends move in. Every friend in your Keepsakes now lives in your garden: the snail creeps along, the frog hops now and then, and the pebble, true to itself, stays put.',
+      'Backdrops change the whole meadow: a picnic blanket, wildflowers, a lily pond, a sunset sky, a cherry blossom bough, or a rainbow.',
+      'In Keepsakes, tap “In the garden” on a friend to tuck it away or bring it back, and on a backdrop to use it. One backdrop at a time.',
+      'BloomyBuds works offline again once you have opened it online, including after an update.',
+      'Wearable keepsakes are next.',
+    ],
+  },
+  {
     version: '0.18.0',
     date: '2026-11-15',
     title: 'A garden to grow',
@@ -22,7 +34,6 @@ export const CHANGELOG: Release[] = [
       'Your newest plants each get their own spot. Older ones slowly grow together into bushes and trees, so the meadow keeps filling in and nothing ever wilts.',
       'The end of a session tells you what you just planted.',
       'The garden screen shows the whole meadow, and it follows your Light or Night theme.',
-      'BloomyBuds works offline again once you have opened it online, including after an update.',
     ],
   },
   {

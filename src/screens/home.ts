@@ -7,7 +7,7 @@ import { copy } from '../copy';
 import { h } from '../dom';
 import { evaluateMedals, nearestUnlock } from '../domain/medals';
 import { meadow } from '../domain/meadow';
-import type { KeepsakeState } from '../domain/keepsakes';
+import type { Decor, KeepsakeState } from '../domain/keepsakes';
 import { lastSevenDays, streak, totalMinutes } from '../domain/stats';
 import { progressLabel } from './medals';
 import type { CompanionProfile, SessionRecord, SpeciesId } from '../domain/types';
@@ -32,6 +32,8 @@ export function homeScreen(
     waitingUnlock?: SpeciesId;
     /** Other adopted companions, shown standing behind the current one. */
     friends: readonly MeadowFriend[];
+    /** Keepsakes dressing the meadow: little friends and a backdrop. */
+    decor: Decor;
   },
 ): { el: HTMLElement; dispose: () => void } {
   const now = new Date();
@@ -83,7 +85,7 @@ export function homeScreen(
   });
 
   // The meadow is the backdrop: plants from every session, friends behind, the companion in front.
-  const scene = meadowScene(meadow(allHistory), opts.friends, 'home');
+  const scene = meadowScene(meadow(allHistory), opts.friends, 'home', opts.decor);
   scene.append(petBtn);
 
   const intro = opts.showIntro

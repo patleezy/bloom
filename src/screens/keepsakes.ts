@@ -1,7 +1,7 @@
 import { giftArt, keepsakeArt } from '../companion/keepsakeArt';
 import { copy } from '../copy';
 import { h } from '../dom';
-import { ITEMS, PICK_COST, RARITIES, type KeepsakeItem, type KeepsakeState, type OpenedGift } from '../domain/keepsakes';
+import { ITEMS, PICK_COST, RARITIES, type Decor, type KeepsakeItem, type KeepsakeState, type OpenedGift } from '../domain/keepsakes';
 import { icon } from '../icons';
 
 const rarityChip = (item: KeepsakeItem) => h('span', { class: `rarity-chip rarity-${item.rarity}` }, copy.rarity[item.rarity]);
@@ -42,6 +42,9 @@ export function keepsakesScreen(state: KeepsakeState, opts: {
   onBack: () => void;
   openGift: (sessionId: string) => Promise<OpenedGift | null>;
   pick: (itemId: string) => Promise<boolean>;
+  decor: Decor;
+  setFriendOut: (itemId: string, out: boolean) => Promise<boolean>;
+  setBackdrop: (itemId: string | null) => Promise<boolean>;
   refresh: () => void;
 }): HTMLElement {
   const fmtDate = (t: number) => new Date(t).toLocaleDateString(undefined, { dateStyle: 'medium' });
@@ -56,6 +59,25 @@ export function keepsakesScreen(state: KeepsakeState, opts: {
             state.unopened.length > 1 ? copy.giftNext : copy.giftDone),
         }))
     : null;
+
+  // Friends and backdrops show up in the meadow. A pressed toggle means "in the garden";
+  // only one backdrop can be in use, so pressing one releases the others.
+  const backdropToggles: HTMLButtonElement[] = [];
+  const gardenToggle = (item: KeepsakeItem): HTMLButtonElement | null => {
+    if (item.kind === 'wear') return null;
+    const isOn = item.kind === 'friend' ? opts.decor.friends.includes(item.id) : opts.decor.backdrop === item.id;
+    const btn = h('button', { class: 'btn small-btn garden-toggle', type: 'button', 'aria-pressed': String(isOn),
+      'aria-label': copy.inGardenLabel(item.name) }, icon('check'), copy.inGarden);
+    btn.addEventListener('click', async () => {
+      const on = btn.getAttribute('aria-pressed') !== 'true';
+      const ok = item.kind === 'friend' ? await opts.setFriendOut(item.id, on) : await opts.setBackdrop(on ? item.id : null);
+      if (!ok) return;
+      if (item.kind === 'backdrop') for (const b of backdropToggles) b.setAttribute('aria-pressed', 'false');
+      btn.setAttribute('aria-pressed', String(on));
+    });
+    if (item.kind === 'backdrop') backdropToggles.push(btn);
+    return btn;
+  };
 
   const sections = RARITIES.map((rarity) => {
     const items = ITEMS.filter((i) => i.rarity === rarity);
@@ -76,6 +98,7 @@ export function keepsakesScreen(state: KeepsakeState, opts: {
           keepsakeArt(item.id, { locked: !have }),
           h('strong', {}, have ? item.name : copy.notFound),
           h('span', { class: 'muted small' }, have ? copy.kind[item.kind] : item.name),
+          have ? gardenToggle(item) : null,
           pick);
       })));
   });
