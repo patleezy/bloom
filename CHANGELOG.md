@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to BloomyBuds (formerly Bloom). Newest first. Mirrors `src/changelog.ts` (shown in-app under Settings → What’s new).
 
+## 0.20.0 — A garden that remembers (2026-11-16)
+- Your garden remembers. In the garden, tap one of your newest plants to see the session it grew from: the day, the minutes, who joined you, and what you focused on.
+- Older plants have grown together, so tapping one shows what they add up to: how many sessions, how many minutes, and when.
+- This is read from the history already on your device. Nothing new is saved and nothing is sent anywhere.
+
 ## 0.19.0 — Friends in the garden (2026-11-16)
 - Little friends move in. Every friend in your Keepsakes now lives in your garden: the snail creeps along, the frog hops now and then, and the pebble, true to itself, stays put.
 - Backdrops change the whole meadow: a picnic blanket, wildflowers, a lily pond, a sunset sky, a cherry blossom bough, or a rainbow.

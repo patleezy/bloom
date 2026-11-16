@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addDays, dayKey } from '../src/logic/dates';
+import { addDays, dayKey, parseDay } from '../src/logic/dates';
 import { computeStreak } from '../src/logic/streak';
 
 const today = new Date(2026, 8, 27);
@@ -18,4 +18,13 @@ describe('streak', () => {
     expect(computeStreak(days(0, 2, 3, 4, 5, 6, 7, 8, 10), today)).toBe(9));
   it('does not use grace for two consecutive misses', () =>
     expect(computeStreak(days(0, 3, 4), today)).toBe(1));
+});
+
+describe('parseDay', () => {
+  it('reads a stored day back as the same local day', () => {
+    expect(dayKey(parseDay('2026-11-16')!)).toBe('2026-11-16');
+  });
+  it('rejects days that are not on the calendar, or not days at all', () => {
+    for (const bad of ['2026-13-01', '2026-02-30', '9999-99-99', '', '<b>', '2026-1-1']) expect(parseDay(bad)).toBeNull();
+  });
 });

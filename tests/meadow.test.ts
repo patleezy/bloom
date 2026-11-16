@@ -21,7 +21,7 @@ describe('meadow', () => {
   });
 
   it('is empty for a new user and ignores short sessions', () => {
-    expect(meadow([])).toEqual({ plants: [], planted: 0 });
+    expect(meadow([])).toEqual({ plants: [], planted: 0, older: null });
     expect(meadow([rec(0, 0)]).planted).toBe(0);
   });
 
@@ -80,5 +80,37 @@ describe('meadow', () => {
       expect(p.depth).toBeLessThanOrEqual(1);
     }
     expect(m.plants.map((p) => p.depth)).toEqual([...m.plants.map((p) => p.depth)].sort((a, b) => a - b));
+  });
+
+  it('ties each recent plant to the session it grew from', () => {
+    const h = [rec(0, 25), rec(1, 60), rec(2, 90)];
+    const m = meadow(h);
+    expect(m.older).toBeNull();
+    for (const p of m.plants) {
+      expect(p.session).not.toBeNull();
+      expect(plantFor(p.session!.countedMinutes)).toBe(p.kind);
+    }
+    expect(m.plants.map((p) => p.session!.id).sort()).toEqual(['s0', 's1', 's2']);
+  });
+
+  it('gives merged plants no single session, and sums up the older ones', () => {
+    const h = sessions(RECENT_PLANTS + 3).map((r, i) => ({ ...r, day: `2026-02-${String(i + 1).padStart(2, '0')}` }));
+    const m = meadow(h);
+    const recent = m.plants.filter((p) => p.recent);
+    const merged = m.plants.filter((p) => !p.recent);
+    expect(merged.length).toBe(3);
+    expect(merged.every((p) => p.session === null)).toBe(true);
+    // The oldest three merged; the newest twelve keep their own session.
+    expect(recent.map((p) => p.session!.id).sort()).toEqual(h.slice(3).map((r) => r.id).sort());
+    expect(m.older).toEqual({ sessions: 3, minutes: 75, firstDay: '2026-02-01', lastDay: '2026-02-03' });
+  });
+
+  it('keeps a session on its plant until it merges', () => {
+    const h = sessions(RECENT_PLANTS);
+    const spot = (hist: SessionRecord[], id: string) => meadow(hist).plants.find((p) => p.session?.id === id);
+    const before = spot(h, 's5')!;
+    const after = spot([...h, rec(50, 25)], 's5')!;
+    expect([after.x, after.depth]).toEqual([before.x, before.depth]);
+    expect(spot([...h, rec(50, 25)], 's0')).toBeUndefined();
   });
 });

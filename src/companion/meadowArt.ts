@@ -147,6 +147,73 @@ const BACKDROPS: Record<string, { behind?: string; ground?: string; front?: stri
 /** Exposed for tests: every friend and backdrop in the catalog must show up in the meadow. */
 export const hasMeadowArt = (itemId: string) => itemId in FRIEND_SPOTS || itemId in BACKDROPS;
 
+/** Rough drawn height of each plant kind, in its own units (see SHAPES). */
+const PLANT_HEIGHT: Record<PlantKind, number> = { flower: 28, bush: 24, tree: 56 };
+
+/**
+ * Makes the plants tappable. `label` names a plant for screen readers; `onPick` gets the
+ * chosen plant and its button, or null when the choice is cleared.
+ */
+export interface PlantPicking {
+  label: (p: Plant) => string;
+  onPick: (picked: { plant: Plant; button: HTMLButtonElement } | null) => void;
+}
+
+/**
+ * One invisible button per plant, laid over the art. Plants stand closer together than a
+ * fingertip, so a tap goes to the plant nearest the finger rather than whichever button is
+ * on top. Merged plants all mean the same thing, so only the first is offered to keyboards
+ * and screen readers.
+ */
+function plantButtons(scene: HTMLElement, plants: readonly Plant[], picking: PlantPicking): void {
+  const centers = plants.map((p) => {
+    const { x, y, scale } = place(p.x, p.depth);
+    return { x: x / W, y: (y - (PLANT_HEIGHT[p.kind] * scale) / 2) / H };
+  });
+  let chosen = -1;
+  const buttons: HTMLButtonElement[] = [];
+  const pick = (i: number) => {
+    buttons[chosen]?.setAttribute('aria-pressed', 'false');
+    chosen = chosen === i ? -1 : i;
+    buttons[chosen]?.setAttribute('aria-pressed', 'true');
+    picking.onPick(chosen < 0 ? null : { plant: plants[chosen], button: buttons[chosen] });
+  };
+  const nearest = (e: MouseEvent): number => {
+    const box = scene.getBoundingClientRect();
+    let best = 0;
+    let bestD = Infinity;
+    centers.forEach((c, i) => {
+      const d = Math.hypot(box.left + c.x * box.width - e.clientX, box.top + c.y * box.height - e.clientY);
+      if (d < bestD) [best, bestD] = [i, d];
+    });
+    return best;
+  };
+
+  const group = document.createElement('div');
+  group.className = 'plant-taps';
+  let mergedOffered = false;
+  plants.forEach((p, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'plant-tap';
+    b.style.left = `${r1(centers[i].x * 100)}%`;
+    b.style.top = `${r1(centers[i].y * 100)}%`;
+    b.setAttribute('aria-pressed', 'false');
+    if (p.recent || !mergedOffered) {
+      b.setAttribute('aria-label', picking.label(p));
+      if (!p.recent) mergedOffered = true;
+    } else {
+      b.tabIndex = -1;
+      b.setAttribute('aria-hidden', 'true');
+    }
+    // detail is 0 for keyboard and screen-reader activation: that means this very button.
+    b.addEventListener('click', (e) => pick(e.detail > 0 ? nearest(e) : i));
+    buttons.push(b);
+    group.append(b);
+  });
+  scene.append(group);
+}
+
 export interface MeadowFriend {
   species: SpeciesId;
   stage: number;
@@ -166,6 +233,7 @@ export function meadowScene(
   friends: readonly MeadowFriend[],
   layout: 'home' | 'garden',
   decor: Decor = { friends: [], backdrop: null },
+  picking?: PlantPicking,
 ): HTMLElement {
   const bd = decor.backdrop ? BACKDROPS[decor.backdrop] : undefined;
   const el = document.createElement('div');
@@ -194,5 +262,6 @@ export function meadowScene(
     art.style.bottom = `${bottom}%`;
     el.append(art);
   });
+  if (picking && m.plants.length) plantButtons(el, m.plants, picking);
   return el;
 }

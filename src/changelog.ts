@@ -2,7 +2,7 @@
  * Release notes shown in-app ("What's new"). Newest first. Keep CHANGELOG.md in sync.
  * APP_VERSION must match package.json.
  */
-export const APP_VERSION = '0.19.0';
+export const APP_VERSION = '0.20.0';
 
 export interface Release {
   version: string;
@@ -12,6 +12,16 @@ export interface Release {
 }
 
 export const CHANGELOG: Release[] = [
+  {
+    version: '0.20.0',
+    date: '2026-11-16',
+    title: 'A garden that remembers',
+    notes: [
+      'Your garden remembers. In the garden, tap one of your newest plants to see the session it grew from: the day, the minutes, who joined you, and what you focused on.',
+      'Older plants have grown together, so tapping one shows what they add up to: how many sessions, how many minutes, and when.',
+      'This is read from the history already on your device. Nothing new is saved and nothing is sent anywhere.',
+    ],
+  },
   {
     version: '0.19.0',
     date: '2026-11-16',
